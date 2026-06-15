@@ -154,6 +154,14 @@ function statScene(kind) {
     <circle cx="146" cy="68" r="3.6" fill="#c9f73e" opacity="0"><animate attributeName="opacity" values="0;0;1;1" keyTimes="0;.68;.74;1" dur="3s" repeatCount="indefinite"/></circle>
     <path d="M134 80 l12 0 0 -12" fill="none" stroke="#c9f73e" stroke-width="1.6" opacity="0"><animate attributeName="opacity" values="0;0;.9;.9;0" keyTimes="0;.7;.76;.94;1" dur="3s" repeatCount="indefinite"/></path>
   </svg>`;
+  if (kind === 'bogey') return `<svg viewBox="0 0 170 100" class="rscene" aria-hidden="true">${bg}
+    <ellipse cx="92" cy="50" rx="32" ry="16" fill="#2f6b39"/><ellipse cx="92" cy="48" rx="20" ry="9" fill="#57b15c"/>
+    <ellipse cx="40" cy="66" rx="17" ry="7" fill="#274d22"/><path d="M28 66 q5 -4 12 -2 q7 2 12 -2" fill="none" stroke="#1d3a1a" stroke-width="0.8" opacity="0.7"/>
+    <circle cx="92" cy="46" r="2.2" fill="#06120a"/>${flag(92, 46, 15)}
+    <circle r="3.8" fill="#fff" stroke="#0a0f08" stroke-width="0.8"><animateMotion dur="3s" repeatCount="indefinite" path="M150 92 Q 110 -8 40 66" keyPoints="0;1;1;1" keyTimes="0;.5;.9;1" calcMode="linear"/></circle>
+    <g opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.52;.6;.92;1" dur="3s" repeatCount="indefinite"/>
+      <circle cx="92" cy="22" r="11" fill="#ff9f43"/><text x="92" y="26" fill="#0a0f06" font-family="Inter,system-ui,sans-serif" font-size="10.5" font-weight="900" text-anchor="middle">+1</text></g>
+  </svg>`;
   return `<svg viewBox="0 0 170 100" class="rscene" aria-hidden="true">${bg}
     <ellipse cx="85" cy="54" rx="48" ry="31" fill="#2f6b39"/><ellipse cx="85" cy="54" rx="34" ry="21" fill="#357a3d" opacity="0.5"/><ellipse cx="80" cy="46" rx="15" ry="7" fill="#6cc471" opacity="0.28"/>
     <circle cx="85" cy="32" r="5" fill="#06120a"/>${flag(85, 32, 16)}
@@ -164,23 +172,30 @@ function statScene(kind) {
 }
 /* reel horizontal de stats animadas (scroll automático) */
 function statReel(cards) {
-  const set = cards.map(([k, v, t]) => `<div class="reel-card"><div class="reel-scene">${statScene(k)}</div><div class="reel-meta"><b>${v}</b><span>${esc(t)}</span></div></div>`).join('');
+  const set = cards.map(([k, v, t, cls]) => `<div class="reel-card${cls ? ' ' + cls : ''}"><div class="reel-scene">${statScene(k)}</div><div class="reel-meta"><b>${v}</b><span>${esc(t)}</span></div></div>`).join('');
   return `<div class="reel"><div class="reel-track">${set}${set}</div></div>`;
 }
-/* reel infinito de stats con gifs: fairways, gir, up&down, putts (+sin 3-putt, birdies) */
+/* reel infinito de stats con gifs: precisión, juego corto y scoring */
 function vStatReel(rounds, agg) {
   const holes = rounds.flatMap(r => r.holes);
   const onePutt = holes.length ? Math.round(holes.filter(h => h.putts != null && h.putts <= 1).length / holes.length * 100) : 0;
   const noThree = Math.max(0, 100 - Math.round(agg.threePct || 0));
-  const sd = agg.scoreDist || { total: 0, eagle: 0, birdie: 0 };
+  const sd = agg.scoreDist || { total: 0, eagle: 0, birdie: 0, bogey: 0, dbl: 0 };
   const birdie = sd.total ? Math.round((sd.eagle + sd.birdie) / sd.total * 100) : 0;
+  const bogeyPlus = sd.total ? Math.round((sd.bogey + sd.dbl) / sd.total * 100) : 0;
+  // distancia promedio a la que embocas el 1er putt
+  const mid = { '0-3': 2, '3-8': 5, '8-20': 13, '20+': 25 };
+  let mNum = 0, mDen = 0;
+  for (const k in (agg.puttsByDist || {})) { const b = agg.puttsByDist[k]; mNum += (b.one || 0) * (mid[k] || 0); mDen += (b.one || 0); }
+  const makeDist = mDen ? Math.round(mNum / mDen) : 0;
   return statReel([
-    ['fw', Math.round(agg.fwPct) + '%', 'Fairways'],
-    ['gir', Math.round(agg.girPct) + '%', 'Greens · GIR'],
+    ['fw', Math.round(agg.fwPct) + '%', 'Calles en juego'],
+    ['gir', Math.round(agg.girPct) + '%', 'Greens en regulación'],
     ['ud', Math.round(agg.scrPct) + '%', 'Up & down'],
-    ['putt', onePutt + '%', 'Putts embocados'],
+    ['putt', onePutt + '%', makeDist ? `Embocados · ~${makeDist} ft` : 'Putts embocados'],
     ['lag', noThree + '%', 'Sin 3-putt'],
     ['bird', birdie + '%', 'Birdies o mejor'],
+    ['bogey', bogeyPlus + '%', 'Bogeys o peor', 'warn'],
   ]);
 }
 /* área (texto del plan) → llave de drillArt */
@@ -229,29 +244,32 @@ function lrHoleCard(hh, i, ch) {
   </div></div>`;
 }
 
-/* mis números: KPIs de juego + mi bolsa (carries por bastón) */
+/* mis números: KPIs de juego + mi bolsa (carry y efectividad por bastón) */
 function vMisNumeros(u, agg) {
   const clubs = u.clubs || {};
   const carry = id => (clubC(clubs, id) != null ? clubC(clubs, id) : CLUB_DEFAULT[id]);
+  const eff = id => { const e = clubE(clubs, id); return e != null ? e : CLUB_EFF_DEFAULT; };
   const hasBag = clubs && Object.keys(clubs).length;
   const ids = (hasBag ? CLUBS.filter(c => clubs[c.id] != null).map(c => c.id) : DEFAULT_BAG).filter(id => CLUB_DEFAULT[id] != null);
-  const sorted = ids.map(id => ({ id, name: (CLUBS.find(c => c.id === id) || {}).name || id, y: carry(id) })).sort((a, b) => b.y - a.y);
+  const items = ids.map(id => ({ id, name: (CLUBS.find(c => c.id === id) || {}).name || id, y: carry(id), e: eff(id) }));
+  const byCarry = items.slice().sort((a, b) => b.y - a.y);
   const driverY = carry('dr');
-  const longest = sorted[0] || { name: 'Driver', y: driverY };
-  const tiles = sorted.map(c => `<div class="bag-tile${c.id === 'dr' ? ' dr' : ''}"><b>${c.y}</b><span>${esc(c.name)}</span></div>`).join('');
+  // el palo con el que eres más certero (más efectivo); a igualdad, el más corto (más fiable)
+  const best = items.slice().sort((a, b) => b.e - a.e || a.y - b.y)[0] || { name: 'Driver', e: CLUB_EFF_DEFAULT };
+  const tiles = byCarry.map(c => `<div class="bag-tile${c.id === 'dr' ? ' dr' : ''}"><b>${c.y}<i>y</i></b><span>${esc(c.name)}</span><u>${c.e}%</u></div>`).join('');
   const kpis = [
     [fmtToPar(agg.bestToPar), 'Mejor vuelta'],
     [fmtToPar(Math.round(agg.avgToPar)), 'Promedio'],
     [agg.putts18.toFixed(0), 'Putts/ronda'],
   ];
-  return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Mis números</h2><span class="small muted">tu juego y tu bolsa</span></div>
+  return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Mis números</h2><span class="small muted">tu juego y tu equipo</span></div>
     <div class="kpi-band">${kpis.map(([v, t]) => `<div class="kpi"><b>${v}</b><span>${t}</span></div>`).join('')}</div>
     <div class="bag-feat">
       <div class="card bag-card"><span class="label">${golfIcon('club')} Carry de driver</span><b class="bag-big">${driverY}<em> yds</em></b></div>
-      <div class="card bag-card"><span class="label">${golfIcon('flag')} Bastón más largo</span><b class="bag-name">${esc(longest.name)}</b><span class="bag-sub">${longest.y} yds de carry</span></div>
+      <div class="card bag-card"><span class="label">${golfIcon('flag')} Tu palo más certero</span><b class="bag-name">${esc(best.name)}</b><span class="bag-sub">${best.e}% de efectividad</span></div>
     </div>
-    <div class="sec-h" style="margin-top:14px"><h2 style="font-size:15px">Mi bolsa</h2><span class="small muted">carry por bastón · desliza →</span></div>
-    <div class="bag-strip">${tiles}</div>`;
+    <div class="sec-h" style="margin-top:14px"><h2 style="font-size:15px">Mi bolsa</h2><span class="small muted">carry y efectividad por palo</span></div>
+    <div class="reel bag-reel"><div class="reel-track">${tiles}${tiles}</div></div>`;
 }
 
 /* tus rondas por campo: elige campo (3) y tarjeta guardada del historial */
@@ -325,21 +343,21 @@ function vDashboard() {
   const head = `<div class="greet">
     <p class="hi">${greeting()}</p>
     <h1>Hola, ${esc(u.name.split(' ')[0])}!</h1>
-    <p class="hcp">HCP: ${fmtHcp(u.hcp)} · Meta ${fmtHcp(u.goal)}</p>
+    <p class="hcp">Hándicap ${fmtHcp(u.hcp)} · meta ${fmtHcp(u.goal)}</p>
   </div>`;
 
   if (!agg) {
     return head + `<div class="card empty">
       <div class="e-ico">${golfIcon('flag')}</div>
-      <h3>Tu perfil de jugador empieza aquí</h3>
-      <p>Registra tu primera ronda — o carga datos de ejemplo para ver PARFECT en acción.</p>
+      <h3>Aquí empieza tu cuaderno de juego</h3>
+      <p>Registra una ronda y PARFECT analiza cada tiro: calles, greens, putts y dónde estás ganando o dejando golpes.</p>
       <button class="btn primary" data-act="quick-round">${logoMark(15)} Registrar mi primera ronda</button>
-      <button class="btn ghost" data-act="seed-demo">Cargar datos de ejemplo</button>
+      <button class="btn ghost" data-act="seed-demo">Ver con datos de ejemplo</button>
     </div>`;
   }
 
   return head + `
-    <div class="sec-h" style="margin-top:16px"><h2 style="font-size:18px">Tu juego en movimiento</h2><span class="small muted">desliza →</span></div>
+    <div class="sec-h" style="margin-top:16px"><h2 style="font-size:18px">Tu rendimiento</h2><span class="small muted">promedio de tus rondas →</span></div>
     ${vStatReel(rounds, agg)}
     ${vMisNumeros(u, agg)}
     ${vLastRound(rounds)}`;
@@ -387,8 +405,8 @@ function vBagEditor(u) {
     return `<p class="sd-sub">${golfIcon(groupIc[g])} ${groupName[g]}</p><div class="carry-grid">${tiles}</div>`;
   }).join('');
   return `<div class="card">
-    <span class="label">${golfIcon('club')} Mi bolsa · carry por bastón</span>
-    <p class="note" style="margin-top:0;margin-bottom:6px">Ajusta el carry de cada bastón (en yardas). Deja en blanco los que no uses.</p>
+    <span class="label">${golfIcon('club')} Mi bolsa · carry por palo</span>
+    <p class="note" style="margin-top:0;margin-bottom:6px">Define el carry real de cada palo en yardas. Deja en blanco los que no lleves.</p>
     ${sections}
     <button class="btn primary" data-act="save-clubs" style="margin-top:14px">Guardar carries</button>
   </div>`;
@@ -429,9 +447,9 @@ function vPerfil() {
     ${vLogros()}
     <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">${golfIcon('card')} Calendario</h2></div>
     ${vCalendar()}
-    <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">${golfIcon('flag')} Patrocinadores y ofertas</h2></div>
+    <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">${golfIcon('flag')} Beneficios y aliados</h2></div>
     <div class="card">
-      <p class="note" style="margin-top:0;margin-bottom:8px">Ofertas de aliados (próximamente). Espacio para patrocinadores.</p>
+      <p class="note" style="margin-top:0;margin-bottom:8px">Próximamente: ofertas exclusivas de clubes, tiendas y profesionales para jugadores PARFECT.</p>
       <div class="club-grid">
         <div class="club-tile"><b>Tu club</b><span class="ct-goal">Reserva tu tee time</span></div>
         <div class="club-tile"><b>Equipo</b><span class="ct-goal">Palos, bolas y más</span></div>
@@ -444,7 +462,7 @@ function vPerfil() {
       <button class="btn ghost" data-act="seed-demo">Cargar datos de ejemplo</button>
       <button class="btn danger" data-act="wipe-mine">${V.wipeArm ? '¿Seguro? Toca otra vez para borrar tus rondas' : 'Borrar mis rondas y prácticas'}</button>
       <button class="btn" data-act="logout">Cerrar sesión</button>
-      <p class="note">Cuenta local: ${esc(u.email)} · Tus datos viven solo en este dispositivo.</p>
+      <p class="note">Cuenta local: ${esc(u.email)} · tus datos se guardan solo en este dispositivo.</p>
     </div>
     ${V.profileOpen ? vProfile() : ''}`;
 }
