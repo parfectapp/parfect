@@ -242,9 +242,13 @@ function simAutoHole(courseId, holeIdx, pr) {
   while (s.lie !== 'holed' && g < 40) { simStep(s); g++; }
   return { log: s.log, score: s.strokes, putts: s.putts, gir: s.gir, fw: s.fw };
 }
-function simNewRound(user, course) {
+function simDefaultShadowHcp(user) {
+  const curHcp = user.hcp != null ? user.hcp : 12;
+  return (user.goal != null && user.goal < curHcp) ? user.goal : Math.max(0, curHcp - 6);
+}
+function simNewRound(user, course, shadowHcp) {
   if (!Stats.aggregate(myRounds())) return null;   // requiere stats del perfil (rondas)
-  const goalHcp = (user.goal != null && user.goal < (user.hcp != null ? user.hcp : 99)) ? user.goal : Math.max(0, (user.hcp != null ? user.hcp : 12) - 6);
+  const goalHcp = shadowHcp != null ? shadowHcp : simDefaultShadowHcp(user);
   const s = { courseId: course.id, holeIdx: 0, card: [], done: false, pr: statProbs(user), shadowPr: hcpProbs(goalHcp), shadowGoal: goalHcp, shadowCard: [] };
   simInitHole(s);
   return s;
@@ -387,7 +391,8 @@ function vSimulator() {
   const u = cur();
   const agg = Stats.aggregate(myRounds());
   const course = COURSES[V.courseId] || COURSES.campestre;
-  const goalHcp = (u.goal != null && u.goal < (u.hcp != null ? u.hcp : 99)) ? u.goal : Math.max(0, (u.hcp != null ? u.hcp : 12) - 6);
+  const curHcp = u.hcp != null ? u.hcp : 12;
+  const goalHcp = V.shadowHcp != null ? V.shadowHcp : simDefaultShadowHcp(u);
 
   if (!agg) {
     return `<div class="card empty"><div class="e-ico">🎲</div><h3>Necesitas tus stats</h3>
@@ -402,16 +407,21 @@ function vSimulator() {
   const sim = V.sim && V.sim.courseId === course.id ? V.sim : null;
 
   if (!sim) {
+    const shadowOpts = [...new Set([u.goal, 5, 3, 0].filter(v => v != null && v <= curHcp))].sort((a, b) => b - a);
+    const optsFinal = shadowOpts.length ? shadowOpts : [Math.max(0, curHcp - 3)];
+    const shadowChips = optsFinal.map(h => `<button class="chip sm ${h === goalHcp ? 'on' : ''}" data-act="sim-shadow" data-h="${h}">${h === 0 ? 'Scratch' : 'HCP ' + h}</button>`).join('');
     return `<div class="card">
       <div class="chips">${courseChips}</div>
-      <p class="note">Juega una ronda virtual en <b>${esc(course.name)}</b>, tiro por tiro. Cada golpe cae según tus stats del perfil, y compites contra tu <b style="color:#6db3ff">Shadow</b> (tu yo objetivo, HCP ${goalHcp}).</p>
+      <p class="note">Juega una ronda virtual en <b>${esc(course.name)}</b>, tiro por tiro. Cada golpe cae según tus stats del perfil, y compites contra tu <b style="color:#6db3ff">Shadow</b> (tu yo objetivo).</p>
       <div class="grid2">
         ${statCard(Math.round(pr.fw * 100) + '%', 'Fairways', pr.fw * 100)}
         ${statCard(Math.round(pr.gir * 100) + '%', 'GIR', pr.gir * 100)}
         ${statCard(Math.round(pr.ud * 100) + '%', 'Up & down', pr.ud * 100)}
         ${statCard(tp + '%', '3-putts', 100 - tp)}
       </div>
-      <button class="btn primary" data-act="sim-start" style="margin-top:14px">🏌️ Jugar vs Shadow (HCP ${goalHcp})</button>
+      <p class="note" style="margin:14px 0 6px"><b style="color:#6db3ff">Nivel de tu Shadow</b> (a quién quieres llegar):</p>
+      <div class="chips">${shadowChips}</div>
+      <button class="btn primary" data-act="sim-start" style="margin-top:14px">🏌️ Jugar vs Shadow (${goalHcp === 0 ? 'Scratch' : 'HCP ' + goalHcp})</button>
     </div>`;
   }
 
