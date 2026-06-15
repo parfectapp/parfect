@@ -194,18 +194,24 @@ function statReel(cards) {
 }
 /* reel infinito de stats con gifs: precisión, juego corto y scoring */
 function vStatReel(rounds, agg) {
-  const holes = rounds.flatMap(r => r.holes);
+  // promedio por ronda, en formato hechos/total (ej. 9/18) — no porcentajes
+  const nR = rounds.length || 1;
+  const rs = rounds.map(Stats.roundStats);
+  const sum = f => rs.reduce((a, r) => a + f(r), 0);
   const sd = agg.scoreDist || { total: 0, eagle: 0, birdie: 0, par: 0, bogey: 0, dbl: 0 };
-  const pct = n => sd.total ? Math.round(n / sd.total * 100) : 0;
-  const threePuttPct = holes.length ? Math.round(holes.filter(h => h.putts >= 3).length / holes.length * 100) : 0;
+  const fw = sum(r => r.fw), fwTot = sum(r => r.fwTot);
+  const gir = sum(r => r.gir), girTot = sum(r => r.girTot);
+  const scr = sum(r => r.scr), scrTot = sum(r => r.scrTot);
+  const threeP = sum(r => r.threeP);
+  const fr = (made, tot) => `${Math.round(made / nR)}<i>/${Math.max(1, Math.round(tot / nR))}</i>`;
   return statReel([
-    ['par', pct(sd.par) + '%', 'Pares'],
-    ['bird', pct(sd.eagle + sd.birdie) + '%', 'Birdies o mejor'],
-    ['bogey', pct(sd.bogey + sd.dbl) + '%', 'Bogeys o peor', 'warn'],
-    ['threeputt', threePuttPct + '%', '3-putts', 'warn'],
-    ['gir', Math.round(agg.girPct) + '%', 'Greens · GIR'],
-    ['fw', Math.round(agg.fwPct) + '%', 'Fairways'],
-    ['ud', Math.round(agg.scrPct) + '%', 'Up & down'],
+    ['par', fr(sd.par, sd.total), 'Pares por ronda'],
+    ['bird', fr(sd.eagle + sd.birdie, sd.total), 'Birdies o mejor'],
+    ['bogey', fr(sd.bogey + sd.dbl, sd.total), 'Bogeys o peor', 'warn'],
+    ['threeputt', fr(threeP, girTot), '3-putts'],
+    ['gir', fr(gir, girTot), 'Greens · GIR'],
+    ['fw', fr(fw, fwTot), 'Fairways'],
+    ['ud', fr(scr, scrTot), 'Up & down'],
   ]);
 }
 /* área (texto del plan) → llave de drillArt */
@@ -282,39 +288,7 @@ function vMisNumeros(u, agg) {
     <div class="reel bag-reel"><div class="reel-track">${tiles}${tiles}</div></div>`;
 }
 
-/* simulación: tu ronda ideal en este campo para llegar a tu hándicap meta */
-function vCourseSim(cid, u) {
-  const c = COURSES[cid];
-  if (!c || !c.holes) return '';
-  const holes = c.holes;
-  const par = holes.reduce((a, h) => a + h.par, 0);
-  const goalH = Math.max(0, Math.round(u.goal || 0));
-  // golpes sobre par permitidos para tu meta, escalados a los hoyos del campo
-  const goalStrokes = Math.max(0, Math.round(goalH * holes.length / 18));
-  // dificultad de cada hoyo (yardas + dogleg + riesgos + tipo de par)
-  const diff = i => { const h = holes[i]; return h.yds + (h.dog && h.dog !== 'straight' ? 22 : 0) + ((h.risks || []).length * 12) + (h.par === 5 ? 8 : h.par === 3 ? -6 : 0); };
-  const order = holes.map((h, i) => i).sort((a, b) => diff(b) - diff(a));
-  const target = holes.map(h => h.par);
-  for (let k = 0; k < goalStrokes; k++) target[order[k % order.length]]++;
-  const total = target.reduce((a, b) => a + b, 0);
-  const tiles = holes.map((h, i) => {
-    const over = target[i] - h.par;
-    const cls = over <= 0 ? '' : over === 1 ? 'b1' : 'b2';
-    return `<div class="sim-tile ${cls}"><span>H${h.n}</span><b>${target[i]}</b><i>par ${h.par}</i></div>`;
-  }).join('');
-  const keyHoles = holes.map((h, i) => ({ n: h.n, over: target[i] - h.par })).filter(x => x.over >= 1).slice(0, 3).map(x => 'H' + x.n);
-  const note = keyHoles.length
-    ? `Toma el bogey sin drama en ${keyHoles.join(', ')} (tus hoyos más duros): un 5 limpio vale más que un 7 por arriesgar. En el resto, juega al centro y ataca el par.`
-    : `Meta ambiciosa: apunta a par o mejor en cada hoyo y sé conservador solo ante el agua o el bunker.`;
-  return `<div class="card sim-card">
-    <span class="label">${golfIcon('peak')} Tu plan para HCP ${fmtHcp(u.goal)}</span>
-    <p class="note" style="margin:2px 0 12px">Tu ronda ideal aquí es <b class="lime">${total}</b> golpes (${fmtToPar(total - par)}). Así repartes tus golpes hoyo por hoyo:</p>
-    <div class="sim-strip">${tiles}</div>
-    <p class="note" style="margin:12px 0 0">${note}</p>
-  </div>`;
-}
-
-/* historial: elige campo (3) y tarjeta guardada + plan ideal para tu meta */
+/* historial: elige campo (3) y tarjeta guardada */
 function vLastRound(rounds) {
   // agrupar rondas por campo real (con su diseño/curvas), en orden más reciente primero
   const byCourse = {};
@@ -363,8 +337,7 @@ function vLastRound(rounds) {
       <div class="lr-pick-head"><b>${esc(courseName)}</b><span class="small muted">${fmtDate(r.date)} · desliza los hoyos →</span></div>
       <div class="lr-hist">${hist}</div>
     </div>
-    <div class="reel reel-swipe"><div class="reel-track">${set}</div></div>
-    ${vCourseSim(cid, cur())}`;
+    <div class="reel reel-swipe"><div class="reel-track">${set}</div></div>`;
 }
 
 /* stats en conjunto (radar + tarjetas) para Perfil */
@@ -377,6 +350,12 @@ function vStatsBundle(agg) {
       ${statCard(agg.scrPct.toFixed(0) + '%', 'Up/Down', agg.scrPct)}
       ${statCard(agg.putts18.toFixed(0), 'Putts / Ronda', Stats.clamp((38 - agg.putts18) / 11 * 100, 0, 100))}
     </div>`;
+}
+
+/* radar de habilidades (stat de perfil, también en Inicio) */
+function vRadarCard(agg) {
+  const r = Stats.radarOf(agg);
+  return `<div class="card" style="margin-top:12px"><span class="label">Perfil de habilidades</span><div class="radar-wrap">${radarSVG(r.labels, r.values)}</div></div>`;
 }
 
 function vDashboard() {
@@ -400,8 +379,9 @@ function vDashboard() {
   }
 
   return head + `
-    <div class="sec-h" style="margin-top:16px"><h2 style="font-size:18px">Tu rendimiento</h2><span class="small muted">promedio de tus rondas →</span></div>
+    <div class="sec-h" style="margin-top:16px"><h2 style="font-size:18px">Tus estadísticas</h2><span class="small muted">promedio por ronda →</span></div>
     ${vStatReel(rounds, agg)}
+    ${vRadarCard(agg)}
     ${vMisNumeros(u, agg)}
     ${vLastRound(rounds)}`;
 }

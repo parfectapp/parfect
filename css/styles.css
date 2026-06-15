@@ -831,6 +831,7 @@ body.is-scrolling .reel-track { animation-play-state: paused; }
 .reel-meta { padding: 16px 18px 20px; }
 .reel-meta b { font-size: 44px; font-weight: 900; color: var(--lime); letter-spacing: -0.02em; line-height: 1; }
 .reel-card.warn .reel-meta b { color: #ff9f43; }
+.reel-meta b i { font-size: 24px; font-style: normal; font-weight: 800; color: var(--muted); letter-spacing: 0; }
 .reel-meta span { display: block; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
 @media (prefers-reduced-motion: reduce) { .reel-track { animation: none; } .reel { overflow-x: auto; } }
 
