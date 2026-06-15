@@ -75,16 +75,14 @@ function vTrainer() {
   const u = cur();
   const tab = V.trainerTab || 'diag';
   const mainPage = vKeyTargets(u) + vDiag();
-  const entreno = vTrainObjectives(u)
-    + `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Tu práctica</h2></div>`
-    + vTracker()
+  const entreno = vTracker()
     + `<div class="sec-h" style="margin-top:20px"><h2 style="font-size:18px">Biblioteca de drills</h2></div>`
     + vDrillsLibrary();
-  const body = tab === 'entreno' ? entreno : mainPage;
+  const body = tab === 'entreno' ? entreno : tab === 'cal' ? vCalendar() : mainPage;
   const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>
     <div class="tabs scroll">
-      ${T('diag', 'Resumen')}${T('entreno', 'Entrenamiento')}
+      ${T('diag', 'Resumen')}${T('entreno', 'Entrenamiento')}${T('cal', 'Calendario')}
     </div>
     ${body}`;
 }
@@ -250,10 +248,6 @@ function vTrackerPlan() {
   const u = cur();
   const plan = trackerPlan(u);
   const list = myPractices();
-  const lastOf = name => [...list].reverse().find(p => p.drill === name);
-  const banner = plan.personalized
-    ? `<p class="note" style="margin-top:14px">Plan basado en tus palos. Edítalos en tu <b class="lime">perfil</b>.</p>`
-    : `<p class="note" style="margin-top:14px">Plan estándar. Carga tus palos en tu <b class="lime">perfil</b> para personalizarlo a tu medida.</p>`;
   const bestOf = name => list.filter(p => p.drill === name).reduce((m, p) => Math.max(m, p.hits || 0), 0);
   const cats = plan.groups.map(c => {
     const tiles = c.drills.map(d => {
@@ -268,7 +262,7 @@ function vTrackerPlan() {
     }).join('');
     return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:15px">${c.icon} ${esc(c.cat)}</h2></div><div class="club-grid">${tiles}</div>`;
   }).join('');
-  return `${banner}<p class="note">Elige el bastón o área que quieras entrenar y dale ⏱.</p>${cats}`;
+  return `<p class="note">Elige el bastón o área que quieras entrenar y dale ⏱.</p>${cats}`;
 }
 
 function vDrillSheet() {
@@ -323,12 +317,12 @@ function vClubs() {
       </div>`).join('');
     return `<div class="card"><span class="label">${groupName[g]}</span><p class="note" style="margin-top:0;margin-bottom:6px">Carry (yds) · Efectividad (%)</p>${rows}</div>`;
   }).join('');
-  return `<button class="auth-back" data-act="nav" data-view="trainer">← Trainer</button>
-    <h1 class="auth-h">Mis palos</h1>
+  return `<button class="auth-back" data-act="nav" data-view="perfil">← Perfil</button>
+    <h1 class="auth-h">Mis bastones</h1>
     <p class="auth-sub">Para cada palo que uses: su carry (cuánto vuela) y tu efectividad (qué tan seguido lo pegas bien, 0–100%). Con esto la estrategia recomienda tus tiros. Deja en blanco los que no uses.</p>
     ${sections}
-    <button class="btn primary" data-act="save-clubs">Guardar mis palos</button>
-    <button class="btn" data-act="nav" data-view="trainer">Cancelar</button>`;
+    <button class="btn primary" data-act="save-clubs">Guardar mis bastones</button>
+    <button class="btn" data-act="nav" data-view="perfil">Cancelar</button>`;
 }
 
 /* ---------- Calendario (estilo Apple, mensual) ---------- */
@@ -409,13 +403,18 @@ function vCalendar() {
   const addType = V.calAddType || 'entreno';
   const typeChips = ['entreno', 'ronda', 'descanso'].map(t => `<button class="chip sm ${addType === t ? 'on' : ''}" data-act="cal-addtype" data-t="${t}">${EV_ICON[t]} ${EV_LABEL[t]}</button>`).join('');
 
-  const upcoming = events.filter(e => e.date >= tl && e.type !== 'descanso').sort((a, b) => a.date.localeCompare(b.date)).slice(0, 6);
-  const agenda = upcoming.length
-    ? upcoming.map(e => `<button class="cal-ev ${e.type}" data-act="cal-day-sel" data-date="${e.date}" style="width:100%;text-align:left;cursor:pointer">
+  const futureEv = events.filter(e => e.date >= tl).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 8);
+  const futureHtml = futureEv.length
+    ? futureEv.map(e => `<button class="cal-ev ${e.type}" data-act="cal-day-sel" data-date="${e.date}" style="width:100%;text-align:left;cursor:pointer">
         <div class="r-main"><b>${esc(e.title || EV_LABEL[e.type])}</b><span>${EV_ICON[e.type]} ${calDateLabel(e.date)}${e.area ? ' · ' + esc(e.area) : ''}</span></div>
         <span class="muted">›</span>
       </button>`).join('')
-    : `<p class="note">Nada agendado. Toca "Planear mi semana" o agrega un evento al día.</p>`;
+    : `<p class="note">Nada agendado. Usa "Planear mi semana".</p>`;
+  const rounds = (typeof myRounds === 'function' ? myRounds() : []);
+  const histItems = [
+    ...events.filter(e => e.date < tl).map(e => ({ date: e.date, html: `<div class="cal-ev ${e.type}"><div class="r-main"><b>${esc(e.title || EV_LABEL[e.type])}</b><span>${EV_ICON[e.type]} ${fmtDate(e.date)}${e.area ? ' · ' + esc(e.area) : ''}</span></div></div>` })),
+    ...rounds.map(r => { const s = Stats.roundStats(r); return { date: r.date, html: `<button class="cal-ev ronda" data-act="round-detail" data-id="${r.id}" style="width:100%;text-align:left;cursor:pointer"><div class="r-main"><b>⛳ ${esc(r.course)}</b><span>${fmtDate(r.date)} · ${s.holes} hoyos · ${s.score} (${fmtToPar(s.toPar)})</span></div><span class="muted">›</span></button>` }; })
+  ].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 12).map(x => x.html).join('');
 
   return `
     <div class="card">
@@ -454,8 +453,11 @@ function vCalendar() {
       <button class="btn primary" data-act="cal-ai" style="margin-top:14px">✨ Planear mi semana</button>
     </div>
 
-    <div class="sec-h"><h2 style="font-size:16px">Próximos eventos</h2></div>
-    ${agenda}`;
+    <div class="sec-h"><h2 style="font-size:16px">Por venir</h2></div>
+    ${futureHtml}
+    <div class="sec-h"><h2 style="font-size:16px">Historial</h2></div>
+    ${histItems || '<p class="note" style="margin-bottom:24px">Aún sin registros. Juega una ronda o agenda algo.</p>'}
+    <div style="height:18px"></div>`;
 }
 
 /* ---------- Social ---------- */

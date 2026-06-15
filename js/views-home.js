@@ -3,8 +3,7 @@
 function navKeyOf(view) {
   if (['ronda', 'nueva', 'detalle'].includes(view)) return 'ronda';
   if (['trainer', 'clubs'].includes(view)) return 'trainer';
-  if (['social', 'friend'].includes(view)) return 'social';
-  if (view === 'strategy' || view === 'simulator') return 'inicio';
+  if (['perfil', 'clubs', 'friend'].includes(view)) return 'perfil';
   return 'inicio';
 }
 
@@ -25,7 +24,7 @@ function vShell(content) {
       ${item('ronda', 'Ronda')}
       <button class="nav-p" data-act="quick-round" aria-label="Iniciar ronda">P</button>
       ${item('trainer', 'Trainer')}
-      ${item('social', 'Calendario')}
+      ${item('perfil', 'Perfil')}
     </nav>
     ${V.profileOpen ? vProfile() : ''}
   </div>`;
@@ -127,6 +126,42 @@ function vDashboard() {
         <div class="r-side"><b>${s.score}</b><span>${fmtToPar(s.toPar)}</span></div>
       </button>`; }).join('')}
       <button class="btn sm ghost" data-act="nav" data-view="ronda" style="margin-top:12px">Ver todas las tarjetas →</button>
+    </div>`;
+}
+
+/* ============ Perfil (página) ============ */
+function vPerfil() {
+  const u = cur();
+  return `<div class="sec-h"><h2>Tu perfil</h2></div>
+    <div class="card">
+      <div class="field" style="margin-top:0"><label>Nombre</label><input id="p-name" value="${esc(u.name)}"></div>
+      <div class="field-row">
+        <div class="field"><label>Hándicap</label><input id="p-hcp" type="number" step="1" value="${esc(u.hcp)}"></div>
+        <div class="field"><label>Meta</label><input id="p-goal" type="number" step="1" value="${esc(u.goal)}"></div>
+      </div>
+      <div class="field"><label>Campo de casa</label>
+        <div class="chips">${COURSE_ORDER.map(id => `<button class="chip sm ${(u.homeCourse || 'campestre') === id ? 'on' : ''}" data-act="prof-campo" data-c="${id}">${esc(COURSES[id].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', ''))}</button>`).join('')}</div>
+      </div>
+      <button class="btn primary" data-act="profile-save">Guardar cambios</button>
+      <button class="btn" data-act="go-clubs">🎒 Mis bastones y distancias</button>
+    </div>
+    ${vLogros()}
+    <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">🏷️ Patrocinadores y ofertas</h2></div>
+    <div class="card">
+      <p class="note" style="margin-top:0;margin-bottom:8px">Ofertas de aliados (próximamente). Espacio para patrocinadores.</p>
+      <div class="club-grid">
+        <div class="club-tile"><b>Tu club</b><span class="ct-goal">Reserva tu tee time</span></div>
+        <div class="club-tile"><b>Equipo</b><span class="ct-goal">Palos, bolas y más</span></div>
+        <div class="club-tile"><b>Clases</b><span class="ct-goal">Encuentra un PRO</span></div>
+        <div class="club-tile"><b>Anúnciate</b><span class="ct-goal">Tu marca aquí</span></div>
+      </div>
+    </div>
+    <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">⚙️ Configuración</h2></div>
+    <div class="card">
+      <button class="btn ghost" data-act="seed-demo">Cargar datos de ejemplo</button>
+      <button class="btn danger" data-act="wipe-mine">${V.wipeArm ? '¿Seguro? Toca otra vez para borrar tus rondas' : 'Borrar mis rondas y prácticas'}</button>
+      <button class="btn" data-act="logout">Cerrar sesión</button>
+      <p class="note">Cuenta local: ${esc(u.email)} · Tus datos viven solo en este dispositivo.</p>
     </div>`;
 }
 

@@ -78,7 +78,7 @@ function App() {
     clubs: vClubs,
     friend: vFriend,
     trainer: vTrainer,
-    social: vSocial,
+    perfil: vPerfil,
   }[V.view] || vDashboard;
   return vShell(content());
 }
@@ -147,7 +147,7 @@ const actions = {
   },
 
   /* ---- perfil ---- */
-  'profile-open'() { V.profileOpen = true; V.wipeArm = false; render(); },
+  'profile-open'() { V.wipeArm = false; go('perfil'); },
   'go-trofeos'() { V.profileOpen = false; V.trainerTab = 'logros'; go('trainer'); },
   'profile-close'() { V.profileOpen = false; V.wipeArm = false; render(); },
   'prof-campo'(d) {
@@ -376,7 +376,7 @@ const actions = {
       clubs[c.id] = { c: Math.round(Number(cv)), e };
     }
     u.clubs = clubs;
-    V.view = 'trainer'; V.trainerTab = 'entreno';
+    V.view = 'perfil';
     commit(); window.scrollTo(0, 0);
   },
   'practice-add'() {
