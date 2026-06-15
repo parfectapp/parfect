@@ -2,7 +2,7 @@
 
 function navKeyOf(view) {
   if (['ronda', 'nueva', 'detalle'].includes(view)) return 'ronda';
-  if (view === 'trainer') return 'trainer';
+  if (['trainer', 'clubs'].includes(view)) return 'trainer';
   if (view === 'social') return 'social';
   return 'inicio';
 }
@@ -108,6 +108,7 @@ function vProfile() {
         <div class="field"><label>Meta</label><input id="p-goal" type="number" step="1" value="${esc(u.goal)}"></div>
       </div>
       <button class="btn primary" data-act="profile-save">Guardar cambios</button>
+      <button class="btn" data-act="go-clubs">🎒 Mis palos y distancias</button>
       <button class="btn" data-act="go-trofeos">🏆 Ver mis trofeos</button>
       <button class="btn ghost" data-act="seed-demo">Cargar datos de ejemplo</button>
       <button class="btn danger" data-act="wipe-mine">${V.wipeArm ? '¿Seguro? Toca otra vez para borrar tus rondas' : 'Borrar mis rondas y prácticas'}</button>

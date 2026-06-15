@@ -9,7 +9,7 @@ let V = {
   hole: null, scoreTouched: false, confirmExit: false,
   detail: null, delArm: null,
   trainerTab: 'diag', diag: null, diagBusy: false,
-  trackVals: null, trkTab: 'plan', drillLog: null,
+  trackVals: null, trkTab: 'plan', drillLog: null, drillCat: 'fw',
   partyDraft: null, showMoney: false, partyView: null,
 };
 
@@ -73,6 +73,7 @@ function App() {
     detalle: vRoundDetail,
     stats: vStats,
     trofeos: vTrophies,
+    clubs: vClubs,
     trainer: vTrainer,
     social: vSocial,
   }[V.view] || vDashboard;
@@ -263,25 +264,35 @@ const actions = {
     }, 700);
   },
   'trk-tab'(d) { V.trkTab = d.t; V.err = null; render(); },
+  'drill-cat'(d) { V.drillCat = d.c; render(); },
   'drill-open'(d) {
-    const dr = drillById(d.id);
-    if (!dr) return;
-    V.drillLog = { id: d.id, hits: dr.target };
+    V.drillLog = { name: d.name, target: Number(d.target), area: d.area || '', goal: d.goal || '', timer: Number(d.timer) || 20, hits: Number(d.target) };
     render();
   },
   'drill-hit'(d) {
     if (!V.drillLog) return;
-    const dr = drillById(V.drillLog.id);
-    V.drillLog.hits = Math.max(0, Math.min(dr.target, V.drillLog.hits + Number(d.d)));
+    V.drillLog.hits = Math.max(0, Math.min(V.drillLog.target, V.drillLog.hits + Number(d.d)));
     render();
   },
   'drill-close'() { V.drillLog = null; render(); },
   'drill-save'() {
     if (!V.drillLog) return;
-    const dr = drillById(V.drillLog.id);
-    S.practices.push({ id: Store.uid(), userId: S.session, date: today(), area: dr.cat, drill: dr.name, attempts: dr.target, hits: V.drillLog.hits, notes: '' });
+    const d = V.drillLog;
+    S.practices.push({ id: Store.uid(), userId: S.session, date: today(), area: d.area, drill: d.name, attempts: d.target, hits: d.hits, notes: '' });
     V.drillLog = null;
     commit();
+  },
+  'go-clubs'() { V.profileOpen = false; go('clubs'); },
+  'save-clubs'() {
+    const u = cur();
+    const clubs = {};
+    for (const c of CLUBS) {
+      const v = val('club-' + c.id);
+      if (v !== '' && !isNaN(Number(v))) clubs[c.id] = Math.round(Number(v));
+    }
+    u.clubs = clubs;
+    V.view = 'trainer'; V.trainerTab = 'tracker';
+    commit(); window.scrollTo(0, 0);
   },
   'practice-add'() {
     const area = val('t-area'), drill = val('t-drill');

@@ -37,8 +37,39 @@ function vTrophies() {
       ${goalRows}
     </div>
 
+    ${vHcpReference(u)}
+
     <div class="sec-h"><h2 style="font-size:18px">Logros</h2></div>
     <div class="trophy-grid">${cards}</div>
     ${unlocked === 0 ? `<p class="note">Registra rondas y prácticas para empezar a desbloquear logros.</p>` : ''}
   `;
+}
+
+/* Tabla de referencia: qué stats tiene cada nivel de hándicap */
+function vHcpReference(u) {
+  const levels = [0, 5, 10, 15, 20, 25];
+  const near = levels.reduce((a, b) => (Math.abs(b - u.hcp) < Math.abs(a - u.hcp) ? b : a), levels[0]);
+  const nearGoal = levels.reduce((a, b) => (Math.abs(b - u.goal) < Math.abs(a - u.goal) ? b : a), levels[0]);
+  const rows = levels.map(h => {
+    const b = Stats.benchFor(h);
+    const tags = [];
+    if (h === near) tags.push('tú');
+    if (h === nearGoal) tags.push('meta');
+    const cls = h === nearGoal ? 'hcp-goal' : (h === near ? 'hcp-me' : '');
+    return `<tr class="${cls}">
+      <td class="hcp-h">${h}${tags.length ? ` <span class="hcp-tag">${tags.join('·')}</span>` : ''}</td>
+      <td>${Math.round(b.fwPct)}%</td>
+      <td>${Math.round(b.girPct)}%</td>
+      <td>${Math.round(b.scrPct)}%</td>
+      <td>${Math.round(b.putts18)}</td>
+    </tr>`;
+  }).join('');
+  return `<div class="card">
+    <span class="label">Referencia por hándicap</span>
+    <p class="note" style="margin-top:0;margin-bottom:8px">Cómo juega cada nivel. Úsalo de mapa para saber qué buscar.</p>
+    <div class="sc-scroll"><table class="sc-table ref-table">
+      <thead><tr><th class="sc-name">HCP</th><th>Calles</th><th>GIR</th><th>U/D</th><th>Putts</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </div>`;
 }
