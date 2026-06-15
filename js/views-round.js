@@ -177,7 +177,7 @@ function captureSchematic(h, chole, noZoom) {
   const pputts = [];
   for (let i = 0; i < nPutts; i++) {
     const f = (i + 1) / nPutts;
-    pputts.push({ x: lag.x + (gx - lag.x) * f + (i < nPutts - 1 ? (i % 2 ? 3 : -3) : 0), y: lag.y + (gy - lag.y) * f });
+    pputts.push({ x: lag.x + (gx - lag.x) * f, y: lag.y + (gy - lag.y) * f });
   }
   const pts = [...fpts, ...pputts];
   const lagNode = lagIdx >= 0 ? lagIdx + 1 : (nPutts > 0 ? fpts.length + 1 : -1);
@@ -185,7 +185,17 @@ function captureSchematic(h, chole, noZoom) {
   const seq = shots.concat(Array.from({ length: nPutts }, () => ({ role: 'putt', ok: true })));
   const route = `M${tee[0]},${tee[1]} ` + pts.map(q => `L${q.x.toFixed(0)},${q.y.toFixed(0)}`).join(' ');
   const distTxt = { '0-3': '0–3 ft', '3-8': '3–8 ft', '8-20': '8–20 ft', '20+': '+20 ft' };
-  const puttLbl = (nPutts > 0 && h.dist && distTxt[h.dist]) ? `<text x="${(lag.x + 11).toFixed(0)}" y="${(lag.y + 4).toFixed(0)}" fill="#eef3e6" font-family="Inter,system-ui,sans-serif" font-size="11" font-weight="800">${distTxt[h.dist]}</text>` : '';
+  const puttLbl = (nPutts > 0 && h.dist && distTxt[h.dist]) ? `<text x="${(lag.x + 12).toFixed(0)}" y="${(lag.y + 3).toFixed(0)}" fill="#9aa6a8" font-family="Inter,system-ui,sans-serif" font-size="9.5" font-weight="700">${distTxt[h.dist]}</text>` : '';
+  // ---- etiquetas claras (pills) en el trazo: calle, GIR/up&down, putts ----
+  const pill = (x, y, text, col) => { const w = text.length * 6.2 + 14; return `<g><rect x="${(x - w / 2).toFixed(0)}" y="${(y - 8).toFixed(0)}" width="${w.toFixed(0)}" height="16" rx="8" fill="rgba(8,12,7,0.9)" stroke="${col}" stroke-width="1"/><text x="${x.toFixed(0)}" y="${(y + 3.4).toFixed(0)}" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="9" font-weight="800" fill="${col}">${text}</text></g>`; };
+  let pills = '';
+  const teeIdx = shots.findIndex(s => s.role === 'tee');
+  if (h.par >= 4 && teeIdx >= 0) { const tp = fpts[teeIdx]; const fw = h.tee === 'fw'; pills += pill(tp.x, tp.y - 15, fw ? 'CALLE ✓' : h.tee === 'penal' ? 'PENAL ✗' : 'CALLE ✗', fw ? '#c9f73e' : '#ff9f43'); }
+  const gir = h.app === 'gir', saved = h.app && h.app !== 'gir' && h.upDown === true;
+  let gtxt = gir ? 'GIR ✓' : saved ? 'SALVÓ ✓' : (h.app && h.app !== 'gir' && h.upDown === false ? 'FALLÓ GREEN' : '');
+  const gcol = gir ? '#46d39a' : saved ? '#5aa9e0' : '#ff9f43';
+  if (nPutts > 0) gtxt = (gtxt ? gtxt + ' · ' : '') + nPutts + ' PUTT' + (nPutts !== 1 ? 'S' : '');
+  if (gtxt) pills += pill(gx, gy + lagDy + 18, gtxt, nPutts > 0 && !gir && !saved ? '#eef3e6' : gcol);
   let zones = '', dots = '';
   shots.forEach((s, i) => { if (s.lie === 'green') return; const q = fpts[i], c = shotColor(s), rx = s.ok ? 13 : 18; zones += `<ellipse cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" rx="${rx}" ry="${(rx * 0.7).toFixed(0)}" fill="${c}" opacity="0.16" stroke="${c}" stroke-width="1.5" stroke-dasharray="4 4"/>`; });
   pts.forEach((q, i) => {
@@ -247,7 +257,7 @@ function captureSchematic(h, chole, noZoom) {
     <line x1="${gx}" y1="${gy}" x2="${gx}" y2="${gy - 22}" stroke="#eef3e6" stroke-width="2"/><path d="M${gx},${gy - 22} l11,3 -11,3z" fill="#c9f73e"/>
     ${haz}${zones}
     <path d="${route}" fill="none" stroke="#c9f73e" stroke-width="2" stroke-dasharray="3 5"/>
-    ${dots}${puttLbl}${ball}
+    ${dots}${puttLbl}${pills}${ball}
     <rect x="${tee[0] - 9}" y="${tee[1]}" width="18" height="6" rx="2" fill="#9ab07f"/>
   </svg></div>`;
 }
