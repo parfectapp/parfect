@@ -280,14 +280,17 @@ const actions = {
   'drill-cat'(d) { V.drillCat = d.c; render(); },
   'drill-open'(d) {
     const timer = Number(d.timer) || 20;
-    V.drillLog = { name: d.name, target: Number(d.target), area: d.area || '', goal: d.goal || '', timer, hits: 0, secs: timer * 60, running: false };
+    V.drillLog = { name: d.name, target: Number(d.target), area: d.area || '', goal: d.goal || '', timer, streak: 0, best: 0, secs: timer * 60, running: false };
     render();
   },
-  'drill-hit'(d) {
+  'drill-hit'() {
     if (!V.drillLog) return;
-    V.drillLog.hits = Math.max(0, Math.min(V.drillLog.target, V.drillLog.hits + Number(d.d)));
+    const d = V.drillLog;
+    d.streak = Math.min(d.target, d.streak + 1);
+    if (d.streak > d.best) d.best = d.streak;
     render();
   },
+  'drill-miss'() { if (!V.drillLog) return; V.drillLog.streak = 0; render(); },
   'drill-timer-toggle'() {
     if (!V.drillLog) return;
     stopDrillTimer();
@@ -308,7 +311,7 @@ const actions = {
     if (!V.drillLog) return;
     stopDrillTimer();
     const d = V.drillLog;
-    S.practices.push({ id: Store.uid(), userId: S.session, date: today(), area: d.area, drill: d.name, attempts: d.target, hits: d.hits, notes: '' });
+    S.practices.push({ id: Store.uid(), userId: S.session, date: today(), area: d.area, drill: d.name, attempts: d.target, hits: d.best, notes: '' });
     V.drillLog = null;
     commit();
   },

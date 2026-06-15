@@ -75,7 +75,9 @@ function vTrainer() {
   const u = cur();
   const tab = V.trainerTab || 'diag';
   const mainPage = vKeyTargets(u) + vDiag();
-  const entreno = vTracker()
+  const entreno = vTrainObjectives(u)
+    + `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Tu práctica</h2></div>`
+    + vTracker()
     + `<div class="sec-h" style="margin-top:20px"><h2 style="font-size:18px">Biblioteca de drills</h2></div>`
     + vDrillsLibrary();
   const body = tab === 'entreno' ? entreno : mainPage;
@@ -212,6 +214,30 @@ function trackerPlan(u) {
   return { groups, personalized };
 }
 
+/* Tabla de objetivos de entrenamiento (metas por área) */
+function vTrainObjectives(u) {
+  const plan = trackerPlan(u);
+  const list = myPractices();
+  const rows = plan.groups.map(g => {
+    const t = (g.drills[0] && g.drills[0].target) || 7;
+    const best = list.filter(p => g.drills.some(d => d.name === p.drill)).reduce((m, p) => Math.max(m, p.hits || 0), 0);
+    const hit = best >= t;
+    return `<tr class="${hit ? 'hcp-goal' : ''}">
+      <td class="hcp-h">${g.icon} ${esc(g.cat)}</td>
+      <td><b class="lime">${t}</b> seguidas</td>
+      <td>${best ? best + '/' + t : '—'}</td>
+    </tr>`;
+  }).join('');
+  return `<div class="card">
+    <span class="label">🎯 Objetivos de entrenamiento</span>
+    <p class="note" style="margin-top:0;margin-bottom:8px">Mete las bolas <b class="lime">seguidas</b> antes de que acabe el timer. Si fallas una, vuelves a empezar.</p>
+    <div class="sc-scroll"><table class="sc-table ref-table">
+      <thead><tr><th class="sc-name">Área</th><th>Meta</th><th>Tu mejor</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+  </div>`;
+}
+
 function vTracker() {
   return `<div class="sec-h"><h2>Práctica</h2><span class="small muted">tu práctica, medida</span></div>
     ${vTrackerPlan()}
@@ -246,13 +272,14 @@ function vDrillSheet() {
   const secs = d.secs != null ? d.secs : d.timer * 60;
   const mm = String(Math.floor(secs / 60)).padStart(2, '0'), ss = String(secs % 60).padStart(2, '0');
   const full = d.timer * 60;
-  const done = d.hits >= d.target;
-  const pct = Math.min(100, Math.round(d.hits / d.target * 100));
+  const streak = d.streak || 0, best = d.best || 0;
+  const done = streak >= d.target;
+  const pct = Math.min(100, Math.round(streak / d.target * 100));
   const timeUp = secs <= 0;
   return `<div class="overlay" data-act="drill-close"><div class="sheet" data-act="noop">
     <div class="grab"></div>
     <h2>${esc(d.name)}</h2>
-    <p class="auth-sub">${d.goal ? esc(d.goal) + ' · ' : ''}${d.area ? esc(d.area) + ' · ' : ''}meta ${d.target} aciertos</p>
+    <p class="auth-sub">Mete <b style="color:var(--text)">${d.target} seguidas</b>${d.goal ? ' · ' + esc(d.goal) : ''} antes de que acabe el timer. Si fallas, vuelves a 0.</p>
 
     <div class="drill-timer ${d.running ? 'run' : ''} ${timeUp ? 'up' : ''}">
       <div class="dt-time" id="drill-time">${mm}:${ss}</div>
@@ -263,13 +290,13 @@ function vDrillSheet() {
     </div>
 
     <div class="drill-count">
-      <div class="dc-num ${done ? 'done' : ''}">${d.hits}<span>/ ${d.target}</span></div>
+      <div class="dc-num ${done ? 'done' : ''}">${streak}<span>/ ${d.target} seguidas</span></div>
       <div class="bar" style="margin-top:12px"><i style="width:${pct}%"></i></div>
-      ${done ? `<p class="note lime" style="margin:8px 0 0">¡Meta lograda! 🎯</p>` : ''}
+      <p class="note" style="margin:8px 0 0">${done ? '¡Objetivo logrado! 🎯' : `Mejor racha: ${best}/${d.target}`}</p>
     </div>
 
-    <button class="btn primary drill-tap" data-act="drill-hit" data-d="1">＋ Acierto</button>
-    <button class="btn sm ghost" data-act="drill-hit" data-d="-1" style="margin-top:8px">− Quitar uno</button>
+    <button class="btn primary drill-tap" data-act="drill-hit">✓ Metió</button>
+    <button class="btn danger" data-act="drill-miss" style="margin-top:8px">✗ Falló · vuelve a 0</button>
 
     <button class="btn primary" data-act="drill-save" style="margin-top:16px">Guardar resultado</button>
     <button class="btn" data-act="drill-close">Cancelar</button>
