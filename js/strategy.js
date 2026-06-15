@@ -13,9 +13,9 @@ const CAMP_HOLES = [
   { n: 2, par: 5, yds: 550, dog: 'right', hazard: 'bunker-left', desc: 'El par 5 más largo; un arroyo cruza antes del green.',
     tips: ['El hoyo más largo del campo: prioriza calle, no distancia.', 'El arroyo cruza antes del green — si no llegas en dos, deja el tercer golpe corto del agua.'],
     geo: { tee: [180, 446], green: [212, 100], ctrl: [150, 252], fairW: 74, bunkers: [[246, 118, 16, 11], [150, 300, 15, 10]], water: [], stream: { y: 206 } } },
-  { n: 3, par: 3, yds: 174, dog: 'straight', hazard: 'water-right', desc: 'Par 3 corto con laguna a la derecha del green.',
-    tips: ['Apunta al centro-izquierda del green; la laguna castiga el lado derecho.', 'Fallar corto-izquierda (al bunker) se salva mejor que mojar la bola.'],
-    geo: { tee: [180, 446], green: [164, 118], ctrl: [174, 300], fairW: 42, bunkers: [[128, 106, 16, 11]], water: [[214, 150, 30, 20]] } },
+  { n: 3, par: 3, yds: 174, dog: 'straight', hazard: 'water-left', desc: 'Par 3 corto con laguna a la izquierda del green.',
+    tips: ['Apunta al centro-derecha del green; la laguna castiga el lado izquierdo.', 'Fallar a la derecha (al bunker) se salva mejor que mojar la bola.'],
+    geo: { tee: [180, 446], green: [196, 118], ctrl: [186, 300], fairW: 42, bunkers: [[232, 106, 16, 11]], water: [[126, 150, 30, 20]] } },
   { n: 4, par: 4, yds: 405, dog: 'left', hazard: 'bunker-right', desc: 'Dogleg suave a la izquierda.' },
   { n: 5, par: 3, yds: 201, dog: 'straight', hazard: 'bunker-left', desc: 'El par 3 más largo; toma palo de más.' },
   { n: 6, par: 4, yds: 432, dog: 'right', hazard: 'bunker-left', desc: 'Par 4 largo; coloca el drive a la derecha.' },
@@ -76,7 +76,48 @@ function bez(t, p0, c, p2) {
   return u * u * p0 + 2 * u * t * c + t * t * p2;
 }
 
+/* Render con geometría REAL del mapa (coordenadas del PDF), orientación norte arriba */
+function holeRealSVG(hole, rec, G) {
+  const par3 = hole.par === 3;
+  const [x0, y0, w, h] = G.bbox;
+  const VW = 340, s = VW / w, H = Math.round(h * s);
+  const sx = x => +((x - x0) * s).toFixed(1), sy = y => +((y - y0) * s).toFixed(1);
+  const colors = { turf: '#2f6b39', agua: '#2f7fa6', arena: '#ddcb8c' };
+  const ord = { turf: 0, arena: 1, agua: 2 };
+  const polys = [...G.polys].sort((a, b) => ord[a.k] - ord[b.k])
+    .map(p => `<path d="${p.d}" fill="${colors[p.k]}"/>`).join('');
+  const tee = [sx(G.tee[0]), sy(G.tee[1])], pin = [sx(G.pin[0]), sy(G.pin[1])];
+  const t = par3 ? 1 : Math.max(0.2, Math.min(0.86, rec.landing / hole.yds));
+  const lx = tee[0] + (pin[0] - tee[0]) * t, ly = tee[1] + (pin[1] - tee[1]) * t;
+  const lrx = Math.max(15, Math.min(34, rec.width * 0.55)), lry = lrx * 0.78;
+  const route = par3
+    ? `M${tee[0]},${tee[1]} L${pin[0]},${pin[1]}`
+    : `M${tee[0]},${tee[1]} L${lx.toFixed(0)},${ly.toFixed(0)} L${pin[0]},${pin[1]}`;
+  return `<svg width="100%" viewBox="0 0 ${VW} ${H}" role="img" aria-label="Estrategia hoyo ${hole.n}">
+    <rect x="0" y="0" width="${VW}" height="${H}" rx="16" fill="#0a0f08" stroke="#1d2914"/>
+    <g transform="scale(${s.toFixed(4)}) translate(${(-x0).toFixed(1)},${(-y0).toFixed(1)})">${polys}</g>
+    <ellipse cx="${lx.toFixed(0)}" cy="${ly.toFixed(0)}" rx="${(lrx + 10).toFixed(0)}" ry="${(lry + 8).toFixed(0)}" fill="#c9f73e" opacity="0.08"/>
+    <path d="${route}" fill="none" stroke="#c9f73e" stroke-width="2.5" stroke-dasharray="3 6"/>
+    <ellipse cx="${lx.toFixed(0)}" cy="${ly.toFixed(0)}" rx="${lrx.toFixed(0)}" ry="${lry.toFixed(0)}" fill="#c9f73e" opacity="0.16" stroke="#c9f73e" stroke-width="1.5" stroke-dasharray="4 4">
+      <animate attributeName="opacity" values="0.1;0.24;0.1" dur="2.4s" repeatCount="indefinite"/>
+    </ellipse>
+    <circle r="5" fill="#ffffff">
+      <animateMotion dur="3.2s" repeatCount="indefinite" path="${route}"/>
+      <animate attributeName="opacity" values="0;1;1;1;0" keyTimes="0;0.06;0.5;0.85;1" dur="3.2s" repeatCount="indefinite"/>
+    </circle>
+    <line x1="${pin[0]}" y1="${pin[1]}" x2="${pin[0]}" y2="${(pin[1] - 26)}" stroke="#eef3e6" stroke-width="2"/>
+    <path d="M${pin[0]},${(pin[1] - 26)} L${(pin[0] + 14)},${(pin[1] - 22)} L${pin[0]},${(pin[1] - 18)} Z" fill="#c9f73e"/>
+    <circle cx="${pin[0]}" cy="${pin[1]}" r="3" fill="#0a0f08" stroke="#eef3e6" stroke-width="1"/>
+    <rect x="${(tee[0] - 9)}" y="${(tee[1] - 5)}" width="18" height="7" rx="2" fill="#9ab07f"/>
+    <text x="${tee[0]}" y="${(tee[1] + 16)}" fill="#9ab07f" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="700" text-anchor="middle">TEE</text>
+    ${!par3 ? `<rect x="${(lx - 46).toFixed(0)}" y="${(ly - lry - 23).toFixed(0)}" width="92" height="20" rx="10" fill="#c9f73e"/>
+      <text x="${lx.toFixed(0)}" y="${(ly - lry - 9).toFixed(0)}" fill="#0a0f08" font-family="Inter,system-ui,sans-serif" font-size="10.5" font-weight="800" text-anchor="middle">Tu zona ideal</text>` : ''}
+  </svg>`;
+}
+
 function holeStrategySVG(hole, rec) {
+  const real = window.CAMP_GEO && window.CAMP_GEO[hole.n];
+  if (real) return holeRealSVG(hole, rec, real);
   const W = 360, H = 470;
   const par3 = hole.par === 3;
   const g = hole.geo;
