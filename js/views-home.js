@@ -540,14 +540,43 @@ function vAvatarPicker(u) {
     <div class="pl-av-grid">${opts}</div>`;
 }
 
+/* tarjeta de jugador estilo Pokémon: avatar + hándicap (HP) + stats (ataques) */
+function vPlayerCard(u, agg) {
+  const home = (u.homeCourse && COURSES[u.homeCourse]) ? COURSES[u.homeCourse] : COURSES.campestre;
+  const homeName = home.name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '');
+  const sd = (agg && agg.scoreDist) || { birdie: 0, eagle: 0 };
+  const moves = agg ? [
+    ['bird', 'Birdies', String(sd.birdie)],
+    ['eagle', 'Águilas', String(sd.eagle)],
+    ['flag', 'Fairways', Math.round(agg.fwPct) + '%'],
+    ['green', 'Greens · GIR', Math.round(agg.girPct) + '%'],
+    ['hand', 'Up & down', Math.round(agg.scrPct) + '%'],
+    ['putter', 'Putts / ronda', agg.putts18.toFixed(0)],
+  ] : [];
+  const moveRow = ([ic, name, val]) => {
+    const icon = ic === 'bird' ? `<img src="assets/bird.png" class="pkc-mi" alt="">` : ic === 'eagle' ? `<img src="assets/eagle.png" class="pkc-mi" alt="">` : `<span class="pkc-mic">${golfIcon(ic)}</span>`;
+    return `<div class="pkc-move">${icon}<b>${name}</b><span>${val}</span></div>`;
+  };
+  const best = agg ? fmtToPar(agg.bestToPar) : '—';
+  return `<div class="pkc"><div class="pkc-inner">
+    <div class="pkc-top"><span class="pkc-name">${esc(u.name)}</span><span class="pkc-hp"><i>HCP</i>${fmtHcp(u.hcp)}</span></div>
+    <div class="pkc-art">
+      <span class="pkc-stage">${esc(homeName)}</span>
+      <img class="pkc-av" src="${avatarSrc(u)}" alt="" loading="lazy">
+    </div>
+    <div class="pkc-sub">Golfista · ${t('goal')} ${fmtHcp(u.goal)}</div>
+    <div class="pkc-moves">${moves.map(moveRow).join('')}</div>
+    <div class="pkc-foot"><span class="pkc-stars">★★★★☆</span><span>${t('best_round')} ${best} · PARFECT 2026</span></div>
+  </div></div>`;
+}
+
 /* ============ Perfil (página) ============ */
 function vPerfil() {
   const u = cur();
   const agg = Stats.aggregate(myRounds());
-  return `<div class="sec-h"><h2>Tu perfil</h2></div>
-    ${vPerfilHero(u)}
+  return `<div class="sec-h"><h2>Tu perfil</h2><button class="sec-edit" data-act="profile-edit">${t('edit')}</button></div>
+    ${vPlayerCard(u, agg)}
     ${vAvatarPicker(u)}
-    ${agg ? `<div class="sec-h" style="margin-top:14px"><h2 style="font-size:18px">${t('sec_stats')}</h2><span class="small muted">${t('sub_stats')}</span></div>${vPerfilStats(agg, myRounds())}` : ''}
     ${vBagEditor(u)}
     ${vLogros()}
     <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">${t('settings')}</h2></div>

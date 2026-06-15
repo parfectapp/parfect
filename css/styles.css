@@ -142,6 +142,28 @@ input, select, textarea { font-family: var(--font); }
 .pl-av-opt.on { border-color: #9ccb35; background: var(--lime-faint); }
 .pl-av-opt img { width: 62px; height: 62px; object-fit: contain; }
 
+/* tarjeta de jugador estilo Pokémon */
+.pkc { margin-top: 8px; border-radius: 24px; padding: 8px; background: linear-gradient(140deg, #f0cf72, #cdec5e 50%, #e6b745); box-shadow: 0 16px 40px rgba(30,50,15,0.30); }
+.pkc-inner { background: #FBF8EC; border-radius: 18px; padding: 12px 12px 10px; }
+.pkc-top { display: flex; align-items: baseline; justify-content: space-between; padding: 2px 4px 8px; }
+.pkc-name { font-size: 18px; font-weight: 900; color: #1B2A18; letter-spacing: -0.01em; }
+.pkc-hp { font-size: 22px; font-weight: 900; color: #d8423a; }
+.pkc-hp i { font-size: 11px; font-style: normal; color: #8a3b36; margin-right: 3px; vertical-align: 2px; }
+.pkc-art { position: relative; border: 3px solid #e6c659; border-radius: 13px; overflow: hidden; height: 196px; display: flex; align-items: flex-end; justify-content: center; background: radial-gradient(120% 92% at 50% 18%, #c2e58c, #7fb85a 72%); }
+.pkc-art::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,0.28), transparent 32%, transparent 68%, rgba(255,255,255,0.16)); }
+.pkc-av { width: 168px; height: 168px; object-fit: contain; position: relative; z-index: 1; }
+.pkc-stage { position: absolute; top: 8px; left: 8px; z-index: 2; background: rgba(255,255,255,0.82); color: #26421a; font-size: 10.5px; font-weight: 800; padding: 3px 9px; border-radius: 99px; }
+.pkc-sub { font-size: 12px; color: #6E7E62; font-weight: 700; padding: 8px 4px 4px; text-align: center; }
+.pkc-moves { display: flex; flex-direction: column; padding: 2px 2px 0; }
+.pkc-move { display: flex; align-items: center; gap: 10px; padding: 8px; border-top: 1px solid rgba(20,40,10,0.09); }
+.pkc-move b { flex: 1; font-size: 14px; font-weight: 700; color: #1B2A18; }
+.pkc-move span { font-size: 16px; font-weight: 900; color: #3b6d11; letter-spacing: -0.02em; }
+.pkc-mi { width: 27px; height: 27px; object-fit: contain; }
+.pkc-mic { width: 27px; height: 27px; display: inline-flex; align-items: center; justify-content: center; }
+.pkc-mic .gi { width: 22px; height: 22px; }
+.pkc-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; padding: 8px 6px 2px; border-top: 1px solid rgba(20,40,10,0.10); font-size: 11px; color: #7C8A6E; }
+.pkc-stars { color: #e6b745; font-size: 13px; letter-spacing: 1px; }
+
 /* escenas con pájaro/águila 3D volando */
 .fly-scene { position: relative; height: 200px; overflow: hidden; background: radial-gradient(120% 90% at 50% 18%, #1a3f29, #0a130c 72%); }
 .fly-scene .fly { position: absolute; top: 46%; left: -80px; width: 64px; height: 64px; object-fit: contain; }
