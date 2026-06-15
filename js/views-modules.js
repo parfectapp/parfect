@@ -254,19 +254,21 @@ function vTrackerPlan() {
   const banner = plan.personalized
     ? `<p class="note" style="margin-top:14px">Plan basado en tus palos. Edítalos en tu <b class="lime">perfil</b>.</p>`
     : `<p class="note" style="margin-top:14px">Plan estándar. Carga tus palos en tu <b class="lime">perfil</b> para personalizarlo a tu medida.</p>`;
+  const bestOf = name => list.filter(p => p.drill === name).reduce((m, p) => Math.max(m, p.hits || 0), 0);
   const cats = plan.groups.map(c => {
-    const rows = c.drills.map(d => {
-      const last = lastOf(d.name);
-      const pct = last ? Math.round((last.hits / last.attempts) * 100) : 0;
-      const hit = last && last.hits >= d.target;
-      return `<button class="row" data-act="drill-open" data-name="${esc(d.name)}" data-target="${d.target}" data-area="${esc(d.area || c.cat)}" data-goal="${esc(d.goal || '')}" data-timer="${d.timer}">
-        <div class="r-main"><b>${esc(d.name)}${hit ? ' ✓' : ''}</b><span>${d.target}/${d.target}${d.goal ? ' · ' + esc(d.goal) : ''} · ${d.timer} min</span></div>
-        <div class="r-side">${last ? `<b>${last.hits}/${last.attempts}</b><span>${pct}%</span>` : `<span class="muted small">registrar →</span>`}</div>
+    const tiles = c.drills.map(d => {
+      const best = bestOf(d.name);
+      const hit = best >= d.target;
+      return `<button class="club-tile ${hit ? 'done' : ''}" data-act="drill-open" data-name="${esc(d.name)}" data-target="${d.target}" data-area="${esc(d.area || c.cat)}" data-goal="${esc(d.goal || '')}" data-timer="${d.timer}">
+        ${hit ? '<span class="ct-check">✓</span>' : ''}
+        <b>${esc(d.name)}</b>
+        <span class="ct-goal">${esc(d.goal || c.cat)}</span>
+        <span class="ct-best">${best ? 'mejor ' + best + '/' + d.target : 'meta ' + d.target + ' seguidas'}</span>
       </button>`;
     }).join('');
-    return `<div class="sec-h" style="margin-top:20px"><h2 style="font-size:16px">${c.icon} ${esc(c.cat)}</h2></div>${rows}`;
+    return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:15px">${c.icon} ${esc(c.cat)}</h2></div><div class="club-grid">${tiles}</div>`;
   }).join('');
-  return `${banner}<p class="note">Toca un drill para registrar tu resultado. La meta es completar la cuenta en 20 min.</p>${cats}`;
+  return `${banner}<p class="note">Elige el bastón o área que quieras entrenar y dale ⏱.</p>${cats}`;
 }
 
 function vDrillSheet() {
@@ -376,30 +378,22 @@ function generateAIPlan(u) {
 
 function vCalendar() {
   const u = cur();
-  const now = new Date();
-  if (V.calY == null) { V.calY = now.getFullYear(); V.calM = now.getMonth(); }
   if (!V.calSel) V.calSel = todayLocal();
-  const y = V.calY, m = V.calM;
   const closedDay = u.closedDay != null ? u.closedDay : 0;
   const events = u.events || [];
   const byDate = {};
   for (const e of events) (byDate[e.date] = byDate[e.date] || []).push(e);
-
-  const first = new Date(y, m, 1);
-  const pad = (first.getDay() + 6) % 7;
-  const dim = new Date(y, m + 1, 0).getDate();
   const tl = todayLocal();
-  let cells = '';
-  for (let i = 0; i < pad; i++) cells += `<div class="cal-cell empty"></div>`;
-  for (let day = 1; day <= dim; day++) {
-    const iso = isoLocal(new Date(y, m, day));
-    const wd = (new Date(y, m, day).getDay() + 6) % 7;
+
+  // tira horizontal de los próximos 14 días
+  let strip = '';
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(tl + 'T12:00:00'); d.setDate(d.getDate() + i);
+    const iso = isoLocal(d), wd = (d.getDay() + 6) % 7;
     const dots = (byDate[iso] || []).slice(0, 3).map(e => `<i class="cal-dot ${e.type}"></i>`).join('');
-    const cls = [iso === tl ? 'today' : '', iso === V.calSel ? 'sel' : '', wd === closedDay ? 'closed' : ''].join(' ');
-    cells += `<button class="cal-cell ${cls}" data-act="cal-day-sel" data-date="${iso}"><span class="cal-n">${day}</span><div class="cal-dots">${dots}</div></button>`;
+    const cls = [iso === tl ? 'today' : '', iso === V.calSel ? 'sel' : '', wd === closedDay ? 'closed' : ''].join(' ').trim();
+    strip += `<button class="day-pill ${cls}" data-act="cal-day-sel" data-date="${iso}"><span class="dp-wd">${CAL_WD[wd]}</span><span class="dp-n">${d.getDate()}</span><div class="dp-dots">${dots}</div></button>`;
   }
-  const ml = first.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
-  const monthLabel = ml.charAt(0).toUpperCase() + ml.slice(1);
 
   const selD = new Date(V.calSel + 'T12:00:00');
   const selWd = (selD.getDay() + 6) % 7;
@@ -425,15 +419,8 @@ function vCalendar() {
 
   return `
     <div class="card">
-      <div class="cal-head">
-        <button class="cal-nav" data-act="cal-prev" aria-label="Mes anterior">‹</button>
-        <span class="cal-month">${monthLabel}</span>
-        <button class="cal-nav" data-act="cal-next" aria-label="Mes siguiente">›</button>
-      </div>
-      <div class="cal-grid">
-        ${CAL_WD.map(w => `<div class="cal-wd">${w}</div>`).join('')}
-        ${cells}
-      </div>
+      <div class="cal-day-head"><span class="label" style="margin:0">📅 Próximos 14 días</span><button class="chip sm ${V.calSel === tl ? 'on' : ''}" data-act="cal-day-sel" data-date="${tl}">Hoy</button></div>
+      <div class="day-strip">${strip}</div>
       <div class="cal-legend">
         <span><i class="cal-dot ronda"></i>Ronda</span>
         <span><i class="cal-dot entreno"></i>Entreno</span>
