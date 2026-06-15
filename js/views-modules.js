@@ -74,11 +74,8 @@ function vStats() {
 function vTrainer() {
   const u = cur();
   const tab = V.trainerTab || 'diag';
-  const mainPage = vDiag();
-  const entreno = objetivosCard(u)
-    + vHcpReference(u)
-    + `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">🏋️ Tu entrenamiento para lograrlo</h2><span class="small muted">en pro de tus objetivos</span></div>`
-    + vTracker()
+  const mainPage = vKeyTargets(u) + vDiag();
+  const entreno = vTracker()
     + `<div class="sec-h" style="margin-top:20px"><h2 style="font-size:18px">Biblioteca de drills</h2></div>`
     + vDrillsLibrary();
   const body = tab === 'entreno' ? entreno : mainPage;
@@ -227,10 +224,8 @@ function vTrackerPlan() {
   const list = myPractices();
   const lastOf = name => [...list].reverse().find(p => p.drill === name);
   const banner = plan.personalized
-    ? `<p class="note" style="margin-top:14px">Plan basado en tus palos. <button class="lk" data-act="go-clubs">Editar palos →</button></p>`
-    : `<div class="card" style="margin-top:14px"><span class="label">Personaliza tu plan 🎒</span>
-        <p class="note" style="margin-top:2px">Carga tus palos y distancias (carry) y el plan se arma a tu medida.</p>
-        <button class="btn primary" data-act="go-clubs">Cargar mis palos</button></div>`;
+    ? `<p class="note" style="margin-top:14px">Plan basado en tus palos. Edítalos en tu <b class="lime">perfil</b>.</p>`
+    : `<p class="note" style="margin-top:14px">Plan estándar. Carga tus palos en tu <b class="lime">perfil</b> para personalizarlo a tu medida.</p>`;
   const cats = plan.groups.map(c => {
     const rows = c.drills.map(d => {
       const last = lastOf(d.name);

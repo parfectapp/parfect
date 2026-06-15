@@ -62,6 +62,26 @@ function vLogros() {
     ${unlocked === 0 ? `<p class="note">Registra rondas y prácticas para empezar a desbloquear logros.</p>` : ''}`;
 }
 
+/* Números clave para llegar a tu meta (según tu HCP objetivo) */
+function vKeyTargets(u) {
+  const agg = Stats.aggregate(myRounds());
+  const goal = u.goal != null ? u.goal : Math.max(0, (u.hcp != null ? u.hcp : 12) - 5);
+  const b = Stats.benchFor(goal);
+  const cur = agg ? { fw: Math.round(agg.fwPct), gir: Math.round(agg.girPct), ud: Math.round(agg.scrPct), putts: Math.round(agg.putts18) } : null;
+  const row = (label, c, t, sfx) => `<div class="row" style="padding:9px 0">
+      <div class="r-main"><b>${label}</b>${cur ? `<span>ahora ${c}${sfx}</span>` : ''}</div>
+      <div class="r-side"><b class="lime">${t}${sfx}</b><span>meta</span></div>
+    </div>`;
+  return `<div class="card">
+    <span class="label">🎯 Números clave para tu meta (HCP ${fmtHcp(goal)})</span>
+    <p class="note" style="margin-top:0;margin-bottom:6px">Lo que juega un HCP ${fmtHcp(goal)}. Apunta a estos números.</p>
+    ${row('Fairways', cur ? cur.fw : '', Math.round(b.fwPct), '%')}
+    ${row('Greens (GIR)', cur ? cur.gir : '', Math.round(b.girPct), '%')}
+    ${row('Up & down', cur ? cur.ud : '', Math.round(b.scrPct), '%')}
+    ${row('Putts / ronda', cur ? cur.putts : '', Math.round(b.putts18), '')}
+  </div>`;
+}
+
 /* Tabla de referencia: qué stats tiene cada nivel de hándicap */
 function vHcpReference(u) {
   const levels = [0, 5, 10, 15, 20, 25];
