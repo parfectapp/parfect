@@ -170,6 +170,10 @@ const CLUBS = [
 ];
 const CLUB_DEFAULT = { dr: 250, w3: 230, w5: 215, w7: 200, h4: 210, h5: 200, h6: 190, i3: 200, i4: 190, i5: 180, i6: 170, i7: 160, i8: 150, i9: 140, pw: 130, w50: 115, w52: 105, w54: 95, w56: 85, w58: 78, w60: 70 };
 const DEFAULT_BAG = ['dr', 'w3', 'h4', 'i5', 'i6', 'i7', 'i8', 'i9', 'pw', 'w52', 'w56', 'w60'];
+const CLUB_EFF_DEFAULT = 70;
+/* clubs[id] puede ser número (carry, formato viejo) o {c:carry, e:efectividad%} */
+function clubC(clubs, id) { const v = clubs && clubs[id]; if (v == null) return null; return typeof v === 'number' ? v : (v.c != null ? v.c : null); }
+function clubE(clubs, id) { const v = clubs && clubs[id]; if (v != null && typeof v === 'object' && v.e != null) return v.e; return null; }
 const GROUP_META = { largo: { cat: 'Juego largo', icon: '🏌️' }, hierros: { cat: 'Hierros', icon: '🎯' }, wedges: { cat: 'Wedges', icon: '⛳' } };
 
 const APPROACH_GROUP = { cat: 'Approach', icon: '🟢', drills: [
@@ -192,7 +196,7 @@ function trackerPlan(u) {
   const clubs = (u && u.clubs) || {};
   const personalized = Object.keys(clubs).some(k => clubs[k] != null);
   const inBag = c => personalized ? clubs[c.id] != null : DEFAULT_BAG.includes(c.id);
-  const carry = c => (clubs[c.id] != null ? clubs[c.id] : CLUB_DEFAULT[c.id]);
+  const carry = c => (clubC(clubs, c.id) != null ? clubC(clubs, c.id) : CLUB_DEFAULT[c.id]);
   const drillFor = c => ({ name: c.name, area: GROUP_META[c.group].cat, goal: `${carry(c)} yds, hueco de ${c.gap} yds`, target: 7, timer: 20 });
   const groups = [];
   for (const g of ['largo', 'hierros', 'wedges']) {
@@ -262,15 +266,15 @@ function vClubs() {
       <div class="club-row">
         <label>${esc(c.name)}</label>
         <div class="club-in">
-          <input id="club-${c.id}" type="number" inputmode="numeric" placeholder="${CLUB_DEFAULT[c.id]}" value="${clubs[c.id] != null ? clubs[c.id] : ''}">
-          <span>yds</span>
+          <input id="club-c-${c.id}" type="number" inputmode="numeric" placeholder="${CLUB_DEFAULT[c.id]}" value="${clubC(clubs, c.id) != null ? clubC(clubs, c.id) : ''}"><span>yds</span>
+          <input id="club-e-${c.id}" type="number" inputmode="numeric" min="0" max="100" placeholder="${CLUB_EFF_DEFAULT}" value="${clubE(clubs, c.id) != null ? clubE(clubs, c.id) : ''}" style="width:58px"><span>%</span>
         </div>
       </div>`).join('');
-    return `<div class="card"><span class="label">${groupName[g]}</span>${rows}</div>`;
+    return `<div class="card"><span class="label">${groupName[g]}</span><p class="note" style="margin-top:0;margin-bottom:6px">Carry (yds) · Efectividad (%)</p>${rows}</div>`;
   }).join('');
   return `<button class="auth-back" data-act="nav" data-view="trainer">← Trainer</button>
     <h1 class="auth-h">Mis palos</h1>
-    <p class="auth-sub">Escribe el carry (cuánto vuela) de cada palo que tengas. Deja en blanco los que no uses. Tu plan de práctica se arma con estos números.</p>
+    <p class="auth-sub">Para cada palo que uses: su carry (cuánto vuela) y tu efectividad (qué tan seguido lo pegas bien, 0–100%). Con esto la estrategia recomienda tus tiros. Deja en blanco los que no uses.</p>
     ${sections}
     <button class="btn primary" data-act="save-clubs">Guardar mis palos</button>
     <button class="btn" data-act="nav" data-view="trainer">Cancelar</button>`;

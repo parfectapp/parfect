@@ -319,8 +319,11 @@ const actions = {
     const u = cur();
     const clubs = {};
     for (const c of CLUBS) {
-      const v = val('club-' + c.id);
-      if (v !== '' && !isNaN(Number(v))) clubs[c.id] = Math.round(Number(v));
+      const cv = val('club-c-' + c.id);
+      if (cv === '' || isNaN(Number(cv))) continue;
+      const ev = val('club-e-' + c.id);
+      const e = (ev !== '' && !isNaN(Number(ev))) ? Math.max(0, Math.min(100, Math.round(Number(ev)))) : CLUB_EFF_DEFAULT;
+      clubs[c.id] = { c: Math.round(Number(cv)), e };
     }
     u.clubs = clubs;
     V.view = 'trainer'; V.trainerTab = 'tracker';
