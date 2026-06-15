@@ -13,7 +13,7 @@ let V = {
   calY: null, calM: null, calSel: null, calAddType: 'entreno', friendId: null, holeIdx: 0,
   courseId: 'campestre', addFriend: false, teeClubId: null, attack2: false, sim: null, shadowHcp: null, camposHcp: null,
   partyDraft: null, showMoney: false, partyView: null, capPid: null,
-  stratCid: null, stratIdx: null, stratTeeId: null, histRound: null, histHole: null,
+  stratCid: null, stratIdx: null, stratTeeId: null, stratLie: 'fw', stratMiss: null, histRound: null, histHole: null,
 };
 
 const cur = () => S.users.find(u => u.id === S.session) || null;
@@ -198,6 +198,8 @@ const actions = {
   'strat-hole'(d) { V.stratIdx = Number(d.i); V.stratTeeId = null; render(); },
   'strat-random'() { const c = COURSE_ORDER[Math.floor(Math.random() * COURSE_ORDER.length)]; V.stratCid = c; V.stratIdx = Math.floor(Math.random() * COURSES[c].holes.length); V.stratTeeId = null; render(); },
   'strat-tee'(d) { V.stratTeeId = d.c; render(); },
+  'strat-lie'(d) { V.stratLie = d.v; render(); },
+  'strat-miss'(d) { V.stratMiss = d.v; render(); },
   'hist-round'(d) { V.histRound = d.id; V.histHole = 0; render(); },
   'hist-hole'(d) { V.histHole = Number(d.i); render(); },
   'quick-round'() {

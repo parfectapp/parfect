@@ -765,6 +765,22 @@ function objectiveTip(hole, u, bench) {
   return `Apunta a ${tgt} (${lab}). ${d <= 0 ? 'Entra en tu rango: ve por el par sin arriesgar.' : `Un ${lab} aquí es buen número; juega seguro y recupera en los fáciles.`}${goalTxt}`;
 }
 
+/* qué hacer en el 2º tiro según dónde quedó la salida */
+function secondShotRec(hole, lie, apprClub) {
+  const club = apprClub ? apprClub.name : 'tu hierro';
+  if (hole.par === 3) return 'Par 3: ya estás en (o cerca de) green. Si fallaste, pásate a "si fallas el green".';
+  if (lie === 'fw') return `Calle limpia: ataca con ${club} al centro del green. Tienes la lie para comprometerte al tiro.`;
+  if (lie === 'izq' || lie === 'der') return `Rough ${lie === 'izq' ? 'izquierdo' : 'derecho'}: si la lie está limpia, un palo más y al CENTRO del green (sin spin no para). Si está enterrada, no seas héroe: saca a la calle con un hierro medio y juega el siguiente cómodo.`;
+  return 'Penal / OB: dropa y saca a la calle con un hierro 7-8; juega el green en el siguiente y firma bogey. Evitar el doble es ganar.';
+}
+/* qué tiro de juego corto jugar según dónde fallaste el green */
+function shortGameRec(miss) {
+  if (miss === 'corto') return 'Corto del green: chip-and-run con PW o 9 — bótala pronto sobre el green y deja que ruede como un putt hacia el hoyo.';
+  if (miss === 'largo') return 'Te pasaste: flop / lob (58-60°), cara abierta y acelera suave para que suba, frene rápido y se quede cerca.';
+  if (miss === 'bunker') return 'Bunker: splash — golpea 5 cm detrás de la bola con la cara abierta y TERMINA el swing. Prioridad: sacarla al green.';
+  return `Falló a la ${miss === 'izq' ? 'izquierda' : 'derecha'}: pitch o chip al centro del green; no busques el pin, deja la bola dada (a 1 m) y salva con un putt.`;
+}
+
 /* Estrategia por hoyo (random + stats) + historias de hoyos pasados tiro por tiro */
 function vEstrategia() {
   const u = cur();
@@ -782,6 +798,8 @@ function vEstrategia() {
   const teeClub = selTee;
   const apprStep = plan.find(s => s.approach) || plan[plan.length - 1];
   const apprClub = apprStep ? apprStep.club : null;
+  const lie = V.stratLie || 'fw';
+  const miss = V.stratMiss || null;
   const maxEff = teeCands.reduce((m, c) => Math.max(m, c.eff || 0), 0);
   const courseChips = COURSE_ORDER.map(id => `<button class="chip sm ${id === cid ? 'on' : ''}" data-act="strat-course" data-c="${id}">${esc(COURSES[id].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', ''))}</button>`).join('');
   const holeChips = course.holes.map((h, i) => `<button class="hole-chip ${i === idx ? 'on' : ''}" data-act="strat-hole" data-i="${i}">${h.n}</button>`).join('');
@@ -815,6 +833,14 @@ function vEstrategia() {
         ${tip('green', 'Conseguir el green (GIR)', girTip(hole, agg, u, bench, apprClub))}
         ${tip('flag', 'Objetivo · rumbo a tu meta', objectiveTip(hole, u, bench))}
       </div>
+    </div>
+    <div class="card">
+      <span class="label">¿Dónde quedó tu salida?</span>
+      <div class="chips" style="margin-top:6px">${[['fw', 'Fairway'], ['izq', '← Izq'], ['der', 'Der →'], ['penal', 'Penal']].map(([v, l]) => `<button class="chip sm ${lie === v ? 'on' : ''}" data-act="strat-lie" data-v="${v}">${l}</button>`).join('')}</div>
+      <p class="tip" style="margin-top:10px"><b style="color:var(--text)">2º tiro:</b> ${esc(secondShotRec(hole, lie, apprClub))}</p>
+      <span class="label" style="margin-top:16px;display:block">Si fallas el green…</span>
+      <div class="chips" style="margin-top:6px">${[['corto', 'Corto'], ['largo', 'Largo'], ['izq', '← Izq'], ['der', 'Der →'], ['bunker', 'Bunker']].map(([v, l]) => `<button class="chip sm ${miss === v ? 'on' : ''}" data-act="strat-miss" data-v="${v}">${l}</button>`).join('')}</div>
+      <p class="tip" style="margin-top:10px"><b style="color:var(--text)">Juego corto:</b> ${miss ? esc(shortGameRec(miss)) : 'Elige dónde quedó la bola para ver qué tiro jugar.'}</p>
     </div>`;
 }
 
