@@ -360,6 +360,41 @@ function vStatsBundle(agg) {
     </div>`;
 }
 
+/* hándicap en grande (héroe del Inicio) */
+function vHcpHero(u) {
+  const gap = Math.max(0, Math.round(u.hcp - u.goal));
+  const sub = gap > 0 ? `${t('goal')} ${fmtHcp(u.goal)} · ${t('to_go')} <b class="lime">${gap}</b>` : `${t('goal_reached')}`;
+  return `<div class="card hcp-hero">
+    <span class="label">${t('hcp_label')}</span>
+    <div class="hcp-big">${fmtHcp(u.hcp)}</div>
+    <p class="hcp-sub">${sub}</p>
+  </div>`;
+}
+
+/* tres números clave: rondas · putts · GIR */
+function vKeyStats(agg) {
+  const tiles = [
+    [String(agg.rounds), t('rounds')],
+    [agg.putts18.toFixed(0), t('putts_round')],
+    [Math.round(agg.girPct) + '%', 'GIR'],
+  ];
+  return `<div class="kpi-band" style="margin-top:12px">${tiles.map(([v, l]) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`).join('')}</div>`;
+}
+
+/* rondas recientes (lista tocable) */
+function vRecentRounds(rounds) {
+  const list = rounds.slice(0, 6);
+  const rows = list.map(r => {
+    const s = Stats.roundStats(r);
+    const course = (r.courseId && COURSES[r.courseId]) ? COURSES[r.courseId].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '') : r.course;
+    return `<button class="rr-row" data-act="round-detail" data-id="${r.id}">
+      <div class="rr-id"><b>${esc(course)}</b><span>${fmtDate(r.date)} · ${r.holes.length} ${t('holes')}</span></div>
+      <div class="rr-score"><b>${s.score}</b><em>${fmtToPar(s.toPar)}</em><i class="rr-go">›</i></div>
+    </button>`;
+  }).join('');
+  return `<div class="sec-h" style="margin-top:24px"><h2 style="font-size:20px">${t('recent')}</h2></div><div class="rr-list">${rows}</div>`;
+}
+
 function vDashboard() {
   const u = cur();
   const rounds = myRounds();
@@ -367,7 +402,6 @@ function vDashboard() {
   const head = `<div class="greet">
     <p class="hi">${greeting()}</p>
     <h1>${t('hi')}, ${esc(u.name.split(' ')[0])}!</h1>
-    <p class="hcp">${t('handicap')} ${fmtHcp(u.hcp)} · ${t('goal')} ${fmtHcp(u.goal)}</p>
   </div>`;
 
   if (!agg) {
@@ -381,10 +415,10 @@ function vDashboard() {
   }
 
   return head + `
-    ${vQuickActions()}
-    <div class="sec-h" style="margin-top:18px"><h2 style="font-size:25px">${t('sec_stats')}</h2><span class="small muted">${t('sub_stats')}</span></div>
-    ${vStatReel(rounds, agg)}
-    ${vMisNumeros(u, agg)}`;
+    ${vHcpHero(u)}
+    ${vKeyStats(agg)}
+    <button class="btn primary" data-act="quick-round" style="margin-top:14px">${logoMark(15)} ${t('start_round')}</button>
+    ${vRecentRounds(rounds)}`;
 }
 
 /* ---- reparto de score: birdies / pares / bogeys… ---- */
@@ -474,8 +508,11 @@ function vPerfilHero(u) {
 /* ============ Perfil (página) ============ */
 function vPerfil() {
   const u = cur();
+  const agg = Stats.aggregate(myRounds());
   return `<div class="sec-h"><h2>Tu perfil</h2></div>
     ${vPerfilHero(u)}
+    ${agg ? `<div class="sec-h" style="margin-top:8px"><h2 style="font-size:16px">${t('sec_stats')}</h2></div>${vStatsBundle(agg)}${vScoreDist(agg)}` : ''}
+    ${vBagEditor(u)}
     ${vLogros()}
     <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">${t('settings')}</h2></div>
     <div class="card">

@@ -923,6 +923,23 @@ body.is-scrolling .reel-track { animation-play-state: paused; }
 .strat-tip b { display: block; font-size: 14px; font-weight: 800; }
 .strat-tip p { font-size: 13px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
 
+/* héroe de hándicap (Inicio) */
+.hcp-hero { margin-top: 18px; text-align: center; padding: 26px 18px 22px; background: linear-gradient(180deg, var(--card2), var(--card)); }
+.hcp-hero .label { display: block; }
+.hcp-big { font-size: clamp(72px, 22vw, 100px); font-weight: 900; color: var(--lime); letter-spacing: -0.04em; line-height: 0.92; margin: 6px 0 2px; }
+.hcp-sub { font-size: 14px; color: var(--muted); font-weight: 700; }
+
+/* rondas recientes (Inicio) */
+.rr-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.rr-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--line); background: linear-gradient(180deg, var(--card2), var(--card)); cursor: pointer; }
+.rr-row:active { transform: scale(0.99); }
+.rr-id b { display: block; font-size: 16px; font-weight: 800; }
+.rr-id span { display: block; font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.rr-score { display: flex; align-items: baseline; gap: 6px; flex: none; }
+.rr-score b { font-size: 24px; font-weight: 900; color: var(--lime); letter-spacing: -0.02em; }
+.rr-score em { font-size: 12px; font-style: normal; font-weight: 700; color: var(--muted); }
+.rr-score .rr-go { font-style: normal; font-size: 20px; color: var(--muted2); margin-left: 4px; }
+
 /* banda de KPIs (Inicio) */
 .kpi-band { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
 .kpi { text-align: center; background: linear-gradient(180deg, var(--card2), var(--card)); border: 1px solid var(--line); border-radius: 16px; padding: 14px 6px; }
