@@ -11,7 +11,49 @@ const Party = (() => {
     medal:  { name: 'Medal',    desc: 'Stroke play: gana quien termine con el score total más bajo.' },
     nassau: { name: 'Nassau',   desc: 'Ida, vuelta y total: cada tramo lo cobra el score más bajo (1 unidad de cada uno).' },
     match:  { name: 'Match play', desc: 'Gana quien gane más hoyos (el score más bajo del hoyo). 2 o más jugadores.' },
+    unidades: { name: 'Unidades (cada quien vs cada quien)', desc: 'Por parejas. Ganar el hoyo +1, birdie +1, águila +2, sandy par +1, más cerca en regulación +1, hole-out +1, putt largo +1; 3-putt −1, español (doble del par) −1. Todo se cobra a cada rival y se acumula.' },
   };
+
+  /** Bonos (+) y castigos (−) absolutos de un jugador en un hoyo, para Unidades */
+  function unidadesHole(h, pid) {
+    let bonus = 0, penalty = 0;
+    const s = h.scores[pid];
+    if (s != null) {
+      const d = s - h.par;
+      if (d <= -2) bonus += 2; else if (d === -1) bonus += 1;        // águila / birdie
+      if (s >= h.par * 2) penalty += 1;                              // español (doble del par)
+    }
+    if ((h.putts && h.putts[pid] != null ? h.putts[pid] : 0) >= 3) penalty += 1; // 3-putt
+    if ((h.sandy || []).includes(pid)) bonus += 1;                   // sandy par
+    if ((h.prox || []).includes(pid)) bonus += 1;                    // más cerca en regulación
+    if ((h.holeout || []).includes(pid)) bonus += 1;                 // hole-out
+    if ((h.longputt || []).includes(pid)) bonus += 1;               // putt largo
+    return { bonus, penalty };
+  }
+
+  /** Unidades por parejas: total de cada jugador (suma cero) */
+  function unidades(party, limit = party.holes.length) {
+    const pids = party.players.map(p => p.pid);
+    const net = {}; pids.forEach(p => { net[p] = 0; });
+    const sc = (h, i, pid) => h.scores[pid] - alloc(party, pid, i);
+    party.holes.slice(0, limit).forEach((h, i) => {
+      const played = pids.filter(p => h.scores[p] != null);
+      if (played.length < 2) return;
+      const info = {}; played.forEach(p => { info[p] = unidadesHole(h, p); });
+      for (let a = 0; a < played.length; a++) {
+        for (let b = a + 1; b < played.length; b++) {
+          const pa = played[a], pb = played[b];
+          const sa = sc(h, i, pa), sb = sc(h, i, pb);
+          let delta = 0;
+          if (sa < sb) delta += 1; else if (sb < sa) delta -= 1;     // ganar el hoyo
+          delta += (info[pa].bonus - info[pb].bonus);                // bonos vs rival
+          delta += (info[pb].penalty - info[pa].penalty);            // castigos
+          net[pa] += delta; net[pb] -= delta;
+        }
+      }
+    });
+    return net;
+  }
 
   /** Puntos de La corta que gana un jugador en un hoyo (solo lo bueno suma) */
   function cortaHolePoints(h, pid) {
@@ -247,7 +289,7 @@ const Party = (() => {
     return tx;
   }
 
-  return { GAMES, newCode, totals, ledger, settle, cortaHolePoints, standings, matchStatus };
+  return { GAMES, newCode, totals, ledger, settle, cortaHolePoints, standings, matchStatus, unidades, unidadesHole };
 })();
 
 function fmtMoney(n) {

@@ -118,6 +118,9 @@ function vDiag() {
           ${drillArt(f.key)}
           <p>${esc(dr.desc)}</p>
           <div class="d-meta"><span>📋 ${esc(dr.dose)}</span><span>🎯 ${esc(dr.metric)}</span></div></div>`).join('')}
+        <div class="drill" style="border-color:var(--lime)"><b>🎯 Reto: 7 de 7 seguidas</b>
+          <p>Mete 7 bolas seguidas (de 7) con timer. Si fallas una, vuelves a empezar. Así llevas el drill a presión real.</p>
+          <button class="btn sm" data-act="go-entreno" style="margin-top:8px">Entrenar con timer →</button></div>
       ` : ''}
       <p class="label" style="margin-top:14px">Estrategia de campo</p>
       ${f.tips.map(t => `<p class="tip">${esc(t)}</p>`).join('')}
