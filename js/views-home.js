@@ -131,6 +131,14 @@ function statScene(kind) {
     <circle cx="85" cy="34" r="5" fill="none" stroke="#c9f73e" stroke-width="1.3" opacity="0"><animate attributeName="r" values="5;5;13" keyTimes="0;.7;.86" dur="2.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.85;0" keyTimes="0;.7;.76;.86" dur="2.8s" repeatCount="indefinite"/></circle>
     <circle fill="#fff" stroke="#0a0f08" stroke-width="0.8"><animateMotion dur="2.8s" repeatCount="indefinite" path="M85 82 L85 34" keyPoints="0;1;1" keyTimes="0;.7;1" calcMode="linear"/><animate attributeName="r" values="3.6;3.6;0;0" keyTimes="0;.68;.74;1" dur="2.8s" repeatCount="indefinite"/></circle>
   </svg>`;
+  if (kind === 'par') return `<svg viewBox="0 0 170 100" class="rscene" aria-hidden="true">${bg}
+    <ellipse cx="85" cy="52" rx="36" ry="18" fill="#2f6b39"/><ellipse cx="85" cy="50" rx="23" ry="11" fill="#57b15c"/><ellipse cx="81" cy="47" rx="11" ry="4.5" fill="#6cc471" opacity="0.45"/>
+    <circle cx="85" cy="46" r="2.2" fill="#06120a"/>${flag(85, 46, 15)}
+    <ellipse cx="80" cy="52" rx="2" ry="1" fill="#c9f73e" opacity="0"><animate attributeName="rx" values="2;2;8;11" keyTimes="0;.44;.56;.66" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0;0;.8;0" keyTimes="0;.44;.5;.66" dur="3s" repeatCount="indefinite"/></ellipse>
+    <circle r="3.8" fill="#fff" stroke="#0a0f08" stroke-width="0.8"><animateMotion dur="3s" repeatCount="indefinite" path="M16 92 Q 48 -10 80 52" keyPoints="0;1;1;1" keyTimes="0;.5;.9;1" calcMode="linear"/></circle>
+    <g opacity="0"><animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.52;.6;.92;1" dur="3s" repeatCount="indefinite"/>
+      <rect x="68" y="18" width="34" height="16" rx="8" fill="#c9f73e"/><text x="85" y="29.4" fill="#0a0f06" font-family="Inter,system-ui,sans-serif" font-size="10" font-weight="900" letter-spacing="0.5" text-anchor="middle">PAR</text></g>
+  </svg>`;
   if (kind === 'drive') return `<svg viewBox="0 0 170 100" class="rscene" aria-hidden="true">${bg}
     <path d="M0 88 Q 85 80 170 70 L170 100 L0 100 Z" fill="#2f6b39" opacity="0.55"/><path d="M0 92 Q 85 85 170 76" fill="none" stroke="#357a3d" stroke-width="3" opacity="0.4"/>
     <ellipse cx="150" cy="44" rx="15" ry="7" fill="#57b15c"/><ellipse cx="150" cy="43" rx="8" ry="3.2" fill="#6cc471" opacity="0.6"/>${flag(150, 44, 14)}
@@ -187,25 +195,17 @@ function statReel(cards) {
 /* reel infinito de stats con gifs: precisión, juego corto y scoring */
 function vStatReel(rounds, agg) {
   const holes = rounds.flatMap(r => r.holes);
-  const onePutt = holes.length ? Math.round(holes.filter(h => h.putts != null && h.putts <= 1).length / holes.length * 100) : 0;
-  const sd = agg.scoreDist || { total: 0, eagle: 0, birdie: 0, bogey: 0, dbl: 0 };
-  const birdie = sd.total ? Math.round((sd.eagle + sd.birdie) / sd.total * 100) : 0;
-  const bogeyPlus = sd.total ? Math.round((sd.bogey + sd.dbl) / sd.total * 100) : 0;
-  // 3-putts por ronda (normalizado a 18 hoyos)
-  const threePuttsPer18 = holes.length ? (holes.filter(h => h.putts >= 3).length / holes.length * 18) : 0;
-  // distancia promedio a la que embocas el 1er putt
-  const mid = { '0-3': 2, '3-8': 5, '8-20': 13, '20+': 25 };
-  let mNum = 0, mDen = 0;
-  for (const k in (agg.puttsByDist || {})) { const b = agg.puttsByDist[k]; mNum += (b.one || 0) * (mid[k] || 0); mDen += (b.one || 0); }
-  const makeDist = mDen ? Math.round(mNum / mDen) : 0;
+  const sd = agg.scoreDist || { total: 0, eagle: 0, birdie: 0, par: 0, bogey: 0, dbl: 0 };
+  const pct = n => sd.total ? Math.round(n / sd.total * 100) : 0;
+  const threePuttPct = holes.length ? Math.round(holes.filter(h => h.putts >= 3).length / holes.length * 100) : 0;
   return statReel([
-    ['fw', Math.round(agg.fwPct) + '%', 'Calles en juego'],
-    ['gir', Math.round(agg.girPct) + '%', 'Greens en regulación'],
+    ['par', pct(sd.par) + '%', 'Pares'],
+    ['bird', pct(sd.eagle + sd.birdie) + '%', 'Birdies o mejor'],
+    ['bogey', pct(sd.bogey + sd.dbl) + '%', 'Bogeys o peor', 'warn'],
+    ['threeputt', threePuttPct + '%', '3-putts', 'warn'],
+    ['gir', Math.round(agg.girPct) + '%', 'Greens · GIR'],
+    ['fw', Math.round(agg.fwPct) + '%', 'Fairways'],
     ['ud', Math.round(agg.scrPct) + '%', 'Up & down'],
-    ['putt', onePutt + '%', makeDist ? `Embocados · ~${makeDist} ft` : 'Putts embocados'],
-    ['threeputt', threePuttsPer18.toFixed(1), '3-putts por ronda', 'warn'],
-    ['bird', birdie + '%', 'Birdies o mejor'],
-    ['bogey', bogeyPlus + '%', 'Bogeys o peor', 'warn'],
   ]);
 }
 /* área (texto del plan) → llave de drillArt */
@@ -282,7 +282,39 @@ function vMisNumeros(u, agg) {
     <div class="reel bag-reel"><div class="reel-track">${tiles}${tiles}</div></div>`;
 }
 
-/* tus rondas por campo: elige campo (3) y tarjeta guardada del historial */
+/* simulación: tu ronda ideal en este campo para llegar a tu hándicap meta */
+function vCourseSim(cid, u) {
+  const c = COURSES[cid];
+  if (!c || !c.holes) return '';
+  const holes = c.holes;
+  const par = holes.reduce((a, h) => a + h.par, 0);
+  const goalH = Math.max(0, Math.round(u.goal || 0));
+  // golpes sobre par permitidos para tu meta, escalados a los hoyos del campo
+  const goalStrokes = Math.max(0, Math.round(goalH * holes.length / 18));
+  // dificultad de cada hoyo (yardas + dogleg + riesgos + tipo de par)
+  const diff = i => { const h = holes[i]; return h.yds + (h.dog && h.dog !== 'straight' ? 22 : 0) + ((h.risks || []).length * 12) + (h.par === 5 ? 8 : h.par === 3 ? -6 : 0); };
+  const order = holes.map((h, i) => i).sort((a, b) => diff(b) - diff(a));
+  const target = holes.map(h => h.par);
+  for (let k = 0; k < goalStrokes; k++) target[order[k % order.length]]++;
+  const total = target.reduce((a, b) => a + b, 0);
+  const tiles = holes.map((h, i) => {
+    const over = target[i] - h.par;
+    const cls = over <= 0 ? '' : over === 1 ? 'b1' : 'b2';
+    return `<div class="sim-tile ${cls}"><span>H${h.n}</span><b>${target[i]}</b><i>par ${h.par}</i></div>`;
+  }).join('');
+  const keyHoles = holes.map((h, i) => ({ n: h.n, over: target[i] - h.par })).filter(x => x.over >= 1).slice(0, 3).map(x => 'H' + x.n);
+  const note = keyHoles.length
+    ? `Toma el bogey sin drama en ${keyHoles.join(', ')} (tus hoyos más duros): un 5 limpio vale más que un 7 por arriesgar. En el resto, juega al centro y ataca el par.`
+    : `Meta ambiciosa: apunta a par o mejor en cada hoyo y sé conservador solo ante el agua o el bunker.`;
+  return `<div class="card sim-card">
+    <span class="label">${golfIcon('peak')} Tu plan para HCP ${fmtHcp(u.goal)}</span>
+    <p class="note" style="margin:2px 0 12px">Tu ronda ideal aquí es <b class="lime">${total}</b> golpes (${fmtToPar(total - par)}). Así repartes tus golpes hoyo por hoyo:</p>
+    <div class="sim-strip">${tiles}</div>
+    <p class="note" style="margin:12px 0 0">${note}</p>
+  </div>`;
+}
+
+/* historial: elige campo (3) y tarjeta guardada + plan ideal para tu meta */
 function vLastRound(rounds) {
   // agrupar rondas por campo real (con su diseño/curvas), en orden más reciente primero
   const byCourse = {};
@@ -297,7 +329,7 @@ function vLastRound(rounds) {
     const r = rounds[0];
     if (!r) return '';
     const set = r.holes.map((hh, i) => lrHoleCard(hh, i, null)).join('');
-    return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Tu última ronda</h2><span class="small muted">${esc(r.course)} · ${fmtDate(r.date)}</span></div>
+    return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Historial</h2><span class="small muted">${esc(r.course)} · ${fmtDate(r.date)}</span></div>
       <div class="reel reel-swipe"><div class="reel-track">${set}</div></div>`;
   }
 
@@ -325,13 +357,14 @@ function vLastRound(rounds) {
   const card = (hh, i) => lrHoleCard(hh, i, (COURSES[cid] && COURSES[cid].holes[i]) ? COURSES[cid].holes[i] : null);
   const set = r.holes.map(card).join('');
 
-  return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Tus rondas por campo</h2><span class="small muted">elige campo y tarjeta</span></div>
+  return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Historial</h2><span class="small muted">elige campo y tarjeta</span></div>
     <div class="chips lr-chips">${chips}</div>
     <div class="card lr-pick">
       <div class="lr-pick-head"><b>${esc(courseName)}</b><span class="small muted">${fmtDate(r.date)} · desliza los hoyos →</span></div>
       <div class="lr-hist">${hist}</div>
     </div>
-    <div class="reel reel-swipe"><div class="reel-track">${set}</div></div>`;
+    <div class="reel reel-swipe"><div class="reel-track">${set}</div></div>
+    ${vCourseSim(cid, cur())}`;
 }
 
 /* stats en conjunto (radar + tarjetas) para Perfil */
@@ -367,10 +400,10 @@ function vDashboard() {
   }
 
   return head + `
-    ${vLastRound(rounds)}
-    <div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Tu rendimiento</h2><span class="small muted">promedio de tus rondas →</span></div>
+    <div class="sec-h" style="margin-top:16px"><h2 style="font-size:18px">Tu rendimiento</h2><span class="small muted">promedio de tus rondas →</span></div>
     ${vStatReel(rounds, agg)}
-    ${vMisNumeros(u, agg)}`;
+    ${vMisNumeros(u, agg)}
+    ${vLastRound(rounds)}`;
 }
 
 /* ---- reparto de score: birdies / pares / bogeys… ---- */
