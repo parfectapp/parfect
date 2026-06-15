@@ -3,7 +3,7 @@
 const Party = (() => {
 
   const GAMES = {
-    corta:  { name: 'La corta (puntos)', desc: 'Solo lo bueno suma: birdie +2, águila +4, pegar green +1, salvar el par +1. Al final le cobras a cada rival la diferencia de puntos × la apuesta.' },
+    corta:  { name: 'La corta', desc: 'Cada quien vs cada quien. Ganar el hoyo +1, birdie +1, águila +2, sandy +1, más cerca en regulación +1, hole-out +1, putt largo +1; 3-putt −1, español (doble del par) −1. Todo se cobra a cada rival y se acumula.' },
     skins:  { name: 'Skins',    desc: 'El score más bajo del hoyo (sin empate) gana 1 unidad de cada uno. Los empates acumulan al siguiente.' },
     larga:  { name: 'La larga', desc: 'En cada par 5, el drive más largo cobra 1 unidad de cada uno.' },
     gogo:   { name: 'Gogos',    desc: 'Salvar el par fuera de green (up & down) cobra 1 unidad de cada uno.' },
@@ -11,27 +11,23 @@ const Party = (() => {
     medal:  { name: 'Medal',    desc: 'Stroke play: gana quien termine con el score total más bajo.' },
     nassau: { name: 'Nassau',   desc: 'Ida, vuelta y total: cada tramo lo cobra el score más bajo (1 unidad de cada uno).' },
     match:  { name: 'Match play', desc: 'Gana quien gane más hoyos (el score más bajo del hoyo). 2 o más jugadores.' },
-    unidades: { name: 'Unidades (cada quien vs cada quien)', desc: 'Por parejas. Ganar el hoyo +1, birdie +1, águila +2, sandy par +1, más cerca en regulación +1, hole-out +1, putt largo +1; 3-putt −1, español (doble del par) −1. Todo se cobra a cada rival y se acumula.' },
   };
 
-  /** Bonos (+) y castigos (−) absolutos de un jugador en un hoyo, para Unidades */
+  /** Bonos (+) y castigos (−) de un jugador en un hoyo, para La corta */
   function unidadesHole(h, pid) {
     let bonus = 0, penalty = 0;
     const s = h.scores[pid];
-    if (s != null) {
-      const d = s - h.par;
-      if (d <= -2) bonus += 2; else if (d === -1) bonus += 1;        // águila / birdie
-      if (s >= h.par * 2) penalty += 1;                              // español (doble del par)
-    }
-    if ((h.putts && h.putts[pid] != null ? h.putts[pid] : 0) >= 3) penalty += 1; // 3-putt
-    if ((h.sandy || []).includes(pid)) bonus += 1;                   // sandy par
+    if (s != null) { const d = s - h.par; if (d <= -2) bonus += 2; else if (d === -1) bonus += 1; } // águila/birdie (del score)
+    if ((h.sandy || []).includes(pid)) bonus += 1;                   // sandy
     if ((h.prox || []).includes(pid)) bonus += 1;                    // más cerca en regulación
     if ((h.holeout || []).includes(pid)) bonus += 1;                 // hole-out
     if ((h.longputt || []).includes(pid)) bonus += 1;               // putt largo
+    if ((h.threeputt || []).includes(pid)) penalty += 1;            // 3-putt
+    if ((h.espanol || []).includes(pid)) penalty += 1;             // español (doble del par)
     return { bonus, penalty };
   }
 
-  /** Unidades por parejas: total de cada jugador (suma cero) */
+  /** La corta por parejas: total de cada jugador (suma cero) */
   function unidades(party, limit = party.holes.length) {
     const pids = party.players.map(p => p.pid);
     const net = {}; pids.forEach(p => { net[p] = 0; });

@@ -5,7 +5,7 @@ let V = {
   view: S.session ? 'inicio' : 'landing',
   err: null, authVals: null,
   profileOpen: false, wipeArm: false,
-  setupHoles: 18, setupCourse: '',
+  setupHoles: 18, setupCourse: '', setupCourseId: null,
   hole: null, scoreTouched: false, confirmExit: false,
   detail: null, delArm: null,
   trainerTab: 'diag', diag: null, diagBusy: false,
@@ -44,11 +44,15 @@ function suggestScore(h) {
   return Math.max(1, h.par - 1 + h.putts + penal); // regulación fallada + chip + putts
 }
 
+function parForActive(a, idx) {
+  if (a && a.courseId && typeof COURSES !== 'undefined' && COURSES[a.courseId] && COURSES[a.courseId].holes[idx]) return COURSES[a.courseId].holes[idx].par;
+  return Stats.PAR_SEQ[idx % 18];
+}
 function loadHole() {
   const a = S.active;
   if (!a || a.idx >= a.holesCount) return;
   const ex = a.holes[a.idx];
-  V.hole = ex ? { ...ex } : newHole(Stats.PAR_SEQ[a.idx % 18]);
+  V.hole = ex ? { ...ex } : newHole(parForActive(a, a.idx));
   V.scoreTouched = !!ex;
   V.confirmExit = false;
 }
@@ -183,16 +187,24 @@ const actions = {
   },
 
   /* ---- rondas ---- */
-  'go-setup'() { V.setupCourse = ''; V.setupHoles = 18; go('nueva'); },
+  'go-setup'() { V.setupCourse = ''; V.setupHoles = 18; V.setupCourseId = V.setupCourseId || 'campestre'; go('nueva'); },
   'setup-holes'(d) { V.setupCourse = val('r-course') || V.setupCourse; V.setupHoles = Number(d.n); render(); },
   'setup-course'(d) { V.setupCourse = d.c; render(); },
+  'setup-pick-course'(d) {
+    if (d.c) { V.setupCourseId = d.c; V.setupHoles = COURSES[d.c].holes.length; }
+    else { V.setupCourseId = null; V.setupCourse = val('r-course') || ''; }
+    render();
+  },
   'quick-round'() {
     if (S.active && S.active.userId === S.session) { loadHole(); go('play'); }
     else actions['go-setup']();
   },
   'start-round'() {
-    const course = val('r-course') || V.setupCourse || 'Mi campo';
-    S.active = { userId: S.session, course, holesCount: V.setupHoles || 18, holes: [], idx: 0, startedAt: Date.now() };
+    const cid = V.setupCourseId;
+    let course, holesCount, courseId = null;
+    if (cid && COURSES[cid]) { course = COURSES[cid].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', ''); holesCount = COURSES[cid].holes.length; courseId = cid; }
+    else { course = val('r-course') || V.setupCourse || 'Mi campo'; holesCount = V.setupHoles || 18; }
+    S.active = { userId: S.session, course, courseId, holesCount, holes: [], idx: 0, startedAt: Date.now() };
     loadHole();
     V.view = 'play';
     commit(); window.scrollTo(0, 0);
@@ -265,7 +277,7 @@ const actions = {
   },
 
   /* ---- trainer / tracker ---- */
-  'trainer-tab'(d) { V.trainerTab = d.t; V.err = null; render(); },
+  'trainer-tab'(d) { V.trainerTab = d.t; V.err = null; if (d.t === 'cal') ensureWeekPlan(cur()); render(); },
   diagnose() {
     V.diagBusy = true; V.diag = null;
     render();

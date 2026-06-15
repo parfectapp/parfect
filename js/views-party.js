@@ -45,7 +45,7 @@ function vPartySetup() {
     <div class="card">
       <span class="label">Juego de la party</span>
       <p class="note" style="margin-top:0;margin-bottom:8px">Puedes elegir varios a la vez.</p>
-      ${Object.entries(Party.GAMES).filter(([k]) => ['medal', 'match', 'unidades'].includes(k)).map(([k, g]) => `
+      ${Object.entries(Party.GAMES).filter(([k]) => ['medal', 'match', 'corta'].includes(k)).map(([k, g]) => `
         <button class="game-row ${d.games[k] ? 'on' : ''}" data-act="pd-game" data-g="${k}">
           <div class="g-main"><b>${g.name}</b><p>${g.desc}</p></div>
           <span class="g-check">${d.games[k] ? '✓' : ''}</span>
@@ -137,14 +137,12 @@ function vPartyLive() {
         const d = s - h.par;
         const r = toParOf[pl.pid];
         const tot = r && r.holes ? fmtToPar(r.toPar) : 'E';
-        const fw = (h.fw || []).includes(pl.pid);
-        const gir = (h.gir || []).includes(pl.pid);
-        const ud = (h.ud || []).includes(pl.pid);
-        const putts = (h.putts && h.putts[pl.pid] != null) ? h.putts[pl.pid] : 2;
+        const has = (k) => (h[k] || []).includes(pl.pid);
+        const net = p.games.corta ? Party.unidades(p, p.idx + 1)[pl.pid] : null;
         return `<div class="ph">
           <div class="ph-head">
             <span class="rank">${esc(initials(pl.name))}</span>
-            <div class="ph-name"><b>${esc(pl.name.split(' ')[0])}</b><span class="muted">Total ${tot}${p.useNet && (pl.strokes || 0) ? ` · ${pl.strokes} gps` : ''}</span></div>
+            <div class="ph-name"><b>${esc(pl.name.split(' ')[0])}</b><span class="muted">Total ${tot}${net != null ? ` · corta ${net >= 0 ? '+' : ''}${net}` : ''}</span></div>
             <span class="pl-rel ${d < 0 ? 'lime' : ''}">${d === 0 ? 'PAR' : d > 0 ? `+${d}` : d}</span>
             <div class="stepper sm">
               <button data-act="pa-score" data-pid="${pl.pid}" data-d="-1">−</button>
@@ -152,22 +150,18 @@ function vPartyLive() {
               <button data-act="pa-score" data-pid="${pl.pid}" data-d="1">+</button>
             </div>
           </div>
-          <div class="ph-stats">
-            ${h.par >= 4 ? `<button class="chip xs ${fw ? 'on' : ''}" data-act="pa-fw" data-pid="${pl.pid}">Calle</button>` : ''}
-            <button class="chip xs ${gir ? 'on' : ''}" data-act="pa-gir" data-pid="${pl.pid}">GIR</button>
-            ${!gir ? `<button class="chip xs ${ud ? 'on' : ''}" data-act="pa-ud" data-pid="${pl.pid}">Up/Down</button>` : ''}
-            <span class="ph-putts">Putts
-              <button class="ph-pbtn" data-act="pa-putts" data-pid="${pl.pid}" data-d="-1">−</button>
-              <b>${putts}</b>
-              <button class="ph-pbtn" data-act="pa-putts" data-pid="${pl.pid}" data-d="1">+</button>
-            </span>
-            ${p.games.unidades ? `
-              <button class="chip xs ${(h.sandy || []).includes(pl.pid) ? 'on' : ''}" data-act="pa-sandy" data-pid="${pl.pid}">🏖️ Sandy</button>
-              <button class="chip xs ${(h.prox || []).includes(pl.pid) ? 'on' : ''}" data-act="pa-prox" data-pid="${pl.pid}">🎯 +cerca</button>
-              <button class="chip xs ${(h.holeout || []).includes(pl.pid) ? 'on' : ''}" data-act="pa-holeout" data-pid="${pl.pid}">⛳ Hole-out</button>
-              <button class="chip xs ${(h.longputt || []).includes(pl.pid) ? 'on' : ''}" data-act="pa-longputt" data-pid="${pl.pid}">🏁 Putt largo</button>
-            ` : ''}
-          </div>
+          ${p.games.corta ? `<div class="ph-stats">
+            <div class="ev-group">
+              <button class="chip xs ${has('sandy') ? 'on' : ''}" data-act="pa-sandy" data-pid="${pl.pid}">🏖️ Sandy</button>
+              <button class="chip xs ${has('prox') ? 'on' : ''}" data-act="pa-prox" data-pid="${pl.pid}">🎯 +cerca</button>
+              <button class="chip xs ${has('holeout') ? 'on' : ''}" data-act="pa-holeout" data-pid="${pl.pid}">⛳ Hole-out</button>
+              <button class="chip xs ${has('longputt') ? 'on' : ''}" data-act="pa-longputt" data-pid="${pl.pid}">🏁 Putt largo</button>
+            </div>
+            <div class="ev-group">
+              <button class="chip xs ev-sub ${has('threeputt') ? 'on' : ''}" data-act="pa-3putt" data-pid="${pl.pid}">🥶 3-putt</button>
+              <button class="chip xs ev-sub ${has('espanol') ? 'on' : ''}" data-act="pa-espanol" data-pid="${pl.pid}">🇪🇸 Español</button>
+            </div>
+          </div>` : ''}
         </div>`;
       }).join('')}
     </div>
@@ -198,10 +192,10 @@ function vPartyLive() {
 /* ---------- Tabla de posiciones (Medal / Match) ---------- */
 function vPartyTable(p, limit) {
   let out = '';
-  if (p.games.unidades) {
+  if (p.games.corta) {
     const net = Party.unidades(p, limit);
     const order = p.players.slice().sort((a, b) => net[b.pid] - net[a.pid]);
-    out += `<div class="sec-h" style="margin-top:4px"><h2 style="font-size:15px">Unidades</h2><span class="small muted">cada quien vs cada quien</span></div>`;
+    out += `<div class="sec-h" style="margin-top:4px"><h2 style="font-size:15px">La corta</h2><span class="small muted">cada quien vs cada quien</span></div>`;
     out += order.map((pl, i) => `<div class="pl-row">
       <span class="rank">${i + 1}</span>
       <div class="r-main" style="flex:1"><b>${esc(pl.name)}</b></div>
@@ -221,7 +215,7 @@ function vPartyTable(p, limit) {
       <div class="r-side"><b>${ms.won[pl.pid]}</b><span>ganados</span></div>
     </div>`).join('');
   }
-  if (p.games.medal || (!p.games.match && !p.games.unidades)) {
+  if (p.games.medal || (!p.games.match && !p.games.corta)) {
     const st = Party.standings(p, limit);
     out += `<div class="sec-h" style="margin-top:14px"><h2 style="font-size:15px">Medal</h2></div>`;
     out += st.map((r, i) => `<div class="pl-row">
@@ -244,11 +238,11 @@ function vPartyDone() {
     sub = ms.is2p ? `gana el match ${ms.text} (${ms.wa}–${ms.wb})` : `gana con ${ms.leaderWon} hoyos`;
   } else if (ms) {
     sub = 'match empatado 🤝';
-  } else if (p.games.unidades && !p.games.medal) {
+  } else if (p.games.corta && !p.games.medal) {
     const net = Party.unidades(p);
     const order = p.players.slice().sort((a, b) => net[b.pid] - net[a.pid]);
-    if (order.length && (!order[1] || net[order[0].pid] !== net[order[1].pid])) { winnerPid = order[0].pid; sub = `lidera en unidades con +${net[order[0].pid]}`; }
-    else sub = 'empate en unidades 🤝';
+    if (order.length && (!order[1] || net[order[0].pid] !== net[order[1].pid])) { winnerPid = order[0].pid; sub = `gana La corta con +${net[order[0].pid]}`; }
+    else sub = 'empate en La corta 🤝';
   } else {
     const played = st.filter(r => r.holes);
     if (played.length && !(played[1] && played[1].toPar === played[0].toPar)) { winnerPid = played[0].pid; sub = `gana en Medal con ${fmtToPar(played[0].toPar)}`; }
@@ -270,12 +264,12 @@ function vPartyDone() {
 /* ---------- Acciones ---------- */
 function makeHoleForParty(p, i) {
   const par = Stats.PAR_SEQ[i % 18];
-  return { par, scores: Object.fromEntries(p.players.map(pl => [pl.pid, par])), fw: [], gir: [], ud: [], putts: {}, sandy: [], prox: [], holeout: [], longputt: [] };
+  return { par, scores: Object.fromEntries(p.players.map(pl => [pl.pid, par])), fw: [], gir: [], ud: [], putts: {}, sandy: [], prox: [], holeout: [], longputt: [], threeputt: [], espanol: [] };
 }
 
 const partyActions = {
   'party-new'() {
-    V.partyDraft = { course: '', holes: 18, useNet: false, games: { corta: false, skins: false, larga: false, gogo: false, birdie: false, medal: true, nassau: false, match: false, unidades: false } };
+    V.partyDraft = { course: '', holes: 18, useNet: false, games: { corta: false, skins: false, larga: false, gogo: false, birdie: false, medal: true, nassau: false, match: false } };
     go('party-setup');
   },
   'pd-holes'(d) { V.partyDraft.course = val('pd-course'); V.partyDraft.holes = Number(d.n); render(); },
@@ -429,6 +423,8 @@ const partyActions = {
   'pa-holeout'(d) { const p = activeParty(); const h = p.holes[p.idx]; h.holeout = h.holeout || []; h.holeout = h.holeout.includes(d.pid) ? h.holeout.filter(x => x !== d.pid) : [...h.holeout, d.pid]; pcommit(p); },
   'pa-longputt'(d) { const p = activeParty(); const h = p.holes[p.idx]; h.longputt = h.longputt || []; h.longputt = h.longputt.includes(d.pid) ? h.longputt.filter(x => x !== d.pid) : [...h.longputt, d.pid]; pcommit(p); },
   'pa-prox'(d) { const p = activeParty(); const h = p.holes[p.idx]; h.prox = (h.prox || []).includes(d.pid) ? [] : [d.pid]; pcommit(p); },
+  'pa-3putt'(d) { const p = activeParty(); const h = p.holes[p.idx]; h.threeputt = h.threeputt || []; h.threeputt = h.threeputt.includes(d.pid) ? h.threeputt.filter(x => x !== d.pid) : [...h.threeputt, d.pid]; pcommit(p); },
+  'pa-espanol'(d) { const p = activeParty(); const h = p.holes[p.idx]; h.espanol = h.espanol || []; h.espanol = h.espanol.includes(d.pid) ? h.espanol.filter(x => x !== d.pid) : [...h.espanol, d.pid]; pcommit(p); },
   'pa-next'() {
     const p = activeParty();
     if (p.idx + 1 >= p.holesCount) return;

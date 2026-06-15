@@ -359,18 +359,25 @@ function generateAIPlan(u) {
     { area: 'Hierros', name: 'Escalera de distancias' },
     { area: 'Driving', name: 'Gate Drill con alineación' },
   ];
-  let rounds = u.roundsPerWeek != null ? u.roundsPerWeek : 1;
-  let trains = u.trainPerWeek != null ? u.trainPerWeek : 3;
+  const rounds = u.roundsPerWeek != null ? u.roundsPerWeek : 5;
+  const trains = u.trainPerWeek != null ? u.trainPerWeek : 5;
   const start = new Date(); start.setHours(12, 0, 0, 0);
   const days = []; for (let i = 0; i < 7; i++) { const d = new Date(start); d.setDate(d.getDate() + i); days.push(d); }
   const openDays = days.filter(d => ((d.getDay() + 6) % 7) !== closedDay);
-  const out = [], used = new Set(); let fi = 0;
+  if (!openDays.length) return [];
+  const out = [];
   const weekendFirst = [...openDays].sort((a, b) => (((a.getDay() + 6) % 7) >= 5 ? 0 : 1) - (((b.getDay() + 6) % 7) >= 5 ? 0 : 1));
-  for (const d of weekendFirst) { if (rounds <= 0) break; const iso = isoLocal(d); if (used.has(iso)) continue; out.push({ id: Store.uid(), date: iso, type: 'ronda', title: 'Ronda', ai: true }); used.add(iso); rounds--; }
-  const addTrain = iso => { const p = plan[fi % plan.length]; out.push({ id: Store.uid(), date: iso, type: 'entreno', title: p.name, area: p.area, ai: true }); fi++; trains--; };
-  for (const d of openDays) { if (trains <= 0) break; const iso = isoLocal(d); if (used.has(iso)) continue; addTrain(iso); used.add(iso); }
-  let idx = 0; while (trains > 0 && openDays.length && idx < 30) { addTrain(isoLocal(openDays[idx % openDays.length])); idx++; }
+  for (let r = 0; r < rounds; r++) out.push({ id: Store.uid(), date: isoLocal(weekendFirst[r % weekendFirst.length]), type: 'ronda', title: 'Ronda', ai: true });
+  for (let t = 0; t < trains; t++) { const p = plan[t % plan.length]; out.push({ id: Store.uid(), date: isoLocal(openDays[t % openDays.length]), type: 'entreno', title: p.name, area: p.area, ai: true }); }
   return out;
+}
+/* Carga el plan de la semana automáticamente si no hay nada agendado por la IA */
+function ensureWeekPlan(u) {
+  const tl = todayLocal();
+  if ((u.events || []).some(e => e.ai && e.date >= tl)) return;
+  u.events = (u.events || []).filter(e => !(e.ai && e.date >= tl));
+  u.events.push(...generateAIPlan(u));
+  Store.save(S);
 }
 
 function vCalendar() {
@@ -415,19 +422,6 @@ function vCalendar() {
   const addType = V.calAddType || 'entreno';
   const typeChips = ['entreno', 'ronda', 'descanso'].map(t => `<button class="chip sm ${addType === t ? 'on' : ''}" data-act="cal-addtype" data-t="${t}">${EV_ICON[t]} ${EV_LABEL[t]}</button>`).join('');
 
-  const futureEv = events.filter(e => e.date >= tl).sort((a, b) => a.date.localeCompare(b.date)).slice(0, 8);
-  const futureHtml = futureEv.length
-    ? futureEv.map(e => `<button class="cal-ev ${e.type}" data-act="cal-day-sel" data-date="${e.date}" style="width:100%;text-align:left;cursor:pointer">
-        <div class="r-main"><b>${esc(e.title || EV_LABEL[e.type])}</b><span>${EV_ICON[e.type]} ${calDateLabel(e.date)}${e.area ? ' · ' + esc(e.area) : ''}</span></div>
-        <span class="muted">›</span>
-      </button>`).join('')
-    : `<p class="note">Nada agendado. Usa "Planear mi semana".</p>`;
-  const rounds = (typeof myRounds === 'function' ? myRounds() : []);
-  const histItems = [
-    ...events.filter(e => e.date < tl).map(e => ({ date: e.date, html: `<div class="cal-ev ${e.type}"><div class="r-main"><b>${esc(e.title || EV_LABEL[e.type])}</b><span>${EV_ICON[e.type]} ${fmtDate(e.date)}${e.area ? ' · ' + esc(e.area) : ''}</span></div></div>` })),
-    ...rounds.map(r => { const s = Stats.roundStats(r); return { date: r.date, html: `<button class="cal-ev ronda" data-act="round-detail" data-id="${r.id}" style="width:100%;text-align:left;cursor:pointer"><div class="r-main"><b>⛳ ${esc(r.course)}</b><span>${fmtDate(r.date)} · ${s.holes} hoyos · ${s.score} (${fmtToPar(s.toPar)})</span></div><span class="muted">›</span></button>` }; })
-  ].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 12).map(x => x.html).join('');
-
   return `
     <div class="card">
       <div class="cal-head">
@@ -459,24 +453,7 @@ function vCalendar() {
         </div>
       </div>
     </div>
-
-    <div class="card">
-      <span class="label">✨ Planear mi semana con IA</span>
-      <p class="note" style="margin-top:2px;margin-bottom:10px">Arma tu semana según tu ritmo, respetando el día de cierre.</p>
-      <div class="cal-step"><div><b>Entrenamientos</b><span>por semana</span></div>
-        <div class="stepper sm"><button data-act="cal-train" data-d="-1">−</button><span class="pl-score">${u.trainPerWeek != null ? u.trainPerWeek : 3}</span><button data-act="cal-train" data-d="1">+</button></div></div>
-      <div class="cal-step"><div><b>Rondas</b><span>por semana</span></div>
-        <div class="stepper sm"><button data-act="cal-rounds" data-d="-1">−</button><span class="pl-score">${u.roundsPerWeek != null ? u.roundsPerWeek : 1}</span><button data-act="cal-rounds" data-d="1">+</button></div></div>
-      <p class="label" style="margin-top:14px">El club cierra los</p>
-      <div class="chips">${CAL_WD_FULL.map((w, i) => `<button class="chip sm ${closedDay === i ? 'on' : ''}" data-act="cal-closed" data-d="${i}">${w}</button>`).join('')}</div>
-      <button class="btn primary" data-act="cal-ai" style="margin-top:14px">✨ Planear mi semana</button>
-    </div>
-
-    <div class="sec-h"><h2 style="font-size:16px">Por venir</h2></div>
-    ${futureHtml}
-    <div class="sec-h"><h2 style="font-size:16px">Historial</h2></div>
-    ${histItems || '<p class="note" style="margin-bottom:24px">Aún sin registros. Juega una ronda o agenda algo.</p>'}
-    <div style="height:18px"></div>`;
+    <p class="note" style="margin-bottom:24px">Tu semana se carga sola con 5 entrenos y 5 jugadas. Para cambiar el ritmo o el día de cierre, ve a tu <b class="lime">Perfil</b>.</p>`;
 }
 
 /* ---------- Social ---------- */
@@ -487,7 +464,7 @@ function partyCard() {
   const myActive = act && (act.hostUserId === u.id || act.players.some(x => x.userId === u.id));
   return `<div class="card">
       <span class="label">🎉 Parfect Party · juega con amigos</span>
-      <p class="small muted" style="margin-top:2px">Medal o Match play. Crea la party, comparte el código y cada quien anota desde su celular.</p>
+      <p class="small muted" style="margin-top:2px">Medal, Match play y La corta (puedes combinarlos). Crea la party, comparte el código y cada quien anota desde su celular.</p>
       ${myActive ? `<button class="btn primary" data-act="party-resume">Continuar party ${esc(act.code)} ${act.status === 'live' ? `· hoyo ${act.idx + 1}` : '· lobby'}</button>`
         : `<button class="btn primary" data-act="party-new">Crear party</button>`}
       <div class="join-row" style="margin-top:12px">

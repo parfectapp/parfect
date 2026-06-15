@@ -145,6 +145,16 @@ function vPerfil() {
       <button class="btn primary" data-act="profile-save">Guardar cambios</button>
       <button class="btn" data-act="go-clubs">🎒 Mis bastones y distancias</button>
     </div>
+    <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">📅 Plan semanal</h2></div>
+    <div class="card">
+      <div class="cal-step"><div><b>Entrenamientos</b><span>por semana</span></div>
+        <div class="stepper sm"><button data-act="cal-train" data-d="-1">−</button><span class="pl-score">${u.trainPerWeek != null ? u.trainPerWeek : 5}</span><button data-act="cal-train" data-d="1">+</button></div></div>
+      <div class="cal-step"><div><b>Jugadas</b><span>por semana</span></div>
+        <div class="stepper sm"><button data-act="cal-rounds" data-d="-1">−</button><span class="pl-score">${u.roundsPerWeek != null ? u.roundsPerWeek : 5}</span><button data-act="cal-rounds" data-d="1">+</button></div></div>
+      <p class="label" style="margin-top:14px">El club cierra los</p>
+      <div class="chips">${CAL_WD_FULL.map((w, i) => `<button class="chip sm ${(u.closedDay != null ? u.closedDay : 0) === i ? 'on' : ''}" data-act="cal-closed" data-d="${i}">${w}</button>`).join('')}</div>
+      <button class="btn primary" data-act="cal-ai" style="margin-top:14px">✨ Regenerar mi semana</button>
+    </div>
     ${vLogros()}
     <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">🏷️ Patrocinadores y ofertas</h2></div>
     <div class="card">

@@ -84,22 +84,27 @@ function vRondaTab() {
 
 /* ---------- Setup de ronda ---------- */
 function vSetup() {
-  const recent = [...new Set(myRounds().map(r => r.course))].slice(0, 3);
+  const cid = V.setupCourseId;
   const n = V.setupHoles || 18;
+  const sname = id => COURSES[id].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '');
   return `<div class="sec-h"><h2>Nueva ronda</h2></div>
     <div class="card">
       <div class="field" style="margin-top:0"><label>Campo</label>
-        <input id="r-course" placeholder="Nombre del campo" value="${esc(V.setupCourse || '')}">
-      </div>
-      ${recent.length ? `<div class="chips" style="margin-top:10px">${recent.map(c =>
-        `<button class="chip sm" data-act="setup-course" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div>` : ''}
-      <div class="field"><label>Hoyos</label>
         <div class="chips">
-          <button class="chip ${n === 9 ? 'on' : ''}" data-act="setup-holes" data-n="9">9 hoyos</button>
-          <button class="chip ${n === 18 ? 'on' : ''}" data-act="setup-holes" data-n="18">18 hoyos</button>
+          ${COURSE_ORDER.map(id => `<button class="chip ${cid === id ? 'on' : ''}" data-act="setup-pick-course" data-c="${id}">${esc(sname(id))}</button>`).join('')}
+          <button class="chip ${!cid ? 'on' : ''}" data-act="setup-pick-course" data-c="">Otro</button>
         </div>
       </div>
-      <p class="note">El par de cada hoyo se ajusta durante la captura (secuencia estándar par 72 por defecto).</p>
+      ${cid
+        ? `<p class="note" style="margin-top:8px">${esc(COURSES[cid].name)} · ${COURSES[cid].holes.length} hoyos · <b class="lime">pares reales del campo</b>.</p>`
+        : `<div class="field"><label>Nombre del campo</label><input id="r-course" placeholder="Nombre del campo" value="${esc(V.setupCourse || '')}"></div>
+           <div class="field"><label>Hoyos</label>
+             <div class="chips">
+               <button class="chip ${n === 9 ? 'on' : ''}" data-act="setup-holes" data-n="9">9 hoyos</button>
+               <button class="chip ${n === 18 ? 'on' : ''}" data-act="setup-holes" data-n="18">18 hoyos</button>
+             </div>
+           </div>
+           <p class="note">El par de cada hoyo se ajusta durante la captura.</p>`}
     </div>
     <button class="btn primary" data-act="start-round">Comenzar ronda →</button>
     <button class="btn" data-act="nav" data-view="ronda">Cancelar</button>
@@ -114,30 +119,38 @@ function chipRow(items, key, current) {
   ).join('') + `</div>`;
 }
 
-/* posiciones de los tiros registrados, para animar el hoyo */
-function captureShots(h) {
+/* posiciones de los tiros registrados, para animar el hoyo (consciente del score) */
+function captureShots(h, score) {
   const shots = [];
-  if (h.par >= 4 && h.tee) {
-    const t = h.tee;
-    const side = t === 'izq' ? -0.62 : t === 'der' ? 0.62 : t === 'penal' ? -0.82 : 0;
-    shots.push({ prog: 0.52, side, ok: t === 'fw', lie: t === 'penal' ? 'water' : (t === 'fw' ? 'fw' : 'rough') });
-  }
-  if (h.app) {
-    if (h.app === 'gir') shots.push({ prog: 1, side: 0, ok: true, lie: 'green' });
-    else {
-      const side = h.app === 'izq' ? -0.6 : h.app === 'der' ? 0.6 : 0;
-      const prog = h.app === 'largo' ? 1.04 : h.app === 'corto' ? 0.84 : 1;
-      shots.push({ prog, side, ok: false, lie: 'rough' });
+  const par = h.par;
+  const putts = h.putts != null ? h.putts : 2;
+  const full = (score != null ? Math.max(1, score - putts) : (par === 3 ? 1 : par === 5 ? 3 : 2));
+  const missed = !!(h.app && h.app !== 'gir');
+  const chip = missed && full >= 2 ? 1 : 0;          // un tiro alrededor del green si falló
+  const advance = Math.max(par === 3 ? 0 : 1, full - 1 - chip); // tiros de avance (incluye salida)
+  for (let i = 0; i < advance; i++) {
+    const prog = advance <= 1 ? 0.48 : 0.34 + i * (0.5 / (advance - 1)); // 0.34 → 0.84
+    let side = 0, ok = true, lie = 'fw';
+    if (i === 0 && par >= 4 && h.tee) {
+      side = h.tee === 'izq' ? -0.62 : h.tee === 'der' ? 0.62 : h.tee === 'penal' ? -0.82 : 0;
+      ok = h.tee === 'fw'; lie = h.tee === 'penal' ? 'water' : (ok ? 'fw' : 'rough');
     }
+    shots.push({ prog, side, ok, lie });
   }
-  if (h.app && h.app !== 'gir' && h.upDown != null) shots.push({ prog: 0.99, side: 0.12, ok: h.upDown === true, lie: 'green' });
-  if (h.putts != null) for (let i = 0; i < h.putts; i++) shots.push({ prog: 1, side: (i % 2 ? 0.06 : -0.06), ok: true, lie: 'green' });
+  if (h.app === 'gir') shots.push({ prog: 1, side: 0, ok: true, lie: 'green' });
+  else if (h.app) {
+    const side = h.app === 'izq' ? -0.6 : h.app === 'der' ? 0.6 : 0;
+    const prog = h.app === 'largo' ? 1.13 : h.app === 'corto' ? 0.82 : 1;   // largo = se pasa del green
+    shots.push({ prog, side, ok: false, lie: 'rough' });
+    if (chip) shots.push({ prog: 0.99, side: 0.1, ok: h.upDown === true, lie: 'green' });
+  }
+  for (let i = 0; i < putts; i++) shots.push({ prog: 1, side: (i % 2 ? 0.06 : -0.06), ok: true, lie: 'green' });
   return shots;
 }
-function captureSchematic(h) {
-  const shots = captureShots(h);
+function captureSchematic(h, score) {
+  const shots = captureShots(h, score);
   const W = 300, H = 232, cx = 150, teeY = 200, greenY = 40, span = teeY - greenY, halfW = 68;
-  const P = s => ({ x: cx + s.side * halfW, y: teeY - Math.min(1.06, s.prog) * span });
+  const P = s => ({ x: cx + s.side * halfW, y: teeY - Math.min(1.15, s.prog) * span });
   const pts = shots.map(P);
   const route = `M${cx},${teeY} ` + pts.map(q => `L${q.x.toFixed(0)},${q.y.toFixed(0)}`).join(' ');
   const colOf = s => s.ok ? '#c9f73e' : (s.lie === 'water' ? '#ff7a6b' : '#ff9f43');
@@ -157,6 +170,7 @@ function captureSchematic(h) {
   return `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tiros del hoyo">
     <rect width="${W}" height="${H}" rx="14" fill="#0a0f08" stroke="#1d2914"/>
     <rect x="${cx - halfW - 4}" y="${greenY - 6}" width="${(halfW + 4) * 2}" height="${teeY - greenY + 14}" rx="${halfW}" fill="#2f6b39"/>
+    <rect x="${cx - halfW + 16}" y="${greenY + 10}" width="${(halfW - 16) * 2}" height="${teeY - greenY - 6}" rx="${halfW - 16}" fill="#3a8043" opacity="0.55"/>
     <ellipse cx="${cx}" cy="${greenY}" rx="40" ry="22" fill="#57b15c" stroke="#2f6b39" stroke-width="2"/>
     <circle cx="${cx}" cy="${greenY}" r="3" fill="#0a0f08"/>
     <line x1="${cx}" y1="${greenY}" x2="${cx}" y2="${greenY - 22}" stroke="#eef3e6" stroke-width="2"/><path d="M${cx},${greenY - 22} l11,3 -11,3z" fill="#c9f73e"/>
@@ -196,7 +210,7 @@ function vPlay() {
     </div>
 
     <div class="card" style="padding:10px">
-      ${captureSchematic(h)}
+      ${captureSchematic(h, score)}
       <p class="note" style="text-align:center;margin:6px 0 0">${sl.length ? esc(sl.join('  ·  ')) : 'Registra tu hoyo y míralo tiro por tiro.'}</p>
     </div>
 
@@ -255,7 +269,7 @@ function vPlay() {
       <span class="label">Tarjeta</span>
       ${scorecardTable(
         a.holesCount,
-        i => (i === a.idx ? h.par : (a.holes[i] ? a.holes[i].par : Stats.PAR_SEQ[i % 18])),
+        i => (i === a.idx ? h.par : (a.holes[i] ? a.holes[i].par : parForActive(a, i))),
         [{ name: cur().name.split(' ')[0], scoreOf: i => (a.holes[i] ? a.holes[i].score : null) }],
         a.idx
       )}
