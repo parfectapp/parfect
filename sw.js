@@ -1,23 +1,23 @@
 /* PARFECT service worker: la app funciona offline una vez visitada. */
-const CACHE = 'parfect-v9';
+const CACHE = 'parfect-v10';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './icon.svg',
-  './css/styles.css?v=9',
-  './js/ui.js?v=9',
-  './js/store.js?v=9',
-  './js/stats.js?v=9',
-  './js/trainer.js?v=9',
-  './js/views-public.js?v=9',
-  './js/views-home.js?v=9',
-  './js/views-round.js?v=9',
-  './js/views-modules.js?v=9',
-  './js/party.js?v=9',
-  './js/views-party.js?v=9',
-  './js/sync.js?v=9',
-  './js/app.js?v=9',
+  './css/styles.css?v=10',
+  './js/ui.js?v=10',
+  './js/store.js?v=10',
+  './js/stats.js?v=10',
+  './js/trainer.js?v=10',
+  './js/views-public.js?v=10',
+  './js/views-home.js?v=10',
+  './js/views-round.js?v=10',
+  './js/views-modules.js?v=10',
+  './js/party.js?v=10',
+  './js/views-party.js?v=10',
+  './js/sync.js?v=10',
+  './js/app.js?v=10',
 ];
 
 self.addEventListener('install', (e) => {

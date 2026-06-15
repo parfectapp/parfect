@@ -212,7 +212,7 @@ function vSocial() {
     return { p, agg };
   }).sort((a, b) => (a.agg ? a.agg.avgToPar : 99) - (b.agg ? b.agg.avgToPar : 99));
 
-  const roundFeed = S.rounds.map(r => {
+  const roundFeed = S.rounds.filter(r => !r.partyId).map(r => {
     const owner = S.users.find(x => x.id === r.userId);
     const s = Stats.roundStats(r);
     const fwP = s.fwTot ? Math.round((s.fw / s.fwTot) * 100) : 0;

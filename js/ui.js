@@ -128,14 +128,13 @@ function drillArt(key) {
   const cup = x => `<ellipse cx="${x}" cy="78" rx="8" ry="3" fill="#0a0f06" stroke="#c9f73e" stroke-width="1.5"/>`;
 
   if (key === 'driving') {
-    const p = 'M30 72 Q 165 6 292 50';
-    return `<svg viewBox="0 0 ${W} ${H}" class="drill-art" role="img" aria-label="Pasillo de salida">
+    const p = 'M26 74 Q 160 -14 272 70';
+    return `<svg viewBox="0 0 ${W} ${H}" class="drill-art" role="img" aria-label="Tiro de salida">
       ${frame}${ground}
-      <line x1="120" y1="50" x2="120" y2="78" stroke="#c9f73e" stroke-width="3" stroke-linecap="round"/>
-      <line x1="152" y1="50" x2="152" y2="78" stroke="#c9f73e" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="292" cy="50" r="10" fill="none" stroke="#c9f73e" stroke-width="2"/><circle cx="292" cy="50" r="3" fill="#c9f73e"/>
+      <rect x="22" y="74" width="8" height="6" rx="1" fill="#7c8a70"/>
+      <ellipse cx="266" cy="78" rx="46" ry="6" fill="rgba(201,247,62,0.12)" stroke="rgba(201,247,62,0.4)" stroke-width="1.5" stroke-dasharray="4 4"/>
       <path d="${p}" fill="none" stroke="rgba(201,247,62,0.25)" stroke-width="2" stroke-dasharray="3 6"/>
-      ${ball(p, '2.4s')}${cap('Salida por el pasillo')}
+      ${ball(p, '2.6s')}${cap('Tiro de salida a la calle')}
     </svg>`;
   }
   if (key === 'approach') {

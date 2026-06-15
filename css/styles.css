@@ -315,6 +315,19 @@ button.row { cursor: pointer; }
 .sc-table td.bogey { color: #d8e0cc; }
 .sc-table td.doble { color: var(--danger); }
 
+/* ============ Captura por jugador en party (score + stats) ============ */
+.ph { border-bottom: 1px solid var(--line-soft); padding: 11px 0; }
+.ph:last-child { border-bottom: none; }
+.ph-head { display: flex; align-items: center; gap: 10px; }
+.ph-name { flex: 1; min-width: 0; }
+.ph-name b { display: block; font-size: 15px; font-weight: 800; }
+.ph-name span { font-size: 11.5px; }
+.ph-stats { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 9px; padding-left: 40px; }
+.chip.xs { flex: 0 0 auto; min-width: 0; padding: 7px 12px; font-size: 12.5px; border-radius: 11px; }
+.ph-putts { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; color: var(--muted); margin-left: auto; }
+.ph-putts b { color: var(--text); font-size: 15px; min-width: 14px; text-align: center; }
+.ph-pbtn { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--line); background: var(--lime-faint); color: var(--lime); font-size: 17px; font-weight: 800; }
+
 /* ============ Drill art (animaciones SVG) ============ */
 .drill-art { width: 100%; height: auto; display: block; border-radius: 12px; margin: 6px 0 2px; }
 

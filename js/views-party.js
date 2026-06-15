@@ -130,21 +130,36 @@ function vPartyLive() {
     </div>
 
     <div class="group">
-      <div class="g-lab"><span class="label">Scores</span><span class="small muted">prellenado al par</span></div>
+      <div class="g-lab"><span class="label">Hoyo a hoyo</span><span class="small muted">score + stats por jugador</span></div>
       ${p.players.map(pl => {
         const s = h.scores[pl.pid] ?? h.par;
         const d = s - h.par;
         const r = toParOf[pl.pid];
-        const tot = r && r.holes ? `Total ${fmtToPar(r.toPar)}` : 'Sin hoyos';
-        return `<div class="pl-row">
-          <span class="rank">${esc(initials(pl.name))}</span>
-          <div class="r-main" style="flex:1"><b>${esc(pl.name.split(' ')[0])}</b>
-            <span class="muted">${tot}${p.useNet && (pl.strokes || 0) ? ` · ${pl.strokes} golpes` : ''}</span></div>
-          <span class="pl-rel ${d < 0 ? 'lime' : ''}">${d === 0 ? 'PAR' : d > 0 ? `+${d}` : d}</span>
-          <div class="stepper sm">
-            <button data-act="pa-score" data-pid="${pl.pid}" data-d="-1">−</button>
-            <span class="pl-score">${s}</span>
-            <button data-act="pa-score" data-pid="${pl.pid}" data-d="1">+</button>
+        const tot = r && r.holes ? fmtToPar(r.toPar) : 'E';
+        const fw = (h.fw || []).includes(pl.pid);
+        const gir = (h.gir || []).includes(pl.pid);
+        const ud = (h.ud || []).includes(pl.pid);
+        const putts = (h.putts && h.putts[pl.pid] != null) ? h.putts[pl.pid] : 2;
+        return `<div class="ph">
+          <div class="ph-head">
+            <span class="rank">${esc(initials(pl.name))}</span>
+            <div class="ph-name"><b>${esc(pl.name.split(' ')[0])}</b><span class="muted">Total ${tot}${p.useNet && (pl.strokes || 0) ? ` · ${pl.strokes} gps` : ''}</span></div>
+            <span class="pl-rel ${d < 0 ? 'lime' : ''}">${d === 0 ? 'PAR' : d > 0 ? `+${d}` : d}</span>
+            <div class="stepper sm">
+              <button data-act="pa-score" data-pid="${pl.pid}" data-d="-1">−</button>
+              <span class="pl-score">${s}</span>
+              <button data-act="pa-score" data-pid="${pl.pid}" data-d="1">+</button>
+            </div>
+          </div>
+          <div class="ph-stats">
+            ${h.par >= 4 ? `<button class="chip xs ${fw ? 'on' : ''}" data-act="pa-fw" data-pid="${pl.pid}">Calle</button>` : ''}
+            <button class="chip xs ${gir ? 'on' : ''}" data-act="pa-gir" data-pid="${pl.pid}">GIR</button>
+            ${!gir ? `<button class="chip xs ${ud ? 'on' : ''}" data-act="pa-ud" data-pid="${pl.pid}">Up/Down</button>` : ''}
+            <span class="ph-putts">Putts
+              <button class="ph-pbtn" data-act="pa-putts" data-pid="${pl.pid}" data-d="-1">−</button>
+              <b>${putts}</b>
+              <button class="ph-pbtn" data-act="pa-putts" data-pid="${pl.pid}" data-d="1">+</button>
+            </span>
           </div>
         </div>`;
       }).join('')}
@@ -235,7 +250,7 @@ function vPartyDone() {
 /* ---------- Acciones ---------- */
 function makeHoleForParty(p, i) {
   const par = Stats.PAR_SEQ[i % 18];
-  return { par, scores: Object.fromEntries(p.players.map(pl => [pl.pid, par])), larga: null, gogos: [], gir: [] };
+  return { par, scores: Object.fromEntries(p.players.map(pl => [pl.pid, par])), fw: [], gir: [], ud: [], putts: {} };
 }
 
 const partyActions = {
@@ -359,7 +374,7 @@ const partyActions = {
     const old = h.par; const par = Number(d.v);
     h.par = par;
     for (const pid of Object.keys(h.scores)) if (h.scores[pid] === old) h.scores[pid] = par;
-    if (par !== 5) h.larga = null;
+    if (par === 3) h.fw = [];  // en par 3 no hay calle
     pcommit(p);
   },
   'pa-score'(d) {
@@ -367,17 +382,30 @@ const partyActions = {
     h.scores[d.pid] = Math.max(1, (h.scores[d.pid] ?? h.par) + Number(d.d));
     pcommit(p);
   },
-  'pa-larga'(d) { const p = activeParty(); const h = p.holes[p.idx]; h.larga = h.larga === d.pid ? null : d.pid; pcommit(p); },
+  'pa-fw'(d) {
+    const p = activeParty(); const h = p.holes[p.idx];
+    h.fw = h.fw || [];
+    h.fw = h.fw.includes(d.pid) ? h.fw.filter(x => x !== d.pid) : [...h.fw, d.pid];
+    pcommit(p);
+  },
   'pa-gir'(d) {
     const p = activeParty(); const h = p.holes[p.idx];
     h.gir = h.gir || [];
     h.gir = h.gir.includes(d.pid) ? h.gir.filter(x => x !== d.pid) : [...h.gir, d.pid];
+    if (h.gir.includes(d.pid)) h.ud = (h.ud || []).filter(x => x !== d.pid); // GIR ⇒ no up/down
     pcommit(p);
   },
-  'pa-gogo'(d) {
+  'pa-ud'(d) {
     const p = activeParty(); const h = p.holes[p.idx];
-    h.gogos = h.gogos || [];
-    h.gogos = h.gogos.includes(d.pid) ? h.gogos.filter(x => x !== d.pid) : [...h.gogos, d.pid];
+    h.ud = h.ud || [];
+    h.ud = h.ud.includes(d.pid) ? h.ud.filter(x => x !== d.pid) : [...h.ud, d.pid];
+    pcommit(p);
+  },
+  'pa-putts'(d) {
+    const p = activeParty(); const h = p.holes[p.idx];
+    h.putts = h.putts || {};
+    const cur = h.putts[d.pid] != null ? h.putts[d.pid] : 2;
+    h.putts[d.pid] = Math.max(0, Math.min(6, cur + Number(d.d)));
     pcommit(p);
   },
   'pa-next'() {
@@ -393,13 +421,50 @@ const partyActions = {
   'pa-finish'() {
     const p = activeParty();
     p.status = 'done';
+    savePartyRounds(p);
     V.partyView = p.id; V.showMoney = false; V.view = 'party-done';
     pcommit(p); window.scrollTo(0, 0);
   },
-  'party-open'(d) { V.partyView = d.id; go('party-done'); },
+  'party-open'(d) { V.partyView = d.id; savePartyRounds(partyById(d.id)); go('party-done'); },
   'party-close-done'() {
     if (S.activeParty && partyById(S.activeParty)?.status === 'done') S.activeParty = null;
     V.partyView = null; V.view = 'social';
     commit();
   },
 };
+
+/* Construye una ronda (formato perfil) a partir de los datos de la party para un jugador */
+function buildRoundFromParty(party, pid) {
+  const holes = party.holes.slice(0, party.holesCount)
+    .filter(h => h.scores[pid] != null)
+    .map(h => {
+      const gir = (h.gir || []).includes(pid);
+      return {
+        par: h.par,
+        score: h.scores[pid],
+        tee: h.par === 3 ? null : ((h.fw || []).includes(pid) ? 'fw' : 'izq'),
+        app: gir ? 'gir' : 'corto',
+        upDown: gir ? null : (h.ud || []).includes(pid),
+        putts: (h.putts && h.putts[pid] != null) ? h.putts[pid] : 2,
+        dist: null,
+      };
+    });
+  return { id: Store.uid(), userId: null, partyId: party.id, course: party.course, date: party.date, holes };
+}
+
+/* Guarda en el perfil la ronda de cada jugador con cuenta en este dispositivo (idempotente) */
+function savePartyRounds(party) {
+  if (!party || party.status !== 'done') return;
+  let added = false;
+  for (const pl of party.players) {
+    if (!pl.userId) continue;                                   // invitados sin cuenta no tienen perfil
+    if (!S.users.some(u => u.id === pl.userId)) continue;       // cuenta no existe en este dispositivo
+    if (S.rounds.some(r => r.partyId === party.id && r.userId === pl.userId)) continue; // ya guardada
+    const round = buildRoundFromParty(party, pl.pid);
+    if (!round.holes.length) continue;
+    round.userId = pl.userId;
+    S.rounds.push(round);
+    added = true;
+  }
+  if (added) Store.save(S);
+}

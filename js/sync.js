@@ -62,6 +62,9 @@ const Sync = (() => {
       S.parties.push(remote);
     }
     Store.save(S);
+    // Si la party terminó, guarda la ronda en el perfil del usuario de este dispositivo
+    const merged = S.parties.find(p => p.code === remote.code);
+    if (merged && merged.status === 'done' && typeof savePartyRounds === 'function') savePartyRounds(merged);
     safeRender();
   }
 
