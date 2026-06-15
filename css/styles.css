@@ -1,17 +1,17 @@
 /* ============ PARFECT design system ============ */
 :root {
-  --bg: #070b06;
-  --panel: #0b110a;
-  --card: #0e150c;
-  --card2: #121a10;
-  --line: rgba(201, 247, 62, 0.13);
+  --bg: #0A140E;
+  --panel: #0F1C13;
+  --card: #112017;
+  --card2: #16271C;
+  --line: rgba(199, 238, 84, 0.14);
   --line-soft: rgba(255, 255, 255, 0.06);
-  --lime: #c9f73e;
-  --lime-dim: rgba(201, 247, 62, 0.16);
-  --lime-faint: rgba(201, 247, 62, 0.07);
-  --text: #eef3e6;
-  --muted: #7c8a70;
-  --muted2: #55624c;
+  --lime: #C7EE54;
+  --lime-dim: rgba(199, 238, 84, 0.18);
+  --lime-faint: rgba(199, 238, 84, 0.09);
+  --text: #EAF3E2;
+  --muted: #8CA086;
+  --muted2: #5d6e56;
   --danger: #ff7a6b;
   --radius: 18px;
   --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -141,6 +141,17 @@ input, select, textarea { font-family: var(--font); }
 .pl-av-opt { background: var(--card); border: 2px solid var(--line-soft); border-radius: 20px; padding: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(40,60,25,0.05); }
 .pl-av-opt.on { border-color: #9ccb35; background: var(--lime-faint); }
 .pl-av-opt img { width: 62px; height: 62px; object-fit: contain; }
+
+/* escenas con pájaro/águila 3D volando */
+.fly-scene { position: relative; height: 200px; overflow: hidden; background: radial-gradient(120% 90% at 50% 18%, #1a3f29, #0a130c 72%); }
+.fly-scene .fly { position: absolute; top: 46%; left: -80px; width: 64px; height: 64px; object-fit: contain; }
+.fly-bird .fly { animation: flyX 3.8s linear infinite, flyBob 0.85s ease-in-out infinite alternate; }
+.fly-eagle .fly { width: 82px; height: 82px; top: 40%; animation: flyX 5.4s linear infinite, flyGlide 2.2s ease-in-out infinite alternate; }
+@keyframes flyX { from { left: 100%; } to { left: -86px; } }
+@keyframes flyBob { from { transform: translateY(-9px); } to { transform: translateY(9px); } }
+@keyframes flyGlide { from { transform: translateY(-15px) rotate(-3deg); } to { transform: translateY(7px) rotate(3deg); } }
+body.is-scrolling .fly { animation-play-state: paused !important; }
+@media (prefers-reduced-motion: reduce) { .fly { animation: none !important; left: 40% !important; } }
 
 /* ============ Cards ============ */
 .card {

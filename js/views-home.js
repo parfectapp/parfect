@@ -503,6 +503,35 @@ function vPerfilHero(u) {
   </div>`;
 }
 
+/* estadísticas animadas del perfil: gifs + pájaro/águila reales */
+function statGifCard(kind, val, label, cls) {
+  return `<div class="reel-card${cls ? ' ' + cls : ''}"><div class="reel-scene">${statScene(kind)}</div><div class="reel-meta"><b>${val}</b><span>${esc(label)}</span></div></div>`;
+}
+function creatureCard(src, val, label, which) {
+  return `<div class="reel-card"><div class="reel-scene fly-scene fly-${which}"><img class="fly" src="${src}" alt="" loading="lazy"></div><div class="reel-meta"><b>${val}</b><span>${esc(label)}</span></div></div>`;
+}
+function vPerfilStats(agg, rounds) {
+  const sd = agg.scoreDist || { total: 0, eagle: 0, birdie: 0, par: 0, bogey: 0, dbl: 0 };
+  const tot = sd.total || 1;
+  const rs = rounds.map(Stats.roundStats);
+  const sum = f => rs.reduce((a, r) => a + f(r), 0);
+  const fw = sum(r => r.fw), fwTot = sum(r => r.fwTot);
+  const gir = sum(r => r.gir), girTot = sum(r => r.girTot) || 1;
+  const scr = sum(r => r.scr), scrTot = sum(r => r.scrTot);
+  const p = (a, b) => Math.round(a / (b || 1) * 100);
+  const cards = [
+    creatureCard('assets/eagle.png', String(sd.eagle), 'Águilas', 'eagle'),
+    creatureCard('assets/bird.png', String(sd.birdie), 'Birdies', 'bird'),
+    statGifCard('par', p(sd.par, tot) + '%', 'Pares'),
+    statGifCard('bogey', p(sd.bogey + sd.dbl, tot) + '%', 'Bogeys o peor', 'warn'),
+    statGifCard('fw', p(fw, fwTot) + '%', 'Fairways'),
+    statGifCard('gir', p(gir, girTot) + '%', 'Greens · GIR'),
+    statGifCard('ud', p(scr, scrTot) + '%', 'Up & down'),
+    statGifCard('putt', Math.round(agg.putts18 / 2) + '', 'Putts · 9 hoyos'),
+  ].join('');
+  return `<div class="reel"><div class="reel-track">${cards}${cards}</div></div>`;
+}
+
 /* selector de avatar (monitos 3D) */
 function vAvatarPicker(u) {
   const sel = (u.avatar != null) ? u.avatar : 0;
@@ -518,7 +547,7 @@ function vPerfil() {
   return `<div class="sec-h"><h2>Tu perfil</h2></div>
     ${vPerfilHero(u)}
     ${vAvatarPicker(u)}
-    ${agg ? `<div class="sec-h" style="margin-top:8px"><h2 style="font-size:16px">${t('sec_stats')}</h2></div>${vStatsBundle(agg)}${vScoreDist(agg)}` : ''}
+    ${agg ? `<div class="sec-h" style="margin-top:14px"><h2 style="font-size:18px">${t('sec_stats')}</h2><span class="small muted">${t('sub_stats')}</span></div>${vPerfilStats(agg, myRounds())}` : ''}
     ${vBagEditor(u)}
     ${vLogros()}
     <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">${t('settings')}</h2></div>
