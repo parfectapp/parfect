@@ -214,25 +214,27 @@ function trackerPlan(u) {
   return { groups, personalized };
 }
 
-/* Tabla de objetivos de entrenamiento (metas por área) */
+/* Tabla de objetivo por hándicap: cuántas bolas seguidas (de 7) mete cada nivel */
 function vTrainObjectives(u) {
-  const plan = trackerPlan(u);
-  const list = myPractices();
-  const rows = plan.groups.map(g => {
-    const t = (g.drills[0] && g.drills[0].target) || 7;
-    const best = list.filter(p => g.drills.some(d => d.name === p.drill)).reduce((m, p) => Math.max(m, p.hits || 0), 0);
-    const hit = best >= t;
-    return `<tr class="${hit ? 'hcp-goal' : ''}">
-      <td class="hcp-h">${g.icon} ${esc(g.cat)}</td>
-      <td><b class="lime">${t}</b> seguidas</td>
-      <td>${best ? best + '/' + t : '—'}</td>
+  const levels = [0, 5, 10, 15, 20, 25];
+  const near = levels.reduce((a, b) => Math.abs(b - u.hcp) < Math.abs(a - u.hcp) ? b : a, levels[0]);
+  const nearGoal = levels.reduce((a, b) => Math.abs(b - u.goal) < Math.abs(a - u.goal) ? b : a, levels[0]);
+  const makes = h => Math.max(1, Math.min(7, 7 - Math.round(h / 5)));
+  const rows = levels.map(h => {
+    const tags = [];
+    if (h === near) tags.push('tú');
+    if (h === nearGoal) tags.push('meta');
+    const cls = h === nearGoal ? 'hcp-goal' : (h === near ? 'hcp-me' : '');
+    return `<tr class="${cls}">
+      <td class="hcp-h">${h}${tags.length ? ` <span class="hcp-tag">${tags.join('·')}</span>` : ''}</td>
+      <td><b class="lime">${makes(h)}/7</b> seguidas</td>
     </tr>`;
   }).join('');
   return `<div class="card">
-    <span class="label">🎯 Objetivos de entrenamiento</span>
-    <p class="note" style="margin-top:0;margin-bottom:8px">Mete las bolas <b class="lime">seguidas</b> antes de que acabe el timer. Si fallas una, vuelves a empezar.</p>
+    <span class="label">🎯 Objetivo por hándicap</span>
+    <p class="note" style="margin-top:0;margin-bottom:8px">Cuántas bolas <b class="lime">seguidas (de 7)</b> mete cada nivel en los drills. Apunta a las de tu meta.</p>
     <div class="sc-scroll"><table class="sc-table ref-table">
-      <thead><tr><th class="sc-name">Área</th><th>Meta</th><th>Tu mejor</th></tr></thead>
+      <thead><tr><th class="sc-name">HCP</th><th>Bolas seguidas</th></tr></thead>
       <tbody>${rows}</tbody>
     </table></div>
   </div>`;
