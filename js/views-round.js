@@ -61,7 +61,17 @@ function vRondaTab() {
   const u = cur();
   const rounds = myRounds();
   const cont = S.active && S.active.userId === u.id;
+  const agg = Stats.aggregate(rounds);
   let html = `<div class="sec-h"><h2>Tus rondas</h2><span class="small muted">${rounds.length} registradas</span></div>`;
+  if (agg) {
+    html += `<div class="card"><span class="label">Tus promedios</span>
+      <div class="avg-strip">
+        <div><b>${agg.avgScore18.toFixed(1)}</b><span>Score</span></div>
+        <div><b>${agg.putts18.toFixed(1)}</b><span>Putts</span></div>
+        <div><b>${agg.fwPct.toFixed(0)}%</b><span>FW</span></div>
+        <div><b>${agg.girPct.toFixed(0)}%</b><span>GIR</span></div>
+      </div></div>`;
+  }
   if (cont) {
     html += `<button class="row" data-act="resume-round">
       <div class="r-main"><b>Ronda en curso · ${esc(S.active.course)}</b><span>Vas en el hoyo ${S.active.idx + 1} de ${S.active.holesCount}</span></div>

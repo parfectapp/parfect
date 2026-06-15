@@ -326,6 +326,8 @@ const actions = {
     render();
   },
   'go-estrategia'() { V.trainerTab = 'estrategia'; go('trainer'); },
+  'go-stats'() { V.trainerTab = 'stats'; go('trainer'); },
+  'go-diag'() { V.trainerTab = 'diag'; go('trainer'); },
   'go-clubs'() { V.profileOpen = false; go('clubs'); },
   'save-clubs'() {
     const u = cur();
