@@ -350,7 +350,7 @@ const actions = {
       clubs[c.id] = { c: Math.round(Number(cv)), e };
     }
     u.clubs = clubs;
-    V.view = 'trainer'; V.trainerTab = 'tracker';
+    V.view = 'trainer'; V.trainerTab = 'entreno';
     commit(); window.scrollTo(0, 0);
   },
   'practice-add'() {

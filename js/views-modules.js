@@ -72,14 +72,24 @@ function vStats() {
 
 /* ---------- Parfect Trainer ---------- */
 function vTrainer() {
+  const u = cur();
   const tab = V.trainerTab || 'diag';
-  const body = tab === 'diag' ? vDiag() : tab === 'drills' ? vDrillsLibrary()
-    : tab === 'campos' ? vCampos() : tab === 'simulador' ? vSimulator()
-      : tab === 'stats' ? vStats() : tab === 'logros' ? vTrophies() : vTracker();
+  const mainPage = objetivosCard(u)
+    + `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">🏋️ Tu entrenamiento para lograrlo</h2><span class="small muted">en pro de tus objetivos</span></div>`
+    + vDiag()
+    + vHcpReference(u);
+  const entreno = vTracker()
+    + `<div class="sec-h" style="margin-top:20px"><h2 style="font-size:18px">Biblioteca de drills</h2></div>`
+    + vDrillsLibrary();
+  const body = tab === 'entreno' ? entreno
+    : tab === 'simulador' ? vSimulator()
+      : tab === 'stats' ? vStats()
+        : tab === 'logros' ? vTrophies()
+          : mainPage;
   const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>
     <div class="tabs scroll">
-      ${T('diag', 'Diagnóstico')}${T('drills', 'Drills')}${T('tracker', 'Práctica')}${T('campos', 'Campos')}${T('simulador', 'Simulador')}${T('stats', 'Stats')}${T('logros', 'Logros')}
+      ${T('diag', 'Diagnóstico')}${T('entreno', 'Entrenamiento')}${T('simulador', 'Simulador')}${T('stats', 'Stats')}${T('logros', 'Logros')}
     </div>
     ${body}`;
 }
