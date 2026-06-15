@@ -62,24 +62,26 @@ function vRondaTab() {
   const rounds = myRounds();
   const cont = S.active && S.active.userId === u.id;
   let html = `<div class="sec-h"><h2>Tus rondas</h2><span class="small muted">${rounds.length} registradas</span></div>`;
+  let rows = '';
   if (cont) {
-    html += `<button class="row" data-act="resume-round">
-      <div class="r-main"><b>Ronda en curso · ${esc(S.active.course)}</b><span>Vas en el hoyo ${S.active.idx + 1} de ${S.active.holesCount}</span></div>
-      <div class="r-side"><b>→</b><span>continuar</span></div>
+    rows += `<button class="pl-rr pl-rr-live" data-act="resume-round">
+      <div class="pl-rr-id"><b>Ronda en curso · ${esc(S.active.course)}</b><span>Hoyo ${S.active.idx + 1} de ${S.active.holesCount} · continuar</span></div>
+      <span class="pl-rr-score">→</span>
     </button>`;
   }
-  if (!rounds.length) {
+  if (!rounds.length && !cont) {
     html += `<div class="card empty"><div class="e-ico">${golfIcon('flag')}</div><h3>Sin rondas todavía</h3><p>Tu primera ronda toma menos de 10 minutos en capturarse — 4 toques por hoyo.</p></div>`;
-  } else {
-    html += rounds.map(r => {
-      const s = Stats.roundStats(r);
-      return `<button class="row" data-act="round-detail" data-id="${r.id}">
-        <div class="r-main"><b>${esc(r.course)}${r.partyId ? ' ' + golfIcon('flag') : ''}</b><span>${fmtDate(r.date)} · ${s.holes} hoyos · ${s.putts} putts</span></div>
-        <div class="r-side"><b>${s.score}</b><span>${fmtToPar(s.toPar)}</span></div>
-      </button>`;
-    }).join('');
+    return html;
   }
-  return html;
+  rows += rounds.map(r => {
+    const s = Stats.roundStats(r);
+    const course = (r.courseId && COURSES[r.courseId]) ? COURSES[r.courseId].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '') : r.course;
+    return `<button class="pl-rr" data-act="round-detail" data-id="${r.id}">
+      <div class="pl-rr-id"><b>${esc(course)}${r.partyId ? ' ' + golfIcon('flag') : ''}</b><span>${fmtDate(r.date)} · ${s.holes} hoyos · ${s.putts} putts</span></div>
+      <span class="pl-rr-score">${s.score}<em>${fmtToPar(s.toPar)}</em></span>
+    </button>`;
+  }).join('');
+  return html + `<div class="pl-rr-list">${rows}</div>`;
 }
 
 /* ---------- Setup de ronda ---------- */
