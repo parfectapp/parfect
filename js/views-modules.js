@@ -77,7 +77,7 @@ function vTrainer() {
   const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>
     <div class="tabs" style="flex-wrap:wrap">
-      ${T('diag', 'Diagnóstico IA')}${T('drills', 'Drills')}${T('tracker', 'Tracker')}${T('estrategia', 'Estrategia')}${T('simulador', 'Simulador')}${T('stats', 'Stats')}${T('logros', 'Logros')}
+      ${T('diag', 'Diagnóstico IA')}${T('drills', 'Drills')}${T('tracker', 'Práctica')}${T('estrategia', 'Estrategia')}${T('simulador', 'Simulador')}${T('stats', 'Stats')}${T('logros', 'Logros')}
     </div>
     ${body}`;
 }
@@ -208,7 +208,7 @@ function trackerPlan(u) {
 }
 
 function vTracker() {
-  return `<div class="sec-h"><h2>Parfect Tracker</h2><span class="small muted">tu práctica, medida</span></div>
+  return `<div class="sec-h"><h2>Práctica</h2><span class="small muted">tu práctica, medida</span></div>
     ${vTrackerPlan()}
     ${V.drillLog ? vDrillSheet() : ''}`;
 }
@@ -455,8 +455,7 @@ function vSocial() {
   });
   const feed = [...partyFeed, ...roundFeed].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14).map(x => x.html).join('');
 
-  return `<div class="sec-h"><h2>Social</h2><span class="small muted">tu calendario y tus amigos</span></div>
-    <div class="sec-h" style="margin-top:6px"><h2 style="font-size:16px">📅 Calendario</h2></div>
+  return `<div class="sec-h"><h2>Calendario</h2><span class="small muted">tu plan y tus amigos</span></div>
     ${vCalendar()}
     <div class="card" style="margin-top:18px">
       <span class="label">Amigos</span>

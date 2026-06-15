@@ -25,7 +25,7 @@ function vShell(content) {
       ${item('ronda', 'Ronda')}
       <button class="nav-p" data-act="quick-round" aria-label="Iniciar ronda">P</button>
       ${item('trainer', 'Trainer')}
-      ${item('social', 'Social')}
+      ${item('social', 'Calendario')}
     </nav>
     ${V.profileOpen ? vProfile() : ''}
   </div>`;
@@ -36,6 +36,45 @@ function greeting() {
   if (h < 12) return 'Buenos días';
   if (h < 20) return 'Buenas tardes';
   return 'Buenas noches';
+}
+
+/* Mini gráfica de tendencia de score (per-18, mejor=arriba) */
+function progressChart(data) {
+  const W = 300, H = 110, pad = 22;
+  const min = Math.min(...data), max = Math.max(...data), span = Math.max(4, max - min);
+  const x = i => data.length > 1 ? pad + i * (W - 2 * pad) / (data.length - 1) : W / 2;
+  const y = v => pad + (v - min) / span * (H - 2 * pad);
+  const pts = data.map((v, i) => [x(i), y(v)]);
+  const line = pts.map((p, i) => `${i ? 'L' : 'M'}${p[0].toFixed(0)},${p[1].toFixed(0)}`).join(' ');
+  const dots = pts.map(p => `<circle cx="${p[0].toFixed(0)}" cy="${p[1].toFixed(0)}" r="3.5" fill="#c9f73e"/>`).join('');
+  const sign = v => (v >= 0 ? '+' : '') + v;
+  return `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tendencia de score">
+    <path d="${line}" fill="none" stroke="#c9f73e" stroke-width="2.5" stroke-linejoin="round"/>${dots}
+    <text x="${pad}" y="14" fill="#7c8a70" font-family="Inter,system-ui" font-size="10">${sign(data[0])} antes</text>
+    <text x="${W - pad}" y="14" fill="#c9f73e" font-family="Inter,system-ui" font-size="11" font-weight="800" text-anchor="end">${sign(data[data.length - 1])} última</text>
+  </svg>`;
+}
+function progressCard(u, rounds) {
+  const data = rounds.slice(0, 8).reverse().map(r => { const s = Stats.roundStats(r); return Math.round(s.toPar * 18 / s.holes); });
+  let chart, trend = '';
+  if (data.length >= 2) {
+    chart = progressChart(data);
+    const half = Math.ceil(data.length / 2);
+    const avgE = data.slice(0, half).reduce((a, b) => a + b, 0) / half;
+    const avgL = data.slice(-half).reduce((a, b) => a + b, 0) / half;
+    const d = Math.round(avgE - avgL);
+    trend = d > 0 ? `📉 Vas mejorando: ~<b class="lime">${d}</b> golpes menos que tus primeras rondas.`
+      : d < 0 ? `📈 Has subido ~${-d} golpes — toca apretar la práctica.` : `Estable en tus últimas rondas.`;
+  } else {
+    chart = `<p class="note">Registra 2+ rondas para ver tu tendencia.</p>`;
+  }
+  const gap = Math.max(0, Math.round(u.hcp - u.goal));
+  return `<div class="card">
+    <span class="label">📈 Seguimiento de progreso</span>
+    ${chart}
+    ${trend ? `<p class="note" style="margin:8px 0 6px">${trend}</p>` : ''}
+    <p class="note" style="margin-bottom:0">HCP ${fmtHcp(u.hcp)} · meta ${fmtHcp(u.goal)}${gap > 0 ? ` · te faltan <b class="lime">${gap}</b> para tu meta` : ' · ¡meta alcanzada! 🎯'}</p>
+  </div>`;
 }
 
 function vDashboard() {
@@ -88,8 +127,9 @@ function vDashboard() {
       </div>
       <button class="btn sm ghost" data-act="nav" data-view="ronda" style="margin-top:14px">Ver todas las tarjetas →</button>
     </div>
+    ${progressCard(u, rounds)}
+    ${vHcpReference(u)}
     <button class="btn ghost" data-act="quick-round">${logoMark(15)} ${cont ? `Continuar ronda · hoyo ${S.active.idx + 1}` : 'Iniciar ronda'}</button>
-    <button class="btn" data-act="go-sim">🎲 Simulador de ronda</button>
     <div class="btn-row">
       <button class="btn" data-act="go-stats">Avatar Stats →</button>
       <button class="btn" data-act="go-trofeos">🏆 Trofeos</button>

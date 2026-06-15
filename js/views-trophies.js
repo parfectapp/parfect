@@ -37,8 +37,6 @@ function vTrophies() {
       ${goalRows}
     </div>
 
-    ${vHcpReference(u)}
-
     <div class="sec-h"><h2 style="font-size:18px">Logros</h2></div>
     <div class="trophy-grid">${cards}</div>
     ${unlocked === 0 ? `<p class="note">Registra rondas y prácticas para empezar a desbloquear logros.</p>` : ''}
