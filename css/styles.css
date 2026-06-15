@@ -901,6 +901,26 @@ button.row { cursor: pointer; }
 /* ============ Landing (match app · escena clara/oscura) ============ */
 .lp { position: relative; width: 100%; overflow: hidden; color: var(--text); }
 
+/* vida del fondo: bolas de golf volando + pájaros cruzando de lado a lado */
+.lp-life { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; will-change: transform; }
+.lp-bird { position: absolute; left: 0; width: 36px; height: 36px; filter: drop-shadow(0 6px 8px rgba(20,40,15,0.18)); }
+.lp-bird.lb1 { top: 13%; width: 38px; animation: lpBirdL 30s linear infinite; }
+.lp-bird.lb2 { top: 26%; width: 26px; animation: lpBirdL 44s linear infinite; animation-delay: -16s; }
+.lp-bird.lb3 { top: 9%; width: 30px; animation: lpBirdR 38s linear infinite; animation-delay: -8s; }
+@keyframes lpBirdL { 0% { transform: translate(112vw,0) scaleX(1) rotate(3deg); } 50% { transform: translate(42vw,-7vh) scaleX(1) rotate(-3deg); } 100% { transform: translate(-22vw,4vh) scaleX(1) rotate(3deg); } }
+@keyframes lpBirdR { 0% { transform: translate(-22vw,0) scaleX(-1) rotate(-3deg); } 50% { transform: translate(46vw,6vh) scaleX(-1) rotate(3deg); } 100% { transform: translate(114vw,-3vh) scaleX(-1) rotate(-3deg); } }
+.lp-fly { position: absolute; left: 0; width: 15px; height: 15px; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #fff, #cdd5d7 70%, #9aa6a8); box-shadow: 0 2px 6px rgba(0,0,0,0.22); }
+.lp-fly.lf1 { top: 62%; animation: lpBallArc 13s ease-in-out infinite; }
+.lp-fly.lf2 { top: 78%; width: 11px; animation: lpBallArc 17s ease-in-out infinite; animation-delay: -6s; }
+.lp-fly.lf3 { top: 48%; width: 18px; animation: lpBallArc 19s ease-in-out infinite; animation-delay: -11s; }
+.lp-fly.lf4 { top: 84%; width: 13px; animation: lpBallArcR 22s ease-in-out infinite; animation-delay: -3s; }
+@keyframes lpBallArc { 0% { transform: translate(-12vw,0); opacity: 0; } 8% { opacity: 1; } 50% { transform: translate(50vw,-30vh); } 92% { opacity: 1; } 100% { transform: translate(116vw,10vh); opacity: 0; } }
+@keyframes lpBallArcR { 0% { transform: translate(116vw,0); opacity: 0; } 8% { opacity: 1; } 50% { transform: translate(48vw,-24vh); } 92% { opacity: 1; } 100% { transform: translate(-12vw,12vh); opacity: 0; } }
+[data-theme="dark"] .lp-bird { display: none; }
+[data-theme="dark"] .lp-fly { box-shadow: 0 0 10px rgba(255,255,255,0.5); }
+body.is-scrolling .lp-bird, body.is-scrolling .lp-fly { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .lp-life { display: none; } }
+
 .lp-nav { position: relative; z-index: 5; display: flex; align-items: center; justify-content: space-between; padding: calc(16px + env(safe-area-inset-top)) clamp(16px,5vw,48px) 14px; }
 .lp-logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 900; font-style: italic; letter-spacing: .12em; color: var(--text); font-size: 16px; }
 .lp-links { display: flex; gap: 9px; }

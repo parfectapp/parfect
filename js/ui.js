@@ -128,14 +128,49 @@ function profileBgGrad(u) {
   if (!b || k === 'rank' || !b.grad) { const rk = RANKS[rankIdx(u && u.hcp)] || RANKS[0]; return `linear-gradient(150deg, ${rk.c}, #5fa03f)`; }
   return b.grad;
 }
-function avatarImg(u, cls) {
+/* "chispa": qué tan encendido va tu golfista según tus jugadas buenas recientes (0..1) */
+function golferSpark(u) {
+  try {
+    const uid = u && u.id;
+    const rounds = ((typeof S !== 'undefined' && S.rounds) || []).filter(r => r.userId === uid).slice(-3);
+    let good = 0, tot = 0;
+    rounds.forEach(r => (r.holes || []).forEach(h => {
+      if (!h || h.score == null) return;
+      tot++;
+      const d = h.score - h.par;
+      if (d <= -1) good += 1.4;            // birdie o mejor
+      else if (d === 0) good += 1;          // par
+      else if (h.upDown === true) good += 0.7; // salvada
+      else if (h.app === 'gir') good += 0.4;   // green en regulación
+    }));
+    if (!tot) return 0;
+    return Math.max(0, Math.min(1, good / tot));
+  } catch (e) { return 0; }
+}
+/* color del aura del golfista (lo elige el jugador; 'rank' o 'mono' usan el rango/plata) */
+function outfitGlow(u) {
+  const k = (u && u.outfit) || 'rank';
+  if (k === 'mono') return '#e3eaee';
+  const o = OUTFITS.find(x => x.k === k);
+  if (!o || o.sw === 'rank') { const r = RANKS[rankIdx(u && u.hcp)] || RANKS[0]; return r.c; }
+  return o.sw;
+}
+function avatarImg(u, cls, lit) {
   const r = RANKS[rankIdx(u && u.hcp)] || RANKS[0];
-  const o = outfitOf(u);
-  const tint = o.f ? o.f : (r.f && r.f !== 'none' ? r.f : '');
-  let glow = '';
-  if (r.aura >= 1) glow += ` drop-shadow(0 0 ${3 + r.aura * 2}px ${r.c})`;
-  if (r.aura >= 4) glow += ` drop-shadow(0 0 ${7 + r.aura * 3}px ${r.c})`;
-  const fil = `${tint}${glow}`.trim();
+  const spark = lit ? 1 : golferSpark(u);
+  let fil;
+  if (spark < 0.2) {
+    // apagado: monito gris (colores naturales desaturados, sin tintes raros)
+    fil = 'grayscale(0.92) brightness(1.06) contrast(0.96)';
+  } else {
+    // encendido: conserva sus colores naturales y gana un aura del color elegido
+    const col = outfitGlow(u);
+    const base = 1 + r.aura;
+    let glow = ` drop-shadow(0 0 ${(3 + spark * base * 1.5).toFixed(0)}px ${col})`;
+    if (spark >= 0.7) glow += ` drop-shadow(0 0 ${(6 + spark * base * 1.3).toFixed(0)}px ${col})`;
+    const sat = spark < 0.5 ? 'saturate(0.82) ' : '';   // a media chispa todavía se está "prendiendo"
+    fil = `${sat}${glow}`.trim();
+  }
   return `<img class="golfer ${cls || ''}" src="${avatarSrc(u)}"${fil ? ` style="filter:${fil}"` : ''} alt="" loading="lazy">`;
 }
 

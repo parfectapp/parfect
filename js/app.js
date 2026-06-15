@@ -247,6 +247,8 @@ const actions = {
     h[k] = v;
     if (k === 'par' && v === 3) h.tee = null;
     if (k === 'app' && v === 'gir') h.upDown = null;
+    // up & down salvado = chip + 1 putt → llena los putts en automático
+    if (k === 'upDown' && v === true) h.putts = 1;
     render();
   },
   'h-score'(d) {

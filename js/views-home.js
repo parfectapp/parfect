@@ -556,11 +556,11 @@ function vAvatarCreator(u) {
     </div>`).join('');
   return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">Crea tu golfista</h2><span class="small muted">hazlo tuyo</span></div>
     <div class="card cre-card">
-      <div class="cre-preview" style="background:${profileBgGrad(u)}">${avatarImg(u, 'cre-hero')}<span class="cre-rank">${RANKS[idx].n}</span></div>
+      <div class="cre-preview" style="background:${profileBgGrad(u)}">${avatarImg(u, 'cre-hero', true)}<span class="cre-rank">${RANKS[idx].n}</span></div>
       <div class="cre-grp"><span class="cre-lab">Golfista</span><div class="cre-row">${personas}</div></div>
-      <div class="cre-grp"><span class="cre-lab">Outfit</span><div class="cre-row cre-sws">${outfits}</div></div>
+      <div class="cre-grp"><span class="cre-lab">Aura</span><div class="cre-row cre-sws">${outfits}</div></div>
       <div class="cre-grp"><span class="cre-lab">Fondo de perfil</span><div class="cre-row cre-bgs">${bgs}</div></div>
-      <p class="note" style="margin:10px 2px 0">Tu golfista brilla más fuerte con cada rango que subes. Algunos fondos se desbloquean al mejorar tu hándicap.</p>
+      <p class="note" style="margin:10px 2px 0">Tu golfista está apagado (gris) y <b>se enciende</b> con tus buenas jugadas; brilla más fuerte con cada rango que subes. Algunos fondos se desbloquean al mejorar tu hándicap.</p>
     </div>
     <div class="rank-ladder" style="margin-top:12px">${steps}</div>`;
 }

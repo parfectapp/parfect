@@ -43,6 +43,15 @@ function lpDrillCards() {
 function vLanding() {
   const feat = (ic, t, d) => `<div class="lp-feat reveal"><div class="lp-feat-ic">${ic}</div><h3>${t}</h3><p>${d}</p></div>`;
   return `<div class="lp">
+    <div class="lp-life parallax" data-speed="0.22" aria-hidden="true">
+      <img class="lp-bird lb1" src="assets/bird.png" alt="" />
+      <img class="lp-bird lb2" src="assets/bird.png" alt="" />
+      <img class="lp-bird lb3" src="assets/bird.png" alt="" />
+      <span class="lp-fly lf1"></span>
+      <span class="lp-fly lf2"></span>
+      <span class="lp-fly lf3"></span>
+      <span class="lp-fly lf4"></span>
+    </div>
     <header class="lp-nav">
       <span class="lp-logo">${logoMark(18)} PARFECT</span>
       <nav class="lp-links">
@@ -94,13 +103,6 @@ function vLanding() {
            [ICONS.social, 'Juega con amigos', 'Arma una partida con código y lleva La corta en vivo.']]
           .map(([ic, t, d]) => feat(ic, t, d)).join('')}
       </div>
-    </section>
-
-    <section class="lp-sec lp-train">
-      <span class="lp-eyebrow reveal">Entrena con propósito</span>
-      <h2 class="lp-h2 reveal">Drills que sí<br/><span class="lime">mueven la aguja.</span></h2>
-      <p class="lp-lead reveal">La IA detecta tu mayor fuga de golpes y arma la sesión: el drill, las repeticiones y el cronómetro. Tú solo ejecutas.</p>
-      <div class="lp-drillreel reveal"><div class="reel-track">${lpDrillCards()}${lpDrillCards()}</div></div>
     </section>
 
     <section class="lp-final reveal">
