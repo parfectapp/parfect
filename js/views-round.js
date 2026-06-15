@@ -138,7 +138,7 @@ function captureShots(h) {
   }
   return shots;
 }
-function captureSchematic(h, chole) {
+function captureSchematic(h, chole, noZoom) {
   const shots = captureShots(h);
   const dog = (chole && chole.dog) || 'straight';
   const par3 = (chole ? chole.par : h.par) === 3;
@@ -200,7 +200,7 @@ function captureSchematic(h, chole) {
     const dur = (0.8 + (nf.length - 1) * 0.9).toFixed(1);
     ball = `<circle r="6" fill="#fff" stroke="#0a0f08" stroke-width="1"><animateMotion dur="${dur}s" repeatCount="indefinite" path="${route}" keyPoints="${kp.join(';')}" keyTimes="${kt.join(';')}" calcMode="linear"/></circle>`;
     // ---- zoom de cámara al green durante los putts ----
-    if (nPutts > 0 && lagNode >= 0) {
+    if (!noZoom && nPutts > 0 && lagNode >= 0) {
       const bx = Math.max(0, Math.min(W - 118, gx - 59)).toFixed(0);
       const by = Math.max(0, Math.min(H - 116, gy + lagDy / 2 - 58)).toFixed(0);
       const box = `${bx} ${by} 118 116`;

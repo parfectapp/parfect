@@ -243,8 +243,7 @@ function vTrainObjectives(u) {
 
 function vTracker() {
   return `<div class="sec-h"><h2>Práctica</h2><span class="small muted">tu práctica, medida</span></div>
-    ${vTrackerPlan()}
-    ${V.drillLog ? vDrillSheet() : ''}`;
+    ${vTrackerPlan()}`;
 }
 
 function vTrackerPlan() {

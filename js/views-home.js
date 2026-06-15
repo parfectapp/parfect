@@ -27,6 +27,7 @@ function vShell(content) {
       ${item('perfil', 'Perfil')}
     </nav>
     ${V.profileOpen ? vProfile() : ''}
+    ${V.drillLog ? vDrillSheet() : ''}
   </div>`;
 }
 
@@ -164,14 +165,35 @@ function vTrainingCard(u) {
   const t = nextTraining(u);
   if (!t) return '';
   const when = t.rec ? 'Recomendado para ti' : (t.date === todayLocal() ? 'Hoy' : 'Próximo · ' + fmtDate(t.date));
+  const howTo = { driving: 'alinea a un blanco y manda bolas a la calle imaginaria', approach: 'tira a banderas a distintas distancias buscando el centro del green', short: 'súbela y embócala, o déjala dada (a 1 m)', putting: 'mete putts seguidos por el gate' };
+  const target = t.key === 'putting' ? 10 : 7;
   return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">Entrenamiento que toca</h2><span class="small muted">${when}</span></div>
-    <button class="card train-card" data-act="nav" data-view="trainer">
+    <button class="card train-card" data-act="drill-open" data-name="${esc(t.name)}" data-target="${target}" data-area="${esc(t.area)}" data-goal="${esc(howTo[t.key] || '')}" data-timer="20">
       <div class="tc-art">${drillArt(t.key)}</div>
       <div class="tc-row">
         <div class="tc-body"><b>${esc(t.name)}</b><span>${esc(t.area)}${t.rec ? ' · tu mayor fuga de golpes' : ''}</span></div>
         <span class="tc-go">Entrenar →</span>
       </div>
     </button>`;
+}
+
+/* última ronda: % de la ronda + reel infinito de sus hoyos tiro por tiro */
+function vLastRound(rounds) {
+  const r = rounds[0];
+  if (!r) return '';
+  const s = Stats.roundStats(r);
+  const p = (a, b) => b ? Math.round(a / b * 100) + '%' : '—';
+  const stats = [[p(s.fw, s.fwTot), 'Calles'], [p(s.gir, s.girTot), 'GIR'], [p(s.scr, s.scrTot), 'Up&down'], [String(s.putts), 'Putts']];
+  const statRow = `<div class="lr-stats">${stats.map(([v, t]) => `<div><b>${v}</b><span>${t}</span></div>`).join('')}</div>`;
+  const card = (hh, i) => {
+    const ch = (r.courseId && COURSES[r.courseId] && COURSES[r.courseId].holes[i]) ? COURSES[r.courseId].holes[i] : null;
+    const yds = ch && ch.yds ? ` · ${ch.yds}y` : '';
+    return `<div class="reel-card"><div class="reel-scene">${captureSchematic(hh, ch, true)}</div><div class="reel-meta" style="padding:12px 16px 14px"><b style="font-size:22px">Hoyo ${i + 1}</b><span>Par ${hh.par}${yds} · ${hh.score} (${fmtToPar(hh.score - hh.par)})</span></div></div>`;
+  };
+  const set = r.holes.map(card).join('');
+  return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Tu última ronda</h2><span class="small muted">${esc(r.course)} · ${fmtDate(r.date)}</span></div>
+    <div class="card" style="padding:14px">${statRow}<p class="note" style="margin:10px 0 0">${s.score} golpes · ${fmtToPar(s.toPar)} en ${s.holes} hoyos · tiro por tiro abajo →</p></div>
+    <div class="reel"><div class="reel-track">${set}${set}</div></div>`;
 }
 
 /* stats en conjunto (radar + tarjetas) para Perfil */
@@ -210,6 +232,7 @@ function vDashboard() {
     <div class="sec-h" style="margin-top:2px"><h2 style="font-size:18px">Tu juego en movimiento</h2><span class="small muted">desliza →</span></div>
     ${vStatReel(rounds, agg)}
     ${vTrainingCard(u)}
+    ${vLastRound(rounds)}
     <div class="card" style="margin-top:16px">
       <span class="label">Tarjetas pasadas</span>
       ${rounds.slice(0, 5).map(r => { const s = Stats.roundStats(r); return `<button class="hist-row" data-act="round-detail" data-id="${r.id}">
