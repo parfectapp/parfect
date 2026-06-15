@@ -67,6 +67,19 @@ const Stats = (() => {
     const girHoles = holes.filter(h => h.app === 'gir');
     const puttsPerGir = girHoles.length ? sum(girHoles.map(h => h.putts)) / girHoles.length : 0;
 
+    // reparto de score por hoyo (águila+, birdie, par, bogey, doble+)
+    const scoreDist = { eagle: 0, birdie: 0, par: 0, bogey: 0, dbl: 0, total: 0 };
+    for (const h of holes) {
+      if (h.score == null || h.par == null) continue;
+      const d = h.score - h.par;
+      scoreDist.total++;
+      if (d <= -2) scoreDist.eagle++;
+      else if (d === -1) scoreDist.birdie++;
+      else if (d === 0) scoreDist.par++;
+      else if (d === 1) scoreDist.bogey++;
+      else scoreDist.dbl++;
+    }
+
     const avgToPar = sum(per18.map(p => p.toPar)) / per18.length;
     const sd = Math.sqrt(sum(per18.map(p => (p.toPar - avgToPar) ** 2)) / per18.length);
 
@@ -87,7 +100,7 @@ const Stats = (() => {
       bestToPar: Math.min(...rs.map(r => Math.round((r.toPar * 18) / r.holes))),
       consistency: sd,
       series,
-      missTee, missApp, puttsByDist, puttsPerGir,
+      missTee, missApp, puttsByDist, puttsPerGir, scoreDist,
     };
   }
 

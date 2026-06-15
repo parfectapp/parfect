@@ -129,10 +129,55 @@ function vDashboard() {
     </div>`;
 }
 
+/* ---- reparto de score: birdies / pares / bogeys… ---- */
+function vScoreDist(agg) {
+  const d = agg.scoreDist;
+  if (!d || !d.total) return '';
+  const tot = d.total;
+  const cats = [
+    { label: 'Birdie o mejor', n: d.eagle + d.birdie, col: 'var(--lime)' },
+    { label: 'Par', n: d.par, col: '#57b15c' },
+    { label: 'Bogey', n: d.bogey, col: '#ff9f43' },
+    { label: 'Doble o peor', n: d.dbl, col: 'var(--danger)' },
+  ];
+  const pct = n => Math.round((n / tot) * 100);
+  const seg = cats.filter(c => c.n > 0).map(c => `<span style="width:${(c.n / tot) * 100}%;background:${c.col}"></span>`).join('');
+  const rows = cats.map(c => `<div class="sd-row">
+    <span class="sd-dot" style="background:${c.col}"></span>
+    <span class="sd-lab">${c.label}</span>
+    <span class="sd-pct">${pct(c.n)}%</span>
+    <span class="sd-n">${c.n}</span>
+  </div>`).join('');
+  return `<div class="card">
+    <span class="label">Mi juego · ${agg.holesPlayed} hoyos${d.eagle ? ` · ${d.eagle} águila${d.eagle > 1 ? 's' : ''} 🦅` : ''}</span>
+    <div class="sd-bar">${seg}</div>
+    <div class="sd-list">${rows}</div>
+  </div>`;
+}
+
+/* ---- carry de cada bastón de mi bolsa ---- */
+function vBagCarries(u) {
+  const clubs = u.clubs || {};
+  const personalized = Object.keys(clubs).some(k => clubs[k] != null);
+  const bag = CLUBS.filter(c => personalized ? clubs[c.id] != null : DEFAULT_BAG.includes(c.id))
+    .map(c => ({ name: c.name, carry: clubC(clubs, c.id) != null ? clubC(clubs, c.id) : CLUB_DEFAULT[c.id] }))
+    .sort((a, b) => b.carry - a.carry);
+  const tiles = bag.map(c => `<div class="carry-tile"><b>${c.carry}<i>yds</i></b><span>${esc(c.name)}</span></div>`).join('');
+  return `<div class="card">
+    <span class="label">🎒 Mi bolsa · carry por bastón</span>
+    ${personalized ? '' : '<p class="note" style="margin-top:0;margin-bottom:8px">Distancias estándar — ponles tus carries reales.</p>'}
+    <div class="carry-grid">${tiles}</div>
+    <button class="btn sm ghost" data-act="go-clubs" style="margin-top:12px">Editar mis bastones →</button>
+  </div>`;
+}
+
 /* ============ Perfil (página) ============ */
 function vPerfil() {
   const u = cur();
+  const agg = Stats.aggregate(myRounds());
   return `<div class="sec-h"><h2>Tu perfil</h2></div>
+    ${agg ? vScoreDist(agg) : ''}
+    ${vBagCarries(u)}
     <div class="card">
       <div class="field" style="margin-top:0"><label>Nombre</label><input id="p-name" value="${esc(u.name)}"></div>
       <div class="field-row">
