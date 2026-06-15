@@ -155,19 +155,25 @@ function vScoreDist(agg) {
   </div>`;
 }
 
-/* ---- carry de cada bastón de mi bolsa ---- */
-function vBagCarries(u) {
+/* ---- carry de cada bastón de mi bolsa (editable aquí mismo) ---- */
+function vBagEditor(u) {
   const clubs = u.clubs || {};
-  const personalized = Object.keys(clubs).some(k => clubs[k] != null);
-  const bag = CLUBS.filter(c => personalized ? clubs[c.id] != null : DEFAULT_BAG.includes(c.id))
-    .map(c => ({ name: c.name, carry: clubC(clubs, c.id) != null ? clubC(clubs, c.id) : CLUB_DEFAULT[c.id] }))
-    .sort((a, b) => b.carry - a.carry);
-  const tiles = bag.map(c => `<div class="carry-tile"><b>${c.carry}<i>yds</i></b><span>${esc(c.name)}</span></div>`).join('');
+  const groupName = { largo: 'Maderas e híbridos', hierros: 'Hierros', wedges: 'Wedges' };
+  const sections = ['largo', 'hierros', 'wedges'].map(g => {
+    const tiles = CLUBS.filter(c => c.group === g).map(c => {
+      const cc = clubC(clubs, c.id);
+      return `<div class="carry-tile">
+        <input class="carry-in" id="club-c-${c.id}" type="number" inputmode="numeric" placeholder="${CLUB_DEFAULT[c.id]}" value="${cc != null ? cc : ''}">
+        <span>${esc(c.name)}</span>
+      </div>`;
+    }).join('');
+    return `<p class="sd-sub">${GROUP_META[g].icon} ${groupName[g]}</p><div class="carry-grid">${tiles}</div>`;
+  }).join('');
   return `<div class="card">
     <span class="label">🎒 Mi bolsa · carry por bastón</span>
-    ${personalized ? '' : '<p class="note" style="margin-top:0;margin-bottom:8px">Distancias estándar — ponles tus carries reales.</p>'}
-    <div class="carry-grid">${tiles}</div>
-    <button class="btn sm ghost" data-act="go-clubs" style="margin-top:12px">Editar mis bastones →</button>
+    <p class="note" style="margin-top:0;margin-bottom:6px">Ajusta el carry de cada bastón (en yardas). Deja en blanco los que no uses.</p>
+    ${sections}
+    <button class="btn primary" data-act="save-clubs" style="margin-top:14px">Guardar carries</button>
   </div>`;
 }
 
@@ -177,7 +183,7 @@ function vPerfil() {
   const agg = Stats.aggregate(myRounds());
   return `<div class="sec-h"><h2>Tu perfil</h2></div>
     ${agg ? vScoreDist(agg) : ''}
-    ${vBagCarries(u)}
+    ${vBagEditor(u)}
     <div class="card">
       <div class="field" style="margin-top:0"><label>Nombre</label><input id="p-name" value="${esc(u.name)}"></div>
       <div class="field-row">
@@ -188,17 +194,6 @@ function vPerfil() {
         <div class="chips">${COURSE_ORDER.map(id => `<button class="chip sm ${(u.homeCourse || 'campestre') === id ? 'on' : ''}" data-act="prof-campo" data-c="${id}">${esc(COURSES[id].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', ''))}</button>`).join('')}</div>
       </div>
       <button class="btn primary" data-act="profile-save">Guardar cambios</button>
-      <button class="btn" data-act="go-clubs">🎒 Mis bastones y distancias</button>
-    </div>
-    <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">📅 Plan semanal</h2></div>
-    <div class="card">
-      <div class="cal-step"><div><b>Entrenamientos</b><span>por semana</span></div>
-        <div class="stepper sm"><button data-act="cal-train" data-d="-1">−</button><span class="pl-score">${u.trainPerWeek != null ? u.trainPerWeek : 5}</span><button data-act="cal-train" data-d="1">+</button></div></div>
-      <div class="cal-step"><div><b>Jugadas</b><span>por semana</span></div>
-        <div class="stepper sm"><button data-act="cal-rounds" data-d="-1">−</button><span class="pl-score">${u.roundsPerWeek != null ? u.roundsPerWeek : 5}</span><button data-act="cal-rounds" data-d="1">+</button></div></div>
-      <p class="label" style="margin-top:14px">El club cierra los</p>
-      <div class="chips">${CAL_WD_FULL.map((w, i) => `<button class="chip sm ${(u.closedDay != null ? u.closedDay : 0) === i ? 'on' : ''}" data-act="cal-closed" data-d="${i}">${w}</button>`).join('')}</div>
-      <button class="btn primary" data-act="cal-ai" style="margin-top:14px">✨ Regenerar mi semana</button>
     </div>
     ${vLogros()}
     <div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">🏷️ Patrocinadores y ofertas</h2></div>

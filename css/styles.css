@@ -502,11 +502,16 @@ button.row { cursor: pointer; }
 .sd-n { color: var(--muted); font-weight: 700; width: 26px; text-align: right; font-size: 12.5px; }
 
 /* carry por bastón (perfil) */
+.sd-sub { font-size: 12px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin: 14px 0 2px; }
 .carry-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
-.carry-tile { text-align: center; background: var(--card2); border: 1px solid var(--line-soft); border-radius: 13px; padding: 11px 6px; display: flex; flex-direction: column; gap: 2px; }
+.carry-tile { text-align: center; background: var(--card2); border: 1px solid var(--line-soft); border-radius: 13px; padding: 9px 6px; display: flex; flex-direction: column; gap: 2px; }
+.carry-tile:focus-within { border-color: var(--lime); }
 .carry-tile b { font-size: 20px; font-weight: 900; color: var(--lime); letter-spacing: -0.02em; }
 .carry-tile b i { font-size: 10px; font-weight: 800; color: var(--muted); font-style: normal; margin-left: 2px; }
 .carry-tile span { font-size: 11px; font-weight: 700; color: var(--muted); }
+.carry-in { width: 100%; background: transparent; border: none; outline: none; text-align: center; font-size: 21px; font-weight: 900; color: var(--lime); letter-spacing: -0.02em; padding: 0; -moz-appearance: textfield; }
+.carry-in::-webkit-outer-spin-button, .carry-in::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.carry-in::placeholder { color: var(--muted2); }
 
 .club-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
 .club-tile { position: relative; text-align: left; background: var(--card2); border: 1px solid var(--line-soft); border-radius: 14px; padding: 12px; color: var(--text); display: flex; flex-direction: column; gap: 3px; transition: transform 0.1s; }
