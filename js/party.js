@@ -3,7 +3,7 @@
 const Party = (() => {
 
   const GAMES = {
-    corta:  { name: 'La corta', desc: 'Cada quien vs cada quien, calculada de los scores: ganar el hoyo +1, birdie +1, águila +2. Todo se cobra a cada rival y se acumula (suma cero). Solo captura el score normal — la app calcula la corta.' },
+    corta:  { name: 'La corta', desc: 'Cada quien vs cada quien. Ganar el hoyo +1, birdie +1, águila +2, sandy +1, más cerca en regulación +1, hole-out +1, putt largo +1; 3-putt −1, español (doble del par) −1. Todo se cobra a cada rival y se acumula.' },
     skins:  { name: 'Skins',    desc: 'El score más bajo del hoyo (sin empate) gana 1 unidad de cada uno. Los empates acumulan al siguiente.' },
     larga:  { name: 'La larga', desc: 'En cada par 5, el drive más largo cobra 1 unidad de cada uno.' },
     gogo:   { name: 'Gogos',    desc: 'Salvar el par fuera de green (up & down) cobra 1 unidad de cada uno.' },
@@ -13,15 +13,22 @@ const Party = (() => {
     match:  { name: 'Match play', desc: 'Gana quien gane más hoyos (el score más bajo del hoyo). 2 o más jugadores.' },
   };
 
-  /** Bono (+) de un jugador en un hoyo, derivado SOLO del score (birdie/águila) */
+  /** Bonos (+) y castigos (−) de un jugador en un hoyo, para La corta */
   function unidadesHole(h, pid) {
-    let bonus = 0;
+    let bonus = 0, penalty = 0;
     const s = h.scores[pid];
-    if (s != null) { const d = s - h.par; if (d <= -2) bonus += 2; else if (d === -1) bonus += 1; } // águila/birdie
-    return { bonus, penalty: 0 };
+    if (s != null) { const d = s - h.par; if (d <= -2) bonus += 2; else if (d === -1) bonus += 1; } // águila/birdie (del score)
+    if ((h.sandy || []).includes(pid)) bonus += 1;                   // sandy
+    if ((h.holeout || []).includes(pid)) bonus += 1;                 // hole-out
+    if (h.longputt && !Array.isArray(h.longputt) && h.longputt[pid]) bonus += h.longputt[pid]; // putt largo: +1 por bandera
+    if ((h.threeputt || []).includes(pid)) penalty += 1;            // 3-putt
+    if ((h.espanol || []).includes(pid)) penalty += 1;             // español (doble del par)
+    return { bonus, penalty };
   }
+  /* rango de regulación (1 = más cerca); sin marcar = lejos */
+  function regRank(h, pid) { return (h.reg && h.reg[pid]) ? h.reg[pid] : 99; }
 
-  /** La corta por parejas, calculada de los scores: total de cada jugador (suma cero) */
+  /** La corta por parejas: total de cada jugador (suma cero) */
   function unidades(party, limit = party.holes.length) {
     const pids = party.players.map(p => p.pid);
     const net = {}; pids.forEach(p => { net[p] = 0; });
@@ -36,7 +43,10 @@ const Party = (() => {
           const sa = sc(h, i, pa), sb = sc(h, i, pb);
           let delta = 0;
           if (sa < sb) delta += 1; else if (sb < sa) delta -= 1;     // ganar el hoyo
-          delta += (info[pa].bonus - info[pb].bonus);                // birdie/águila vs rival
+          delta += (info[pa].bonus - info[pb].bonus);                // bonos vs rival
+          delta += (info[pb].penalty - info[pa].penalty);            // castigos
+          const ra = regRank(h, pa), rb = regRank(h, pb);            // más cerca en regulación
+          if (ra < rb) delta += 1; else if (rb < ra) delta -= 1;
           net[pa] += delta; net[pb] -= delta;
         }
       }
@@ -44,13 +54,15 @@ const Party = (() => {
     return net;
   }
 
-  /** Puntos de La corta que gana un jugador en un hoyo (derivado del score) */
+  /** Puntos de La corta que gana un jugador en un hoyo (solo lo bueno suma) */
   function cortaHolePoints(h, pid) {
     let pts = 0;
     if (h.scores[pid] != null) {
-      const d = h.scores[pid] - h.par;       // birdie/águila por score
+      const d = h.scores[pid] - h.par;       // birdie/águila por score bruto
       if (d <= -2) pts += 4; else if (d === -1) pts += 2;
     }
+    if ((h.sandy || []).includes(pid)) pts += 1;
+    if ((h.holeout || []).includes(pid)) pts += 1;
     return pts;
   }
 
