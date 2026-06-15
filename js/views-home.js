@@ -3,7 +3,7 @@
 function navKeyOf(view) {
   if (['ronda', 'nueva', 'detalle'].includes(view)) return 'ronda';
   if (['trainer', 'clubs'].includes(view)) return 'trainer';
-  if (view === 'social') return 'social';
+  if (['social', 'friend'].includes(view)) return 'social';
   return 'inicio';
 }
 

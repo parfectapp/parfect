@@ -380,6 +380,19 @@ button.row { cursor: pointer; }
 .ref-table tr.hcp-goal .hcp-h { color: var(--lime); }
 .hcp-tag { font-size: 9px; font-weight: 900; letter-spacing: 0.04em; text-transform: uppercase; color: var(--lime); border: 1px solid var(--line); border-radius: 6px; padding: 1px 4px; }
 
+/* ============ Calendario de entrenamientos ============ */
+.ph-head .r-main b { display: block; font-size: 14.5px; font-weight: 800; }
+.ph-head .r-main span { font-size: 12px; }
+.cal-day { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line-soft); }
+.cal-day:last-child { border-bottom: none; }
+.cal-day.on { }
+.cal-day.on .cal-d { background: var(--lime); color: #0a0f06; border-color: var(--lime); }
+.cal-d { flex: none; width: 42px; text-align: center; font-size: 12px; font-weight: 800; color: var(--muted); padding: 5px 0; border: 1px solid var(--line-soft); border-radius: 9px; }
+.cal-items { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+.cal-chip { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 9px; background: var(--lime-faint); border: 1px solid var(--line); color: var(--lime); }
+.cal-chip.ronda { background: var(--lime-dim); }
+.cal-chip.rest { background: transparent; border-color: var(--line-soft); color: var(--muted2); }
+
 /* ============ Drill art (animaciones SVG) ============ */
 .drill-art { width: 100%; height: auto; display: block; border-radius: 12px; margin: 6px 0 2px; }
 

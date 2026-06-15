@@ -74,6 +74,7 @@ function App() {
     stats: vStats,
     trofeos: vTrophies,
     clubs: vClubs,
+    friend: vFriend,
     trainer: vTrainer,
     social: vSocial,
   }[V.view] || vDashboard;
@@ -280,6 +281,23 @@ const actions = {
     const d = V.drillLog;
     S.practices.push({ id: Store.uid(), userId: S.session, date: today(), area: d.area, drill: d.name, attempts: d.target, hits: d.hits, notes: '' });
     V.drillLog = null;
+    commit();
+  },
+  friend(d) { V.friendId = d.id; go('friend'); },
+  'cal-train'(d) { const u = cur(); u.trainPerWeek = Stats.clamp((u.trainPerWeek != null ? u.trainPerWeek : 3) + Number(d.d), 0, 14); commit(); },
+  'cal-rounds'(d) { const u = cur(); u.roundsPerWeek = Stats.clamp((u.roundsPerWeek != null ? u.roundsPerWeek : 1) + Number(d.d), 0, 7); commit(); },
+  'cal-add-round'() {
+    const u = cur();
+    const date = val('cal-date'), course = val('cal-course');
+    if (!date) { V.err = 'Elige la fecha de la ronda.'; render(); return; }
+    u.events = u.events || [];
+    u.events.push({ id: Store.uid(), type: 'ronda', date, course: course || 'Ronda' });
+    V.err = null;
+    commit();
+  },
+  'cal-del'(d) {
+    const u = cur();
+    u.events = (u.events || []).filter(e => e.id !== d.id);
     commit();
   },
   'go-clubs'() { V.profileOpen = false; go('clubs'); },

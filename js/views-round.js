@@ -75,7 +75,7 @@ function vRondaTab() {
     html += rounds.map(r => {
       const s = Stats.roundStats(r);
       return `<button class="row" data-act="round-detail" data-id="${r.id}">
-        <div class="r-main"><b>${esc(r.course)}</b><span>${fmtDate(r.date)} · ${s.holes} hoyos · ${s.putts} putts</span></div>
+        <div class="r-main"><b>${esc(r.course)}${r.partyId ? ' 🎉' : ''}</b><span>${fmtDate(r.date)} · ${s.holes} hoyos · ${s.putts} putts</span></div>
         <div class="r-side"><b>${s.score}</b><span>${fmtToPar(s.toPar)}</span></div>
       </button>`;
     }).join('');

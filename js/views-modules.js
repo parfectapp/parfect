@@ -71,12 +71,13 @@ function vStats() {
 /* ---------- Parfect Trainer ---------- */
 function vTrainer() {
   const tab = V.trainerTab || 'diag';
-  const body = tab === 'diag' ? vDiag() : tab === 'drills' ? vDrillsLibrary() : vTracker();
+  const body = tab === 'diag' ? vDiag() : tab === 'drills' ? vDrillsLibrary() : tab === 'cal' ? vCalendar() : vTracker();
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>
-    <div class="tabs">
+    <div class="tabs" style="flex-wrap:wrap">
       <button class="tab ${tab === 'diag' ? 'on' : ''}" data-act="trainer-tab" data-t="diag">Diagnóstico</button>
       <button class="tab ${tab === 'drills' ? 'on' : ''}" data-act="trainer-tab" data-t="drills">Drills</button>
       <button class="tab ${tab === 'tracker' ? 'on' : ''}" data-act="trainer-tab" data-t="tracker">Tracker</button>
+      <button class="tab ${tab === 'cal' ? 'on' : ''}" data-act="trainer-tab" data-t="cal">Calendario</button>
     </div>
     ${body}`;
 }
@@ -275,6 +276,95 @@ function vClubs() {
     <button class="btn" data-act="nav" data-view="trainer">Cancelar</button>`;
 }
 
+/* ---------- Calendario de entrenamientos ---------- */
+const WEEKDAYS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+const FOCUS_LABEL = { driving: 'Driving', approach: 'Hierros', short: 'Juego corto', putting: 'Putting' };
+
+function calDateLabel(iso) {
+  const dd = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const d = new Date(iso + 'T12:00:00');
+  const base = new Date(today() + 'T12:00:00');
+  const diff = Math.round((d - base) / 864e5);
+  const rel = diff <= 0 ? 'hoy' : diff === 1 ? 'mañana' : `en ${diff} días`;
+  return `${dd[d.getDay()]} ${d.getDate()} ${d.toLocaleDateString('es-MX', { month: 'short' })} · ${rel}`;
+}
+
+function weekPlan(n, m, focuses) {
+  const roundPriority = [6, 5, 2, 3, 1, 4, 0];   // Dom, Sáb, Mié...
+  const trainPriority = [0, 1, 3, 4, 2, 5, 6];   // Lun, Mar, Jue...
+  const days = WEEKDAYS.map(() => []);
+  const roundDays = roundPriority.slice(0, Math.min(m, 7));
+  roundDays.forEach(d => days[d].push({ type: 'ronda' }));
+  const avail = trainPriority.filter(d => !roundDays.includes(d));
+  let fi = 0;
+  const place = d => { days[d].push({ type: 'train', focus: focuses.length ? focuses[fi % focuses.length] : 'General' }); fi++; };
+  for (let k = 0; k < Math.min(n, avail.length); k++) place(avail[k]);
+  let extra = n - avail.length, idx = 0;
+  while (extra > 0 && avail.length) { place(avail[idx % avail.length]); extra--; idx++; }
+  return days;
+}
+
+function vCalendar() {
+  const u = cur();
+  const tn = u.trainPerWeek != null ? u.trainPerWeek : 3;
+  const rn = u.roundsPerWeek != null ? u.roundsPerWeek : 1;
+  const agg = Stats.aggregate(myRounds());
+  let focuses = ['Putting', 'Juego corto', 'Hierros', 'Driving'];
+  if (agg) focuses = Trainer.analyze(agg, u).focus.map(f => FOCUS_LABEL[f.key] || f.titulo);
+  const days = weekPlan(tn, rn, focuses);
+  const todayIdx = (new Date().getDay() + 6) % 7;
+
+  const planRows = WEEKDAYS.map((d, i) => {
+    const items = days[i];
+    const chips = items.length
+      ? items.map(it => it.type === 'ronda'
+        ? `<span class="cal-chip ronda">⛳ Ronda</span>`
+        : `<span class="cal-chip">🛠️ ${esc(it.focus)}</span>`).join('')
+      : `<span class="cal-chip rest">Descanso</span>`;
+    return `<div class="cal-day ${i === todayIdx ? 'on' : ''}"><span class="cal-d">${d}</span><div class="cal-items">${chips}</div></div>`;
+  }).join('');
+
+  const events = (u.events || []).filter(e => e.type === 'ronda' && e.date >= today()).sort((a, b) => a.date.localeCompare(b.date));
+  const evRows = events.length
+    ? events.map(e => `<div class="row">
+        <div class="r-main"><b>⛳ ${esc(e.course || 'Ronda')}</b><span>${calDateLabel(e.date)}</span></div>
+        <button class="pl-x" data-act="cal-del" data-id="${e.id}">✕</button>
+      </div>`).join('')
+    : `<p class="note">Aún no tienes rondas agendadas.</p>`;
+
+  return `
+    <div class="card">
+      <span class="label">Mi ritmo semanal</span>
+      <div class="ph-head" style="margin-top:10px">
+        <div class="r-main" style="flex:1"><b>Entrenamientos</b><span class="muted">por semana</span></div>
+        <div class="stepper sm"><button data-act="cal-train" data-d="-1">−</button><span class="pl-score">${tn}</span><button data-act="cal-train" data-d="1">+</button></div>
+      </div>
+      <div class="ph-head" style="margin-top:12px;border-top:1px solid var(--line-soft);padding-top:12px">
+        <div class="r-main" style="flex:1"><b>Rondas</b><span class="muted">por semana</span></div>
+        <div class="stepper sm"><button data-act="cal-rounds" data-d="-1">−</button><span class="pl-score">${rn}</span><button data-act="cal-rounds" data-d="1">+</button></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="label">Plan de la semana</span>
+      <p class="note" style="margin-top:0;margin-bottom:10px">${agg ? 'Entrenamientos enfocados en lo que más golpes te cuesta.' : 'Registra rondas y enfocaremos tus entrenamientos.'}</p>
+      ${planRows}
+    </div>
+
+    <div class="card">
+      <span class="label">Próximas rondas</span>
+      ${evRows}
+      <div class="field" style="margin-top:12px"><label>Agendar una ronda</label>
+        <div class="field-row">
+          <input id="cal-date" type="date" min="${today()}">
+          <input id="cal-course" placeholder="Campo">
+        </div>
+      </div>
+      ${V.err ? `<p class="form-err">${esc(V.err)}</p>` : ''}
+      <button class="btn primary" data-act="cal-add-round">Agregar al calendario</button>
+    </div>`;
+}
+
 /* ---------- Social ---------- */
 function vSocial() {
   const u = cur();
@@ -323,16 +413,58 @@ function vSocial() {
     </div>
     <div class="card">
       <span class="label">Leaderboard · este dispositivo</span>
-      ${players.map((x, i) => `<div class="row" style="border:none;background:transparent;padding:10px 0;margin-top:0">
-        <div style="display:flex;align-items:center;gap:12px">
+      ${players.map((x, i) => `<button class="row" style="border:none;background:transparent;padding:10px 2px;margin-top:0;width:100%;text-align:left" data-act="friend" data-id="${x.p.id}">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
           <span class="rank">${i + 1}</span>
           <div class="r-main"><b>${esc(x.p.name)}${x.p.id === u.id ? ' (tú)' : ''}</b>
           <span>HCP ${fmtHcp(x.p.hcp)} · ${x.agg ? x.agg.rounds + ' rondas' : 'sin rondas'}</span></div>
         </div>
-        <div class="r-side"><b>${x.agg ? fmtToPar(Math.round(x.agg.avgToPar)) : '—'}</b><span>prom/18</span></div>
-      </div>`).join('')}
-      <p class="note">Crea más cuentas en este dispositivo para competir cara a cara.</p>
+        <div class="r-side"><b>${x.agg ? fmtToPar(Math.round(x.agg.avgToPar)) : '—'}</b><span>prom/18 ›</span></div>
+      </button>`).join('')}
+      <p class="note">Toca a un jugador para ver su perfil. Crea más cuentas para competir cara a cara.</p>
     </div>
     <div class="sec-h"><h2>Actividad</h2></div>
     ${feed || `<div class="card empty"><div class="e-ico">🏆</div><h3>Nada por aquí aún</h3><p>Las rondas guardadas aparecen en este feed.</p></div>`}`;
+}
+
+/* ---------- Perfil de un jugador (amigo) ---------- */
+function vFriend() {
+  const p = S.users.find(x => x.id === V.friendId);
+  if (!p) { V.view = 'social'; return vSocial(); }
+  const me = p.id === S.session;
+  const rounds = S.rounds.filter(r => r.userId === p.id).sort((a, b) => b.date.localeCompare(a.date));
+  const agg = Stats.aggregate(rounds);
+  const head = `<button class="auth-back" data-act="nav" data-view="social">← Social</button>
+    <div class="greet" style="padding-top:6px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <span class="avatar-btn" style="width:52px;height:52px;font-size:18px">${esc(initials(p.name))}</span>
+        <div><h1 style="font-size:26px">${esc(p.name)}${me ? ' (tú)' : ''}</h1>
+        <p class="hcp">HCP ${fmtHcp(p.hcp)} · Meta ${fmtHcp(p.goal)}</p></div>
+      </div>
+    </div>`;
+  if (!agg) {
+    return head + `<div class="card empty"><div class="e-ico">⛳</div><h3>Sin rondas todavía</h3><p>${me ? 'Aún no registras rondas.' : 'Este jugador aún no tiene rondas.'}</p></div>`;
+  }
+  const radar = Stats.radarOf(agg);
+  return head + `
+    <div class="grid2">
+      ${statCard(agg.fwPct.toFixed(0) + '%', 'Fairways', agg.fwPct)}
+      ${statCard(agg.girPct.toFixed(0) + '%', 'GIR', agg.girPct)}
+      ${statCard(agg.scrPct.toFixed(0) + '%', 'Up/Down', agg.scrPct)}
+      ${statCard(agg.putts18.toFixed(0), 'Putts / Ronda', Stats.clamp((38 - agg.putts18) / 11 * 100, 0, 100))}
+    </div>
+    <div class="card">
+      <span class="label">Perfil de habilidades</span>
+      <div class="radar-wrap">${radarSVG(radar.labels, radar.values)}</div>
+    </div>
+    <div class="card">
+      <span class="label">Tarjetas recientes</span>
+      ${rounds.slice(0, 6).map(r => {
+        const s = Stats.roundStats(r);
+        return `<div class="hist-row" style="cursor:default">
+          <div class="r-main"><b>${esc(r.course)}${r.partyId ? ' 🎉' : ''}</b><span>${fmtDate(r.date)} · ${s.holes} hoyos · ${s.putts} putts</span></div>
+          <div class="r-side"><b>${s.score}</b><span>${fmtToPar(s.toPar)}</span></div>
+        </div>`;
+      }).join('')}
+    </div>`;
 }
