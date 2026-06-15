@@ -895,6 +895,15 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .hole-shots span { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--text); }
 .hole-shots i { width: 10px; height: 10px; border-radius: 3px; flex: none; }
 
+/* tarjeta de hoyo simple: texto sobre la imagen del trazo */
+.lr-simple .reel-scene { padding: 0; }
+.lr-scene { position: relative; }
+.lr-cap { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 10px 13px 18px; background: linear-gradient(180deg, rgba(7,11,6,0.94) 35%, rgba(7,11,6,0.4) 75%, transparent); pointer-events: none; }
+.lr-cap-l { font-size: 12px; font-weight: 700; color: var(--muted); }
+.lr-cap-l b { font-size: 14.5px; font-weight: 900; color: var(--text); margin-right: 6px; }
+.lr-cap-s { font-size: 19px; font-weight: 900; color: var(--lime); letter-spacing: -0.02em; white-space: nowrap; }
+.lr-cap-s em { font-size: 11px; font-style: normal; font-weight: 700; color: var(--muted); margin-left: 3px; }
+
 /* reel deslizable (manual) para listas pesadas como la última ronda */
 .reel-swipe { overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; scrollbar-width: none; -ms-overflow-style: none; }
 .reel-swipe::-webkit-scrollbar { display: none; }

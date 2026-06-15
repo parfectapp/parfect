@@ -220,25 +220,13 @@ function vTrainingCard(u) {
     </button>`;
 }
 
-/* desglose claro de los tiros de un hoyo (con su color) */
-function holeShotList(hh) {
-  const dot = c => `<i style="background:${c}"></i>`;
-  const distTxt = { '0-3': '0–3 ft', '3-8': '3–8 ft', '8-20': '8–20 ft', '20+': '+20 ft' };
-  const rows = [];
-  if (hh.par >= 4) {
-    const t = hh.tee;
-    const txt = t === 'fw' ? 'Fairway ✓' : t === 'izq' ? 'falló izquierda' : t === 'der' ? 'falló derecha' : t === 'penal' ? 'OB / Penal' : '—';
-    const col = t === 'fw' ? '#c9f73e' : t === 'penal' ? '#ff7a6b' : '#ff9f43';
-    rows.push(`<span>${dot(col)} Salida · ${txt}</span>`);
-  }
-  if (hh.app) {
-    const a = hh.app;
-    const txt = a === 'gir' ? 'Green ✓' : a === 'corto' ? 'corto' : a === 'largo' ? 'largo, se pasó' : a === 'izq' ? 'falló izquierda' : 'falló derecha';
-    rows.push(`<span>${dot(a === 'gir' ? '#c9f73e' : '#ff9f43')} Approach · ${txt}</span>`);
-    if (a !== 'gir' && hh.upDown != null) rows.push(`<span>${dot(hh.upDown ? '#c9f73e' : '#ff9f43')} Up & down · ${hh.upDown ? 'salvado ✓' : 'no ✗'}</span>`);
-  }
-  if (hh.putts != null) rows.push(`<span>${dot('#c9f73e')} ${hh.putts} putt${hh.putts !== 1 ? 's' : ''}${hh.dist && distTxt[hh.dist] ? ` · 1er a ${distTxt[hh.dist]}` : ''}</span>`);
-  return `<div class="hole-shots">${rows.join('')}</div>`;
+/* tarjeta simple de hoyo: solo la imagen del trazo con el texto encima */
+function lrHoleCard(hh, i, ch) {
+  const yds = ch && ch.yds ? ` · ${ch.yds}y` : '';
+  const tp = fmtToPar(hh.score - hh.par);
+  return `<div class="reel-card lr-simple"><div class="reel-scene lr-scene">${captureSchematic(hh, ch, true, true)}
+    <div class="lr-cap"><span class="lr-cap-l"><b>Hoyo ${i + 1}</b>Par ${hh.par}${yds}</span><span class="lr-cap-s">${hh.score}<em>${tp}</em></span></div>
+  </div></div>`;
 }
 
 /* mis números: KPIs de juego + mi bolsa (carries por bastón) */
@@ -280,7 +268,7 @@ function vLastRound(rounds) {
   if (!available.length) {
     const r = rounds[0];
     if (!r) return '';
-    const set = r.holes.map((hh, i) => `<div class="reel-card"><div class="reel-scene">${captureSchematic(hh, null, true, true)}</div><div class="reel-meta" style="padding:13px 16px 16px"><div class="hole-head2"><b>Hoyo ${i + 1}</b><span class="hh-par">Par ${hh.par}</span><span class="hh-score">${hh.score} <em>${fmtToPar(hh.score - hh.par)}</em></span></div>${holeShotList(hh)}</div></div>`).join('');
+    const set = r.holes.map((hh, i) => lrHoleCard(hh, i, null)).join('');
     return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Tu última ronda</h2><span class="small muted">${esc(r.course)} · ${fmtDate(r.date)}</span></div>
       <div class="reel reel-swipe"><div class="reel-track">${set}</div></div>`;
   }
@@ -306,11 +294,7 @@ function vLastRound(rounds) {
     </button>`;
   }).join('');
 
-  const card = (hh, i) => {
-    const ch = (COURSES[cid] && COURSES[cid].holes[i]) ? COURSES[cid].holes[i] : null;
-    const yds = ch && ch.yds ? ` · ${ch.yds}y` : '';
-    return `<div class="reel-card"><div class="reel-scene">${captureSchematic(hh, ch, true, true)}</div><div class="reel-meta" style="padding:13px 16px 16px"><div class="hole-head2"><b>Hoyo ${i + 1}</b><span class="hh-par">Par ${hh.par}${yds}</span><span class="hh-score">${hh.score} <em>${fmtToPar(hh.score - hh.par)}</em></span></div>${holeShotList(hh)}</div></div>`;
-  };
+  const card = (hh, i) => lrHoleCard(hh, i, (COURSES[cid] && COURSES[cid].holes[i]) ? COURSES[cid].holes[i] : null);
   const set = r.holes.map(card).join('');
 
   return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Tus rondas por campo</h2><span class="small muted">elige campo y tarjeta</span></div>
