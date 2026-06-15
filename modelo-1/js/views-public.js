@@ -119,18 +119,11 @@ function vLanding() {
   </div>`;
 }
 
-/* hook post-render: anima la landing + transiciones entre vistas de la app */
+/* hook post-render: anima la landing (reveal + parallax) */
 function afterRender() {
-  if (window.__lpClean) { window.__lpClean(); window.__lpClean = null; }
   const lp = document.querySelector('.lp');
-  if (lp) { initLanding(lp); window.__lastView = 'landing'; return; }
-  // transición de entrada SOLO al cambiar de vista (no en cada re-render por tap)
-  const changed = window.__lastView !== V.view;
-  window.__lastView = V.view;
-  if (changed) {
-    const el = document.querySelector('.app-content') || (document.getElementById('root') || {}).firstElementChild;
-    if (el) el.classList.add('view-in');
-  }
+  if (window.__lpClean) { window.__lpClean(); window.__lpClean = null; }
+  if (lp) initLanding(lp);
 }
 function initLanding(root) {
   const io = new IntersectionObserver(es => {

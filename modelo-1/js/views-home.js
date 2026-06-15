@@ -18,7 +18,7 @@ function vShell(content) {
       <span class="logo-word">${logoMark(16)} PARFECT</span>
       <button class="avatar-btn" data-act="profile-open" aria-label="Perfil">${esc(initials(u.name))}</button>
     </div>
-    <div class="app-content">${content}</div>
+    <div class="fade-in">${content}</div>
     <nav class="nav">
       ${item('inicio', 'Inicio')}
       ${item('ronda', 'Ronda')}
