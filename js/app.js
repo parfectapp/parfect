@@ -89,6 +89,7 @@ function App() {
 
 function render() {
   document.getElementById('root').innerHTML = App();
+  if (typeof afterRender === 'function') afterRender();
 }
 
 /* ============ Acciones ============ */
