@@ -5,7 +5,7 @@ let V = {
   view: S.session ? 'inicio' : 'landing',
   err: null, authVals: null,
   profileOpen: false, wipeArm: false,
-  setupHoles: 18, setupCourse: '', setupCourseId: null,
+  setupCourseId: null,
   hole: null, scoreTouched: false, confirmExit: false,
   detail: null, delArm: null,
   trainerTab: 'diag', diag: null, diagBusy: false,
@@ -187,24 +187,17 @@ const actions = {
   },
 
   /* ---- rondas ---- */
-  'go-setup'() { V.setupCourse = ''; V.setupHoles = 18; V.setupCourseId = V.setupCourseId || 'campestre'; go('nueva'); },
-  'setup-holes'(d) { V.setupCourse = val('r-course') || V.setupCourse; V.setupHoles = Number(d.n); render(); },
-  'setup-course'(d) { V.setupCourse = d.c; render(); },
-  'setup-pick-course'(d) {
-    if (d.c) { V.setupCourseId = d.c; V.setupHoles = COURSES[d.c].holes.length; }
-    else { V.setupCourseId = null; V.setupCourse = val('r-course') || ''; }
-    render();
-  },
+  'go-setup'() { V.setupCourseId = (V.setupCourseId && COURSES[V.setupCourseId]) ? V.setupCourseId : 'campestre'; go('nueva'); },
+  'setup-pick-course'(d) { if (COURSES[d.c]) V.setupCourseId = d.c; render(); },
   'quick-round'() {
     if (S.active && S.active.userId === S.session) { loadHole(); go('play'); }
     else actions['go-setup']();
   },
   'start-round'() {
-    const cid = V.setupCourseId;
-    let course, holesCount, courseId = null;
-    if (cid && COURSES[cid]) { course = COURSES[cid].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', ''); holesCount = COURSES[cid].holes.length; courseId = cid; }
-    else { course = val('r-course') || V.setupCourse || 'Mi campo'; holesCount = V.setupHoles || 18; }
-    S.active = { userId: S.session, course, courseId, holesCount, holes: [], idx: 0, startedAt: Date.now() };
+    const cid = (V.setupCourseId && COURSES[V.setupCourseId]) ? V.setupCourseId : 'campestre';
+    const course = COURSES[cid].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '');
+    const holesCount = COURSES[cid].holes.length;
+    S.active = { userId: S.session, course, courseId: cid, holesCount, holes: [], idx: 0, startedAt: Date.now() };
     loadHole();
     V.view = 'play';
     commit(); window.scrollTo(0, 0);

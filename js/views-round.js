@@ -84,27 +84,15 @@ function vRondaTab() {
 
 /* ---------- Setup de ronda ---------- */
 function vSetup() {
-  const cid = V.setupCourseId;
-  const n = V.setupHoles || 18;
+  const cid = V.setupCourseId || 'campestre';
   const sname = id => COURSES[id].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '');
   return `<div class="sec-h"><h2>Nueva ronda</h2></div>
     <div class="card">
-      <div class="field" style="margin-top:0"><label>Campo</label>
-        <div class="chips">
-          ${COURSE_ORDER.map(id => `<button class="chip ${cid === id ? 'on' : ''}" data-act="setup-pick-course" data-c="${id}">${esc(sname(id))}</button>`).join('')}
-          <button class="chip ${!cid ? 'on' : ''}" data-act="setup-pick-course" data-c="">Otro</button>
-        </div>
+      <span class="label">Elige campo</span>
+      <div class="chips" style="margin-top:8px">
+        ${COURSE_ORDER.map(id => `<button class="chip ${cid === id ? 'on' : ''}" data-act="setup-pick-course" data-c="${id}">${esc(sname(id))}</button>`).join('')}
       </div>
-      ${cid
-        ? `<p class="note" style="margin-top:8px">${esc(COURSES[cid].name)} · ${COURSES[cid].holes.length} hoyos · <b class="lime">pares reales del campo</b>.</p>`
-        : `<div class="field"><label>Nombre del campo</label><input id="r-course" placeholder="Nombre del campo" value="${esc(V.setupCourse || '')}"></div>
-           <div class="field"><label>Hoyos</label>
-             <div class="chips">
-               <button class="chip ${n === 9 ? 'on' : ''}" data-act="setup-holes" data-n="9">9 hoyos</button>
-               <button class="chip ${n === 18 ? 'on' : ''}" data-act="setup-holes" data-n="18">18 hoyos</button>
-             </div>
-           </div>
-           <p class="note">El par de cada hoyo se ajusta durante la captura.</p>`}
+      <p class="note" style="margin:10px 0 0">${esc(COURSES[cid].name)} · ${COURSES[cid].holes.length} hoyos · <b class="lime">pares y yardas reales</b>.</p>
     </div>
     <button class="btn primary" data-act="start-round">Comenzar ronda →</button>
     <button class="btn" data-act="nav" data-view="ronda">Cancelar</button>
@@ -147,19 +135,38 @@ function captureShots(h, score) {
   for (let i = 0; i < putts; i++) shots.push({ prog: 1, side: (i % 2 ? 0.06 : -0.06), ok: true, lie: 'green' });
   return shots;
 }
-function captureSchematic(h, score) {
+function captureSchematic(h, score, chole) {
   const shots = captureShots(h, score);
-  const W = 300, H = 232, cx = 150, teeY = 200, greenY = 40, span = teeY - greenY, halfW = 68;
-  const P = s => ({ x: cx + s.side * halfW, y: teeY - Math.min(1.15, s.prog) * span });
+  const dog = (chole && chole.dog) || 'straight';
+  const par3 = (chole ? chole.par : h.par) === 3;
+  const W = 300, H = 296, tee = [150, 266];
+  const green = dog === 'left' ? [104, 52] : dog === 'right' ? [196, 52] : [150, 50];
+  const ctrl = par3 ? [150, 165] : (dog === 'left' ? [198, 158] : dog === 'right' ? [102, 158] : [150, 158]);
+  const gx = green[0], gy = green[1], halfW = 50;
+  const fair = `M${tee[0]},${tee[1]} Q ${ctrl[0]},${ctrl[1]} ${gx},${gy}`;
+  const P = s => {
+    const t = Math.min(1, s.prog);
+    let x = bez(t, tee[0], ctrl[0], gx), y = bez(t, tee[1], ctrl[1], gy);
+    if (s.prog > 1) y -= (s.prog - 1) * 72;            // approach largo: se pasa del green
+    return { x: x + s.side * halfW, y };
+  };
   const pts = shots.map(P);
-  const route = `M${cx},${teeY} ` + pts.map(q => `L${q.x.toFixed(0)},${q.y.toFixed(0)}`).join(' ');
+  const route = `M${tee[0]},${tee[1]} ` + pts.map(q => `L${q.x.toFixed(0)},${q.y.toFixed(0)}`).join(' ');
   const colOf = s => s.ok ? '#c9f73e' : (s.lie === 'water' ? '#ff7a6b' : '#ff9f43');
   let zones = '', dots = '';
-  shots.forEach((s, i) => { if (s.lie === 'green') return; const q = pts[i], c = colOf(s), rx = s.ok ? 14 : 20; zones += `<ellipse cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" rx="${rx}" ry="${(rx * 0.7).toFixed(0)}" fill="${c}" opacity="0.16" stroke="${c}" stroke-width="1.5" stroke-dasharray="4 4"/>`; });
+  shots.forEach((s, i) => { if (s.lie === 'green') return; const q = pts[i], c = colOf(s), rx = s.ok ? 13 : 18; zones += `<ellipse cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" rx="${rx}" ry="${(rx * 0.7).toFixed(0)}" fill="${c}" opacity="0.16" stroke="${c}" stroke-width="1.5" stroke-dasharray="4 4"/>`; });
   pts.forEach((q, i) => { dots += `<circle cx="${q.x.toFixed(0)}" cy="${q.y.toFixed(0)}" r="4" fill="${colOf(shots[i])}"/>`; });
+  let haz = '';
+  ((chole && chole.risks) || []).forEach(r => {
+    let rx, ry;
+    if (r.at === 'drive') { const lp = pts[0] || { x: gx, y: gy }; rx = lp.x + (r.side === 'left' ? -36 : 36); ry = lp.y; }
+    else { rx = gx + (r.side === 'left' ? -40 : 40); ry = gy + 14; }
+    const water = r.kind === 'water';
+    haz += `<ellipse cx="${rx.toFixed(0)}" cy="${ry.toFixed(0)}" rx="${water ? 21 : 16}" ry="${water ? 13 : 9}" fill="${water ? '#2f7fa6' : '#ddcb8c'}"/>`;
+  });
   let ball = '';
   if (pts.length) {
-    const allP = [{ x: cx, y: teeY }, ...pts], seg = []; let tot = 0;
+    const allP = [{ x: tee[0], y: tee[1] }, ...pts], seg = []; let tot = 0;
     for (let i = 1; i < allP.length; i++) { const l = Math.hypot(allP[i].x - allP[i - 1].x, allP[i].y - allP[i - 1].y); seg.push(l); tot += l || 1; }
     const nf = [0]; { let aa = 0; for (const l of seg) { aa += l; nf.push(aa / tot); } }
     const ev = [{ p: 0, d: 0 }]; for (let i = 1; i < nf.length; i++) { ev.push({ p: nf[i], d: 1 }); if (i < nf.length - 1) ev.push({ p: nf[i], d: 0.5 }); } ev.push({ p: 1, d: 1 });
@@ -169,15 +176,15 @@ function captureSchematic(h, score) {
   }
   return `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tiros del hoyo">
     <rect width="${W}" height="${H}" rx="14" fill="#0a0f08" stroke="#1d2914"/>
-    <rect x="${cx - halfW - 4}" y="${greenY - 6}" width="${(halfW + 4) * 2}" height="${teeY - greenY + 14}" rx="${halfW}" fill="#2f6b39"/>
-    <rect x="${cx - halfW + 16}" y="${greenY + 10}" width="${(halfW - 16) * 2}" height="${teeY - greenY - 6}" rx="${halfW - 16}" fill="#3a8043" opacity="0.55"/>
-    <ellipse cx="${cx}" cy="${greenY}" rx="40" ry="22" fill="#57b15c" stroke="#2f6b39" stroke-width="2"/>
-    <circle cx="${cx}" cy="${greenY}" r="3" fill="#0a0f08"/>
-    <line x1="${cx}" y1="${greenY}" x2="${cx}" y2="${greenY - 22}" stroke="#eef3e6" stroke-width="2"/><path d="M${cx},${greenY - 22} l11,3 -11,3z" fill="#c9f73e"/>
-    ${zones}
+    <path d="${fair}" fill="none" stroke="#2f6b39" stroke-width="${par3 ? 40 : 56}" stroke-linecap="round"/>
+    <path d="${fair}" fill="none" stroke="#3a8043" stroke-width="${par3 ? 20 : 30}" stroke-linecap="round" opacity="0.5"/>
+    <ellipse cx="${gx}" cy="${gy}" rx="34" ry="22" fill="#57b15c" stroke="#2f6b39" stroke-width="2"/>
+    <circle cx="${gx}" cy="${gy}" r="3" fill="#0a0f08"/>
+    <line x1="${gx}" y1="${gy}" x2="${gx}" y2="${gy - 22}" stroke="#eef3e6" stroke-width="2"/><path d="M${gx},${gy - 22} l11,3 -11,3z" fill="#c9f73e"/>
+    ${haz}${zones}
     <path d="${route}" fill="none" stroke="#c9f73e" stroke-width="2" stroke-dasharray="3 5"/>
     ${dots}${ball}
-    <rect x="${cx - 9}" y="${teeY}" width="18" height="6" rx="2" fill="#9ab07f"/>
+    <rect x="${tee[0] - 9}" y="${tee[1]}" width="18" height="6" rx="2" fill="#9ab07f"/>
   </svg>`;
 }
 
@@ -186,6 +193,7 @@ function vPlay() {
   if (!a) return vRondaTab();
   if (a.idx >= a.holesCount) return vSummary(a);
   const h = V.hole;
+  const chole = (a.courseId && COURSES[a.courseId] && COURSES[a.courseId].holes[a.idx]) ? COURSES[a.courseId].holes[a.idx] : null;
   const sugg = suggestScore(h);
   const score = V.scoreTouched ? h.score : sugg;
   const pct = (a.idx / a.holesCount) * 100;
@@ -206,17 +214,12 @@ function vPlay() {
     <div class="progress"><i style="width:${pct}%"></i></div>
     <div class="hole-head">
       <span class="hnum">Hoyo ${a.idx + 1}</span>
-      <span class="hof">Par ${h.par}</span>
+      <span class="hof">Par ${h.par}${chole && chole.yds ? ` · ${chole.yds} yds` : ''}</span>
     </div>
 
     <div class="card" style="padding:10px">
-      ${captureSchematic(h, score)}
+      ${captureSchematic(h, score, chole)}
       <p class="note" style="text-align:center;margin:6px 0 0">${sl.length ? esc(sl.join('  ·  ')) : 'Registra tu hoyo y míralo tiro por tiro.'}</p>
-    </div>
-
-    <div class="group">
-      <div class="g-lab"><span class="label">Par del hoyo</span></div>
-      ${chipRow([[3, 'Par 3'], [4, 'Par 4'], [5, 'Par 5']], 'par', h.par)}
     </div>
 
     ${h.par !== 3 ? `<div class="group">
