@@ -194,7 +194,6 @@ function vTrainFeatured() {
   const drill = DRILL_LIBRARY.find(d => d.cat === cat) || DRILL_LIBRARY[0];
   return `<div class="tr-feat">
     <span class="tr-feat-tag">${golfIcon('green')} Tu sesión de hoy</span>
-    <div class="tr-feat-art">${drillScene(drill.name, cat)}</div>
     <h3 class="tr-feat-name">${esc(drill.name)}</h3>
     <p class="tr-feat-why">${agg ? `Tu mayor fuga está en <b>${lab}</b>. Empieza por aquí.` : 'Arranca con un fundamento clave. Registra rondas y te recomiendo según tus números.'}</p>
     <button class="btn primary" data-act="drill-open" data-name="${esc(drill.name)}">Ver ejercicio →</button>
@@ -210,9 +209,9 @@ function vDrillsLibrary() {
     return `<button class="tab ${c.id === cat ? 'on' : ''}" data-act="drill-cat" data-c="${c.id}">${esc(c.label)} <span class="muted">${n}</span></button>`;
   }).join('');
   const items = list.map(d => `<button class="dlc" data-act="drill-open" data-name="${esc(d.name)}">
-      <div class="dlc-art">${drillScene(d.name, d.cat)}</div>
       <div class="dlc-info">
         <b>${esc(d.name)}</b>
+        <p class="dlc-desc">${esc(d.desc)}</p>
         <div class="dlc-meta"><span>${golfIcon('bucket')} ${esc(d.dose)}</span><span>${golfIcon('green')} ${esc(d.metric)}</span></div>
       </div>
       <span class="dlc-go">Ver →</span>
@@ -232,7 +231,6 @@ function vDrillDetail() {
       <div class="panel-head"><h2>${esc(d.name)}</h2><button class="panel-x" data-act="drill-close-detail" aria-label="Cerrar">✕</button></div>
       <div class="panel-body">
         <span class="dd-cat">${golfIcon('green')} ${esc(catLab)}</span>
-        <div class="dd-hero">${drillScene(d.name, d.cat)}</div>
         <p class="dd-why">${esc(d.desc)}</p>
         <div class="dd-goals">
           <div class="dd-goal"><span>Dosis</span><b>${esc(d.dose)}</b></div>
@@ -240,7 +238,7 @@ function vDrillDetail() {
         </div>
         <h3 class="dd-h3">Paso a paso</h3>
         <ol class="dd-steps">${steps}</ol>
-        <button class="btn primary big" data-act="drill-start">▶ Entrenar con timer</button>
+        <button class="btn primary big" data-act="drill-done">Listo, lo entrené ✓</button>
       </div>
     </div>
   </div>`;

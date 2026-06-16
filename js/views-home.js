@@ -29,7 +29,6 @@ function vShell(content) {
     ${vSenseiCompanion()}
     ${V.profileOpen ? vProfile() : ''}
     ${V.drillDetail ? vDrillDetail() : ''}
-    ${V.drillLog ? vDrillSheet() : ''}
     ${V.bagEdit ? vBagSheet() : ''}
   </div>`;
 }

@@ -573,6 +573,40 @@ function vExitSheet() {
 }
 
 /* ---------- Resumen de ronda ---------- */
+/* análisis completo de la ronda: highlights, mejor/peor hoyo, fortaleza y fuga */
+function roundAnalysis(a, s) {
+  const holes = (a.holes || []).filter(Boolean);
+  if (!holes.length) return '';
+  let bird = 0, par = 0, bog = 0, worse = 0, best = null, worst = null;
+  holes.forEach((h, i) => { const d = h.score - h.par; if (d <= -1) bird++; else if (d === 0) par++; else if (d === 1) bog++; else worse++; if (best == null || d < best.d) best = { d, n: i + 1 }; if (worst == null || d > worst.d) worst = { d, n: i + 1 }; });
+  const u = cur();
+  const vibe = roundVibe(s, u.hcp);
+  const areas = [
+    { k: 'la salida (calles)', v: s.fwTot ? s.fw / s.fwTot : 1 },
+    { k: 'los greens (GIR)', v: s.girTot ? s.gir / s.girTot : 1 },
+    { k: 'el juego corto', v: s.scrTot ? s.scr / s.scrTot : 1 },
+    { k: 'el putt', v: Math.max(0, Math.min(1, (36 - (s.putts * 18 / s.holes)) / 12)) },
+  ];
+  const weak = [...areas].sort((x, y) => x.v - y.v)[0];
+  const strong = [...areas].sort((x, y) => y.v - x.v)[0];
+  const head = vibe && vibe.k === 'fire' ? '🔥 ¡Gran ronda! Le ganaste a tu hándicap.'
+    : vibe && vibe.k === 'ice' ? '🧊 Ronda fría, pero ya sabes dónde apretar.'
+    : '✅ Ronda sólida. Aquí está tu desglose.';
+  const row = (ic, b, sub, cls) => `<div class="ra-row ${cls || ''}"><span class="ra-ic">${ic}</span><div><b>${b}</b><span>${sub}</span></div></div>`;
+  const rows = [
+    row('🐦', `${bird} birdie${bird !== 1 ? 's' : ''} o mejor`, `${par} pares · ${bog} bogeys · ${worse} dobles o peor`),
+    best ? row('⭐', `Tu mejor hoyo: #${best.n}`, relScore(best.d)) : '',
+    (worst && worst.d >= 2) ? row('⚠️', `El más caro: hoyo #${worst.n}`, `${relScore(worst.d)} — pasa la página`) : '',
+    row('💪', `Lo mejor: ${strong.k}`, 'sigue así'),
+    row('🎯', `Tu fuga de hoy: ${weak.k}`, 'practícalo en el Trainer', 'ra-focus'),
+  ].filter(Boolean).join('');
+  return `<div class="card ra-card">
+    <span class="label">Análisis de tu ronda</span>
+    <p class="ra-head">${head}</p>
+    ${rows}
+  </div>`;
+}
+
 function vSummary(a) {
   const fake = { holes: a.holes };
   const s = Stats.roundStats(fake);
@@ -592,6 +626,7 @@ function vSummary(a) {
       ${statCard(pct(s.scr, s.scrTot), 'Up/Down', s.scrTot ? (s.scr / s.scrTot) * 100 : 0)}
       ${statCard(String(s.putts), 'Putts', Stats.clamp(((38 - (s.putts * 18) / s.holes) / 11) * 100, 0, 100))}
     </div>
+    ${roundAnalysis(a, s)}
     <div class="card">
       <span class="label">Tarjeta</span>
       ${scorecard(a.holes.slice(0, 9))}
