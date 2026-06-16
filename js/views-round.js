@@ -405,6 +405,40 @@ function captureSchematic(h, chole, noZoom, clean) {
   </svg></div>`;
 }
 
+/* tracker de tiros del hoyo: limpio, confiable y bonito (reemplaza el mapa del hoyo) */
+function holeViz(h, chole, holeNum, teeF) {
+  const par = h.par;
+  const yds = chole && chole.yds ? Math.round(chole.yds * (teeF || 1)) : null;
+  const sugg = (typeof suggestScore === 'function') ? suggestScore(h) : null;
+  const score = sugg;
+  const rel = score != null ? score - par : null;
+  const scoreCls = rel == null ? '' : rel < 0 ? 'good' : rel === 0 ? 'par' : rel <= 1 ? 'over' : 'bad';
+  const relLbl = score != null ? (rel === 0 ? 'Par' : rel < 0 ? String(rel) : '+' + rel) : 'Por jugar';
+  const lieLbl = { calle: 'Calle', rough: 'Rough', bunker: 'Bunker', ob: 'OB' };
+  const appLbl = { gir: 'Green ✓', corto: 'Corto', largo: 'Largo', izq: 'Falló izq', der: 'Falló der' };
+  const steps = [];
+  if (par !== 3) steps.push({ ic: 'club', label: 'Salida', done: !!(h.teeLie || h.tee), res: h.teeLie ? (lieLbl[h.teeLie] || '') : (h.tee === 'fw' ? 'Calle' : h.tee ? 'Falló' : '') });
+  steps.push({ ic: 'green', label: 'Approach', done: !!h.app, res: h.app ? (appLbl[h.app] || '') : '' });
+  if (h.app && h.app !== 'gir') steps.push({ ic: 'flag', label: 'Up & down', done: h.upDown != null, res: h.upDown != null ? (h.upDown ? 'Salvado ✓' : 'Chip') : '' });
+  steps.push({ ic: 'putter', label: 'Putts', done: h.putts != null, res: h.putts != null ? (h.putts + ' putt' + (h.putts !== 1 ? 's' : '')) : '' });
+  const firstPending = steps.findIndex(s => !s.done);
+  const track = steps.map((s, i) => {
+    const cls = s.done ? 'done' : (i === firstPending ? 'now' : '');
+    return `<div class="hv-step ${cls}">
+      <span class="hv-dot">${s.done ? '<span class="hv-check">✓</span>' : golfIcon(s.ic)}</span>
+      <span class="hv-lab">${s.label}</span>
+      <span class="hv-res">${esc(s.res || '·')}</span>
+    </div>`;
+  }).join('<span class="hv-conn"></span>');
+  return `<div class="hv ${scoreCls}">
+    <div class="hv-head">
+      <div class="hv-info"><span class="hv-hole">Hoyo ${holeNum != null ? holeNum : ''}</span><span class="hv-par">Par ${par}${yds ? ' · ' + yds + ' yds' : ''}</span></div>
+      <div class="hv-score"><b>${score != null ? score : '–'}</b><span>${relLbl}</span></div>
+    </div>
+    <div class="hv-track">${track}</div>
+  </div>`;
+}
+
 function vPlay() {
   const a = S.active;
   if (!a) return vRondaTab();
@@ -439,10 +473,7 @@ function vPlay() {
       <span class="hof">Par ${h.par}${chole && chole.yds ? ` · ${Math.round(chole.yds * (a.teeF || 1))} yds` : ''}${a.teeName ? ` · ${esc(a.teeName)}` : ''}</span>
     </div>
 
-    <div class="card" style="padding:10px">
-      ${captureSchematic(h, chole)}
-      <p class="note" style="text-align:center;margin:6px 0 0">${sl.length ? esc(sl.join('  ·  ')) : 'Registra tu hoyo y míralo tiro por tiro.'}</p>
-    </div>
+    ${holeViz(h, chole, a.idx + 1, a.teeF)}
 
     <div class="reg-card">
     ${h.par !== 3 ? `<div class="group">

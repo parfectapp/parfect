@@ -175,10 +175,8 @@ function vPartyLive() {
       <div class="chips">${p.players.map(pl => `<button class="chip ${pl.pid === ap ? 'on' : ''}" data-act="pa-player" data-pid="${pl.pid}">${filled(pl) ? '✓ ' : ''}${esc(pl.name.split(' ')[0])}${scoreOf(pl) != null ? ` · ${scoreOf(pl)}` : ''}</button>`).join('')}</div>
     </div>
 
-    <div class="card" style="padding:10px">
-      ${captureSchematic(c, chole)}
-      <p class="note" style="text-align:center;margin:6px 0 0"><b>${esc(apl.name.split(' ')[0])}</b>${bdg ? ` · ${bdg}` : ''}${sl.length ? ' · ' + esc(sl.join('  ·  ')) : ' · registra su hoyo'}${net != null ? ` · corta ${net >= 0 ? '+' : ''}${net}` : ''}</p>
-    </div>
+    ${holeViz(c, chole, (V.holeIdx != null ? V.holeIdx + 1 : null), 1)}
+    <p class="note" style="text-align:center;margin:8px 0 0"><b>${esc(apl.name.split(' ')[0])}</b>${bdg ? ` · ${bdg}` : ''}${net != null ? ` · corta ${net >= 0 ? '+' : ''}${net}` : ''}</p>
 
     ${h.par !== 3 ? `<div class="group">
       <div class="g-lab"><span class="label">1 · Salida</span></div>

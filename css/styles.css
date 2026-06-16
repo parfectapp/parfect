@@ -461,6 +461,30 @@ body.is-scrolling .fly { animation-play-state: paused !important; }
 .hole-head .hof { color: var(--muted); font-weight: 700; }
 .progress { height: 5px; border-radius: 99px; background: rgba(255, 255, 255, 0.08); margin-top: 12px; }
 .progress > i { display: block; height: 100%; border-radius: 99px; background: var(--lime); }
+/* ====== Tracker de tiros del hoyo (registro) ====== */
+.hv { position: relative; overflow: hidden; margin-top: 14px; border-radius: 24px; padding: 16px 18px 18px; background: linear-gradient(150deg, #d8f0ac, #9ed16a); box-shadow: 0 12px 30px rgba(40,80,20,0.16); }
+.hv.good { background: linear-gradient(150deg, #cdf472, #7cc23c); }
+.hv.par { background: linear-gradient(150deg, #d3eba6, #8fc25c); }
+.hv.over { background: linear-gradient(150deg, #ffe6a2, #f0bb5c); }
+.hv.bad { background: linear-gradient(150deg, #ffcaa4, #ef9460); }
+.hv-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; position: relative; z-index: 2; }
+.hv-hole { display: block; font-size: 20px; font-weight: 900; color: #1f3d12; letter-spacing: -0.02em; }
+.hv-par { font-size: 12.5px; font-weight: 800; color: rgba(20,50,10,0.7); }
+.hv-score { text-align: center; background: rgba(255,255,255,0.94); border-radius: 16px; padding: 6px 16px; box-shadow: 0 5px 14px rgba(20,40,10,0.18); flex: none; }
+.hv-score b { display: block; font-size: 30px; font-weight: 900; color: #1B2A18; line-height: 1; }
+.hv-score span { font-size: 11px; font-weight: 800; color: var(--muted); }
+.hv-track { display: flex; align-items: flex-start; justify-content: space-between; gap: 2px; margin-top: 16px; position: relative; z-index: 2; }
+.hv-step { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; min-width: 0; }
+.hv-dot { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.5); display: grid; place-items: center; color: #2f6b39; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.65); transition: transform .2s, background .2s; }
+.hv-dot .gi, .hv-dot svg { width: 22px; height: 22px; }
+.hv-step.done .hv-dot { background: #fff; color: #3a8043; box-shadow: 0 5px 14px rgba(20,40,10,0.22); }
+.hv-check { color: #3a8043; font-weight: 900; font-size: 21px; }
+.hv-step.now .hv-dot { background: #16241A; color: #C7EE54; animation: hvPulse 1.6s ease-in-out infinite; }
+@keyframes hvPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(22,36,26,0.45); } 50% { box-shadow: 0 0 0 8px rgba(22,36,26,0); } }
+.hv-lab { font-size: 11px; font-weight: 800; color: #1f3d12; }
+.hv-res { font-size: 10.5px; font-weight: 700; color: rgba(20,50,10,0.64); min-height: 13px; }
+.hv-conn { flex: 0 0 8px; height: 2.5px; background: rgba(255,255,255,0.55); margin-top: 21px; border-radius: 2px; }
+
 /* ====== Registro de hoyo (concepto juguetón) ====== */
 .reg-card { margin-top: 14px; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 6px 16px 16px; box-shadow: 0 10px 30px rgba(20, 40, 15, 0.07); }
 .reg-card .group:first-child { margin-top: 12px; }
