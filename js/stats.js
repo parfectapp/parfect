@@ -135,5 +135,15 @@ const Stats = (() => {
     };
   }
 
-  return { PAR_SEQ, DIST_BANDS, roundStats, aggregate, radarOf, benchFor, clamp };
+  /* reparto de score esperado por hoyo (%) según el hándicap meta */
+  function distFor(hcp) {
+    const h = clamp(Number(hcp) || 0, -3, 36);
+    const birdie = clamp(13 - 0.34 * h, 1, 16);
+    const par = clamp(52 - 1.25 * h, 7, 58);
+    const bogey = clamp(32 + 0.12 * h, 28, 40);
+    const dbl = clamp(100 - birdie - par - bogey, 1, 90);
+    return { birdie, par, bogey, dbl };
+  }
+
+  return { PAR_SEQ, DIST_BANDS, roundStats, aggregate, radarOf, benchFor, distFor, clamp };
 })();

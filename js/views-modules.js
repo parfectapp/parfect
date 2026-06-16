@@ -139,7 +139,7 @@ function vTrainer() {
   const u = cur();
   const tab = ['entreno', 'objetivos'].includes(V.trainerTab) ? V.trainerTab : 'diag';
   const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
-  const body = tab === 'entreno' ? (vTrackerPlan() + vDrillsLibrary())
+  const body = tab === 'entreno' ? (vSessionPlanner() + vTrackerPlan() + vDrillsLibrary())
     : tab === 'objetivos' ? (vKeyTargets(u) + `<div style="margin-top:22px"></div>` + vLogros())
       : vDiag();
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>
@@ -389,23 +389,82 @@ function vTracker() {
     ${vTrackerPlan()}`;
 }
 
+/* ---------- Planificador de sesión: acomoda tus drills en el tiempo que tengas ---------- */
+const SP_AREAS = {
+  driving: { label: 'Driving', icon: 'flag' },
+  approach: { label: 'Hierros', icon: 'green' },
+  short: { label: 'Juego corto', icon: 'bucket' },
+  putting: { label: 'Putting', icon: 'putter' },
+};
+function vSessionPlanner() {
+  const u = cur();
+  const agg = Stats.aggregate(myRounds());
+  const T = V.sessionMin || 60;
+  const opts = [30, 60, 90, 120];
+  const fmtMin = m => m >= 60 ? (m % 60 ? (m / 60).toFixed(1) : (m / 60)) + ' h' : m + ' min';
+  const chips = opts.map(m => `<button class="chip ${T === m ? 'on' : ''}" data-act="session-min" data-m="${m}">${fmtMin(m)}</button>`).join('');
+  let focus = agg ? Trainer.analyze(agg, u).focus.slice(0, 4) : [];
+  if (!focus.length) focus = Object.keys(SP_AREAS).map(k => ({ key: k, titulo: SP_AREAS[k].label, lost: 1, drills: [] }));
+  const warm = Math.max(5, Math.round(T * 0.12));
+  let rem = T - warm;
+  const totalLost = focus.reduce((a, f) => a + Math.max(0.25, f.lost), 0);
+  let blocks = focus.map(f => ({
+    key: f.key,
+    label: (SP_AREAS[f.key] || {}).label || f.titulo,
+    icon: (SP_AREAS[f.key] || {}).icon || 'green',
+    drill: (f.drills && f.drills[0]) ? f.drills[0].name : null,
+    min: Math.max(6, Math.round(rem * Math.max(0.25, f.lost) / totalLost)),
+  }));
+  // ajusta para cuadrar exactamente con el tiempo restante
+  let sum = blocks.reduce((a, b) => a + b.min, 0);
+  if (blocks.length) blocks[blocks.length - 1].min += (rem - sum);
+  if (blocks.length && blocks[blocks.length - 1].min < 5) blocks[blocks.length - 1].min = 5;
+  // construye la línea de tiempo
+  let clock = 0;
+  const seg = (label, icon, min, drill, lead) => {
+    const from = clock; clock += min;
+    return `<div class="sp-seg">
+      <span class="sp-time">${from}–${clock}'</span>
+      <span class="sp-dot ${lead ? 'warm' : ''}">${golfIcon(icon)}</span>
+      <div class="sp-body">
+        <b>${esc(label)} <i class="sp-min">${min} min</i></b>
+        ${drill ? `<button class="sp-drill" data-act="drill-open" data-name="${esc(drill)}">${golfIcon('green')} ${esc(drill)} →</button>` : `<span class="sp-note">${esc(lead || 'Calienta progresivo: wedge → hierros → driver')}</span>`}
+      </div>
+    </div>`;
+  };
+  const timeline = seg('Calentamiento', 'bucket', warm, null, 'Calienta progresivo: wedge → hierros → driver')
+    + blocks.map(b => seg(b.label, b.icon, b.min, b.drill)).join('');
+  return `<div class="card sp-card">
+    <div class="sp-head"><span class="label">${golfIcon('flag')} Planifica tu sesión</span><span class="sp-total">${fmtMin(T)}</span></div>
+    <p class="note" style="margin:2px 0 10px">Dinos cuánto tiempo tienes y te acomodamos los drills priorizando tus puntos débiles.</p>
+    <div class="chips" style="margin-bottom:14px">${chips}</div>
+    <div class="sp-timeline">${timeline}</div>
+    ${!agg ? `<p class="note" style="margin-top:10px">Registra una ronda para que el plan se ajuste a tus debilidades reales.</p>` : ''}
+  </div>`;
+}
+
 function vTrackerPlan() {
   const u = cur();
   const plan = trackerPlan(u);
   const list = myPractices();
+  const done = (cur() || {}).drillsDone || {};
+  const td = today();
   const bestOf = name => list.filter(p => p.drill === name).reduce((m, p) => Math.max(m, p.hits || 0), 0);
   const cats = plan.groups.map(c => {
     const tiles = c.drills.map(d => {
       const best = bestOf(d.name);
-      const hit = best >= d.target;
-      return `<button class="club-tile ${hit ? 'done' : ''}" data-act="drill-open" data-name="${esc(d.name)}" data-target="${d.target}" data-area="${esc(d.area || c.cat)}" data-goal="${esc(d.goal || '')}" data-timer="${d.timer}">
-        ${hit ? '<span class="ct-check">✓</span>' : ''}
-        <b>${esc(d.name)}</b>
-        <span class="ct-goal">${esc(d.goal || c.cat)}</span>
-        <span class="ct-best">${best ? 'mejor ' + best + '/' + d.target : 'meta ' + d.target + ' seguidas'}</span>
+      const hit = best >= d.target || done[d.name] === td;
+      return `<button class="dlc ${hit ? 'done' : ''}" data-act="drill-open" data-name="${esc(d.name)}" data-target="${d.target}" data-area="${esc(d.area || c.cat)}" data-goal="${esc(d.goal || '')}" data-timer="${d.timer}">
+        <span class="dlc-check">${hit ? '✓' : ''}</span>
+        <div class="dlc-info">
+          <b>${esc(d.name)}</b>
+          <p class="dlc-desc">${esc(d.goal || ('Práctica de ' + c.cat.toLowerCase()))}</p>
+          <div class="dlc-meta"><span>${golfIcon('bucket')} meta ${d.target} seguidas</span><span>${golfIcon('green')} ${best ? 'mejor ' + best + '/' + d.target : esc(c.cat)}</span></div>
+        </div>
+        <span class="dlc-go">${hit ? 'Hecho' : 'Ver →'}</span>
       </button>`;
     }).join('');
-    return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:15px">${golfIcon(c.icon)} ${esc(c.cat)}</h2></div><div class="club-grid">${tiles}</div>`;
+    return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:15px">${golfIcon(c.icon)} ${esc(c.cat)}</h2></div><div class="dlc-list">${tiles}</div>`;
   }).join('');
   return `<p class="note">Elige el bastón o área que quieras entrenar y dale para empezar.</p>${cats}`;
 }

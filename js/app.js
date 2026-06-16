@@ -9,7 +9,7 @@ let V = {
   setupCourseId: null, setupTee: 'blancas', setupHoles: 18, setupStart: 0,
   hole: null, scoreTouched: false, confirmExit: false,
   detail: null, delArm: null,
-  trainerTab: 'diag', diag: null, diagBusy: false,
+  trainerTab: 'diag', diag: null, diagBusy: false, sessionMin: 60,
   trackVals: null, trkTab: 'plan', drillLog: null, drillCat: 'fw',
   calY: null, calM: null, calSel: null, calAddType: 'entreno', friendId: null, holeIdx: 0,
   courseId: 'campestre', addFriend: false, teeClubId: null, attack2: false, sim: null, shadowHcp: null, camposHcp: null,
@@ -210,7 +210,7 @@ const actions = {
   'card-picker-close'() { V.cardPicker = false; render(); },
   'set-skin'(d) { const u = cur(); if (u && CARD_SKINS.some(s => s.k === d.k)) { u.cardSkin = d.k; commit(); } },
   'stat-open'(d) { V.statOpen = (V.statOpen === d.k) ? null : d.k; render(); },
-  'go-trofeos'() { V.profileOpen = false; V.trainerTab = 'logros'; go('trainer'); },
+  'go-trofeos'() { V.profileOpen = false; V.trainerTab = 'objetivos'; go('trainer'); },
   'profile-close'() { V.profileOpen = false; V.wipeArm = false; render(); },
   'prof-campo'(d) {
     const u = cur();
@@ -490,6 +490,7 @@ const actions = {
   },
   'timer-set'(d) { if (!V.timer) V.timer = {}; stopDrillTimer(); const s = Number(d.s) || 300; V.timer = { left: s, total: s, running: false }; render(); },
   'timer-adjust'(d) { stopDrillTimer(); const cur = (V.timer && V.timer.total) || 300; const total = Math.max(60, Math.min(3600, cur + Number(d.d) * 60)); V.timer = { left: total, total, running: false }; render(); },
+  'session-min'(d) { V.sessionMin = Number(d.m) || 60; render(); },
   'timer-start'() {
     if (!V.timer || V.timer.running || V.timer.left <= 0) return;
     V.timer.running = true; render();
