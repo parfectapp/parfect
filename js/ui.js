@@ -208,6 +208,24 @@ function cardSkin(u) {
 }
 function cardSkinGrad(u) { return cardSkin(u).g; }
 
+/* Escena del hoyo para el banner del registro (tee → calle → green con bandera) */
+function holeScene(par) {
+  const p = par || 4;
+  const greenX = p === 3 ? 60 : p >= 5 ? 86 : 74;
+  return `<svg viewBox="0 0 120 80" class="hb-svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs><linearGradient id="hbsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--hb-sky1)"/><stop offset="1" stop-color="var(--hb-sky2)"/></linearGradient></defs>
+    <rect width="120" height="80" fill="url(#hbsky)"/>
+    <circle cx="100" cy="18" r="9" fill="var(--hb-sun)"/>
+    <path d="M0 42 Q34 28 68 40 T120 36 V80 H0 Z" fill="var(--hb-far)"/>
+    <path d="M0 54 Q60 42 120 52 V80 H0 Z" fill="var(--hb-grass)"/>
+    <path d="M52 80 L68 80 L${greenX - 4} 34 L${greenX - 12} 34 Z" fill="var(--hb-fair)"/>
+    <ellipse cx="${greenX}" cy="33" rx="15" ry="5.5" fill="var(--hb-green)" stroke="var(--hb-grass2)" stroke-width="1"/>
+    <line x1="${greenX}" y1="33" x2="${greenX}" y2="15" stroke="#1f3a16" stroke-width="1.4"/>
+    <path d="M${greenX} 15 L${greenX + 12} 18 L${greenX} 21 Z" fill="var(--hb-flag)"/>
+    <circle cx="60" cy="74" r="3" fill="#fff" stroke="var(--hb-grass2)" stroke-width=".7"/>
+  </svg>`;
+}
+
 /* ====== Mini-escenas 3D de golf por stat (Fairways / GIR / Up&down) ====== */
 function pstScene(kind, pct, label, goalPct) {
   const p = Math.max(0, Math.min(100, Math.round(pct || 0)));

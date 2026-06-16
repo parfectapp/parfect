@@ -26,7 +26,6 @@ function vShell(content) {
       ${item('trainer', t('nav_trainer'))}
       ${item('perfil', t('nav_profile'))}
     </nav>
-    ${vSenseiCompanion()}
     ${V.profileOpen ? vProfile() : ''}
     ${V.cardPicker ? vCardPicker() : ''}
     ${V.drillDetail ? vDrillDetail() : ''}

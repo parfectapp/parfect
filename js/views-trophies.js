@@ -63,23 +63,53 @@ function vLogros() {
 }
 
 /* Números clave para llegar a tu meta (según tu HCP objetivo) */
+/* Emblema de trofeo mítico (color vía currentColor) */
+function mythTrophy() {
+  return `<svg viewBox="0 0 64 64" class="myt-svg" aria-hidden="true">
+    <g fill="currentColor">
+      <path d="M18 14c-6 0-9 4-8 10 1 5 5 8 10 8v-4c-3 0-5-2-5.5-4.5-.6-3 .8-5.5 4.5-5.5z"/>
+      <path d="M46 14c6 0 9 4 8 10-1 5-5 8-10 8v-4c3 0 5-2 5.5-4.5.6-3-.8-5.5-4.5-5.5z"/>
+      <path d="M19 11h26v11c0 9-6 16-13 16s-13-7-13-16z"/>
+      <rect x="29" y="37" width="6" height="8" rx="1.5"/>
+      <rect x="22" y="44" width="20" height="4.5" rx="2.2"/>
+      <rect x="18" y="49" width="28" height="4.2" rx="2"/>
+    </g>
+    <path class="myt-star" d="M32 16l2.3 4.6 5.1.8-3.7 3.6.9 5.1-4.6-2.5-4.6 2.5.9-5.1-3.7-3.6 5.1-.8z"/>
+  </svg>`;
+}
 function vKeyTargets(u) {
   const agg = Stats.aggregate(myRounds());
   const goal = u.goal != null ? u.goal : Math.max(0, (u.hcp != null ? u.hcp : 12) - 5);
   const b = Stats.benchFor(goal);
-  const cur = agg ? { fw: Math.round(agg.fwPct), gir: Math.round(agg.girPct), ud: Math.round(agg.scrPct), putts: Math.round(agg.putts18) } : null;
-  const row = (label, c, t, sfx) => `<div class="pl-rr stat">
-      <div class="pl-rr-id"><b>${label}</b>${cur ? `<span>ahora ${c}${sfx}</span>` : ''}</div>
-      <span class="pl-rr-score">${t}${sfx}</span>
+  const c = agg ? { fw: Math.round(agg.fwPct), gir: Math.round(agg.girPct), ud: Math.round(agg.scrPct), putts: Math.round(agg.putts18) } : null;
+  const lock = `<svg class="myt-lockic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="11" width="14" height="9" rx="2.2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
+  const items = [
+    { name: 'Maestro de Calles', sub: 'Fairways', target: Math.round(b.fwPct), now: c ? c.fw : null, sfx: '%', lower: false },
+    { name: 'Guardián del Green', sub: 'Greens en regulación', target: Math.round(b.girPct), now: c ? c.gir : null, sfx: '%', lower: false },
+    { name: 'Mago del Up & Down', sub: 'Salvar el par', target: Math.round(b.scrPct), now: c ? c.ud : null, sfx: '%', lower: false },
+    { name: 'Hechicero del Putt', sub: 'Putts por ronda', target: Math.round(b.putts18), now: c ? c.putts : null, sfx: '', lower: true },
+  ];
+  const isOn = it => it.now != null && (it.lower ? it.now <= it.target : it.now >= it.target);
+  const cards = items.map(it => {
+    const on = isOn(it);
+    let prog = 0;
+    if (it.now != null) prog = it.lower ? Math.min(1, it.target / Math.max(1, it.now)) : Math.min(1, it.now / Math.max(1, it.target));
+    const stat = on
+      ? `<i class="myt-chk">✓</i> Desbloqueado`
+      : (it.now != null ? `vas ${it.now}${it.sfx} · meta ${it.target}${it.sfx}` : `meta ${it.target}${it.sfx}`);
+    return `<div class="myt ${on ? 'on' : 'off'}">
+      ${on ? '' : `<span class="myt-lock">${lock}</span>`}
+      <div class="myt-emb">${mythTrophy()}</div>
+      <b class="myt-name">${it.name}</b>
+      <span class="myt-sub">${it.sub} · meta ${it.target}${it.sfx}</span>
+      <div class="myt-bar"><i style="width:${Math.round(prog * 100)}%"></i></div>
+      <span class="myt-stat">${stat}</span>
     </div>`;
-  return `<div class="sec-h" style="margin-top:6px"><h2 style="font-size:16px">${golfIcon('green')} Números clave · meta HCP ${fmtHcp(goal)}</h2></div>
-    <p class="note" style="margin:0 0 4px">Lo que juega un HCP ${fmtHcp(goal)}. El badge lima es tu objetivo.</p>
-    <div class="pl-rr-list">
-    ${row('Fairways', cur ? cur.fw : '', Math.round(b.fwPct), '%')}
-    ${row('Greens (GIR)', cur ? cur.gir : '', Math.round(b.girPct), '%')}
-    ${row('Up & down', cur ? cur.ud : '', Math.round(b.scrPct), '%')}
-    ${row('Putts / ronda', cur ? cur.putts : '', Math.round(b.putts18), '')}
-    </div>`;
+  }).join('');
+  const onN = items.filter(isOn).length;
+  return `<div class="sec-h" style="margin-top:6px"><h2 style="font-size:16px">${golfIcon('trophy')} Trofeos míticos · meta HCP ${fmtHcp(goal)}</h2></div>
+    <p class="note" style="margin:0 0 12px">Alcanza los números de un HCP ${fmtHcp(goal)} para desbloquear cada trofeo. Llevas <b>${onN}/${items.length}</b>.</p>
+    <div class="myt-grid">${cards}</div>`;
 }
 
 /* Tabla de referencia: qué stats tiene cada nivel de hándicap */

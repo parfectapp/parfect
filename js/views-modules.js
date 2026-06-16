@@ -172,13 +172,22 @@ function vDiag() {
       <h3 style="margin-top:12px;font-size:17px;font-weight:900">${esc(f.titulo)}</h3>
       <p class="small muted" style="margin-top:4px">~${f.lost.toFixed(1)} golpes/ronda en juego</p>
       <p style="font-size:14px;margin-top:10px">${esc(f.diag)}</p>
-      ${i < 2 ? `
-        <p class="label" style="margin-top:16px">Drills que te toca practicar</p>
-        ${f.drills.map(dr => `<button class="dlc" data-act="drill-open" data-name="${esc(dr.name)}" style="margin-top:8px">
+      ${i < 2 ? (() => {
+      const done = (cur() || {}).drillsDone || {};
+      const td = today();
+      const total = f.drills.length;
+      const doneN = f.drills.filter(dr => done[dr.name] === td).length;
+      return `
+        <p class="label" style="margin-top:16px">Drills que te toca practicar <span class="dlc-count">${doneN}/${total} hoy</span></p>
+        ${f.drills.map(dr => {
+        const isDone = done[dr.name] === td;
+        return `<button class="dlc ${isDone ? 'done' : ''}" data-act="drill-open" data-name="${esc(dr.name)}" style="margin-top:8px">
+          <span class="dlc-check">${isDone ? '✓' : ''}</span>
           <div class="dlc-info"><b>${esc(dr.name)}</b><p class="dlc-desc">${esc(dr.desc)}</p>
           <div class="dlc-meta"><span>${golfIcon('bucket')} ${esc(dr.dose)}</span><span>${golfIcon('green')} ${esc(dr.metric)}</span></div></div>
-          <span class="dlc-go">Ver →</span></button>`).join('')}
-      ` : ''}
+          <span class="dlc-go">${isDone ? 'Hecho' : 'Ver →'}</span></button>`;
+      }).join('')}`;
+    })() : ''}
       <p class="label" style="margin-top:16px">Estrategia de campo</p>
       ${f.tips.map(t => `<p class="tip">${esc(t)}</p>`).join('')}
     </div>`).join('') +
@@ -233,6 +242,22 @@ function vDrillDetail() {
   const d = V.drillDetail; if (!d) return '';
   const catLab = (DRILL_CATS.find(c => c.id === d.cat) || {}).label || '';
   const steps = (d.steps || []).map((s, i) => `<li><span class="dd-n">${i + 1}</span><span>${esc(s)}</span></li>`).join('');
+  const tm = V.timer || { left: 300, total: 300, running: false };
+  const presets = [180, 300, 600];
+  const pct = tm.total ? (tm.left / tm.total) * 100 : 0;
+  const timerHtml = `
+    <h3 class="dd-h3">Cronómetro de práctica</h3>
+    <div class="dd-timer ${tm.running ? 'run' : ''}">
+      <div class="ddt-clock" id="dd-timer">${fmtClock(tm.left)}</div>
+      <div class="ddt-bar"><i style="width:${pct}%"></i></div>
+      <div class="ddt-presets">${presets.map(s => `<button class="chip sm ${tm.total === s ? 'on' : ''}" data-act="timer-set" data-s="${s}">${s / 60} min</button>`).join('')}</div>
+      <div class="ddt-ctrls">
+        ${tm.running
+      ? `<button class="btn" data-act="timer-pause">⏸ Pausar</button>`
+      : `<button class="btn primary" data-act="timer-start" ${tm.left <= 0 ? 'disabled' : ''}>${tm.left < tm.total ? 'Reanudar' : 'Iniciar'} ▶</button>`}
+        <button class="btn ghost" data-act="timer-reset">↺</button>
+      </div>
+    </div>`;
   return `<div class="overlay panel-ov" data-act="drill-close-detail">
     <div class="panel" data-act="noop">
       <div class="panel-head"><h2>${esc(d.name)}</h2><button class="panel-x" data-act="drill-close-detail" aria-label="Cerrar">✕</button></div>
@@ -245,6 +270,7 @@ function vDrillDetail() {
         </div>
         <h3 class="dd-h3">Paso a paso</h3>
         <ol class="dd-steps">${steps}</ol>
+        ${timerHtml}
         <button class="btn primary big" data-act="drill-done">Listo, lo entrené ✓</button>
       </div>
     </div>

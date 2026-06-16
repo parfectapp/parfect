@@ -127,7 +127,8 @@ function render() {
 
 /* ============ Acciones ============ */
 let drillInt = null;
-function stopDrillTimer() { if (drillInt) { clearInterval(drillInt); drillInt = null; } }
+function stopDrillTimer() { if (drillInt) { clearInterval(drillInt); drillInt = null; } if (V._tid) { clearInterval(V._tid); V._tid = null; } }
+function fmtClock(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 const actions = {
   noop() {},
 
@@ -407,6 +408,8 @@ const actions = {
   'trk-tab'(d) { V.trkTab = d.t; V.err = null; render(); },
   'drill-cat'(d) { V.drillCat = d.c; render(); },
   'drill-open'(d) {
+    stopDrillTimer();
+    V.timer = { left: 300, total: 300, running: false };
     const drill = (typeof DRILL_LIBRARY !== 'undefined') ? DRILL_LIBRARY.find(x => x.name === d.name) : null;
     if (drill) { V.drillDetail = drill; render(); return; }
     // práctica de bastón/área (no está en la biblioteca): detalle simple
@@ -417,6 +420,21 @@ const actions = {
     };
     render();
   },
+  'timer-set'(d) { if (!V.timer) V.timer = {}; stopDrillTimer(); const s = Number(d.s) || 300; V.timer = { left: s, total: s, running: false }; render(); },
+  'timer-start'() {
+    if (!V.timer || V.timer.running || V.timer.left <= 0) return;
+    V.timer.running = true; render();
+    V._tid = setInterval(() => {
+      if (!V.timer) { stopDrillTimer(); return; }
+      V.timer.left = Math.max(0, V.timer.left - 1);
+      const el = document.getElementById('dd-timer');
+      if (!el) { stopDrillTimer(); return; }
+      el.textContent = fmtClock(V.timer.left);
+      if (V.timer.left <= 0) { stopDrillTimer(); V.timer.running = false; if (typeof celebrate === 'function') celebrate(false, '¡Tiempo! Bien entrenado'); render(); }
+    }, 1000);
+  },
+  'timer-pause'() { stopDrillTimer(); if (V.timer) V.timer.running = false; render(); },
+  'timer-reset'() { stopDrillTimer(); if (V.timer) { V.timer.left = V.timer.total; V.timer.running = false; } render(); },
   'drill-start'() {
     const drill = V.drillDetail; if (!drill) return;
     const timer = 20, target = drill.cat === 'putt' ? 10 : 7;
@@ -425,8 +443,17 @@ const actions = {
     V.drillDetail = null;
     render();
   },
-  'drill-close-detail'() { V.drillDetail = null; render(); },
-  'drill-done'() { const d = V.drillDetail; V.drillDetail = null; if (d) S.practices.push({ id: Store.uid(), userId: S.session, date: today(), drill: d.name, area: (DRILL_CATS.find(c => c.id === d.cat) || {}).label || '', notes: 'entrenado' }); if (typeof celebrate === 'function') celebrate(false, '¡Bien hecho!'); commit(); },
+  'drill-close-detail'() { stopDrillTimer(); V.drillDetail = null; render(); },
+  'drill-done'() {
+    stopDrillTimer();
+    const d = V.drillDetail; V.drillDetail = null;
+    if (d) {
+      S.practices.push({ id: Store.uid(), userId: S.session, date: today(), drill: d.name, area: (DRILL_CATS.find(c => c.id === d.cat) || {}).label || '', notes: 'entrenado' });
+      const u = cur(); if (u) { u.drillsDone = u.drillsDone || {}; u.drillsDone[d.name] = today(); }
+    }
+    if (typeof celebrate === 'function') celebrate(false, '¡Bien hecho!');
+    commit();
+  },
   'sensei-toggle'() { V.senseiOpen = V.senseiOpen === false; render(); },
   'train-area'(d) { V.drillCat = d.c; V.trainerTab = 'drills'; render(); window.scrollTo(0, 0); },
   'drill-hit'() {

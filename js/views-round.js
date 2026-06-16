@@ -501,7 +501,7 @@ function vPlay() {
   const gir = h.app === 'gir';
 
   const chk = (k, on, ic, label, sub) => `<button class="chk-row ${on ? 'on' : ''}" data-act="h-toggle" data-k="${k}">
-      <span class="chk-ic">${regScene(k)}</span>
+      <span class="chk-ic ic-${k}">${golfIcon(ic)}</span>
       <span class="chk-lab">${label}<small>${sub}</small></span>
       <span class="chk-box">${on ? '✓' : ''}</span>
     </button>`;
@@ -513,13 +513,18 @@ function vPlay() {
       <span class="small muted">${a.idx + 1}/${a.holesCount}</span>
     </div>
     <div class="progress"><i style="width:${pct}%"></i></div>
-    <div class="hole-head">
-      <span class="hnum">Hoyo ${a.idx + 1}</span>
-      <span class="hof">Par ${h.par}${yds ? ` · ${yds} yds` : ''}${a.teeName ? ` · ${esc(a.teeName)}` : ''}</span>
+
+    <div class="hole-banner">
+      <div class="hb-art">${holeScene(h.par)}</div>
+      <div class="hb-info">
+        <span class="hb-course">${esc(a.course)}${a.teeName ? ` · ${esc(a.teeName)}` : ''}</span>
+        <div class="hb-num">Hoyo ${a.idx + 1}</div>
+        <div class="hb-meta"><span class="hb-par">Par ${h.par}</span>${yds ? `<span class="hb-yds">${yds} yds</span>` : ''}</div>
+      </div>
     </div>
 
     <div class="card hole-card">
-      <span class="hc-title">Marca lo que lograste</span>
+      <span class="hc-title">${golfIcon('tee')} Tu tiro</span>
       <div class="hc-checks">
         ${h.par !== 3 ? chk('fw', h.teeLie === 'calle', 'club', 'Fairway', 'le pegaste a la calle') : ''}
         ${chk('gir', gir, 'green', 'Green en regulación', 'llegaste al green a tiempo')}
@@ -529,7 +534,7 @@ function vPlay() {
     </div>
 
     <div class="card">
-      <div class="g-lab"><span class="chk-ic chk-ic-sm">${regScene('putt')}</span><span class="label">Putts</span></div>
+      <div class="g-lab"><span class="chk-ic chk-ic-sm ic-putt">${golfIcon('putter')}</span><span class="label">Putts</span></div>
       ${chipRow([[0, '0'], [1, '1'], [2, '2'], [3, '3'], [4, '4+']], 'putts', h.putts)}
       <div class="g-lab" style="margin-top:14px"><span class="label">Distancia 1er putt</span><span class="small muted">opcional</span></div>
       ${chipRow([['0-3', '0–3 ft'], ['3-8', '3–8 ft'], ['8-20', '8–20 ft'], ['20+', '+20 ft']], 'dist', h.dist)}
