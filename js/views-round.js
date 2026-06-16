@@ -650,8 +650,8 @@ function vPlay() {
   if (!a) return vRondaTab();
   if (a.idx >= a.holesCount) return vSummary(a);
   const h = V.hole;
-  const chole = (a.courseId && COURSES[a.courseId] && COURSES[a.courseId].holes[(a.holeOffset || 0) + a.idx]) ? COURSES[a.courseId].holes[(a.holeOffset || 0) + a.idx] : null;
-  const holeNo = chole && chole.n ? chole.n : (a.idx + 1);
+  const chole = (typeof srcHole === 'function') ? srcHole(a, a.idx) : null;
+  const holeNo = (a.holeOffset || 0) + a.idx + 1;   // numeración continua (10-18, 19-27, repite en campos de 9)
   const yds = chole && chole.yds ? Math.round(chole.yds * (a.teeF || 1)) : null;
   const sugg = suggestScore(h);
   const score = (V.scoreTouched && h.score != null) ? h.score : sugg;

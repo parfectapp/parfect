@@ -47,10 +47,11 @@ function suggestScore(h) {
   return Math.max(1, h.par - 1 + h.putts + penal); // sin GIR = chip/approach + putts
 }
 
-/* hoyo de origen en el campo para el índice de juego (respeta la vuelta elegida) */
+/* hoyo de origen en el campo para el índice de juego (respeta la vuelta; da la vuelta si el campo es de 9) */
 function srcHole(a, idx) {
   if (!a || !a.courseId || typeof COURSES === 'undefined' || !COURSES[a.courseId]) return null;
-  return COURSES[a.courseId].holes[(a.holeOffset || 0) + idx] || null;
+  const hs = COURSES[a.courseId].holes; const n = hs.length;
+  return hs[((a.holeOffset || 0) + idx) % n] || null;
 }
 function parForActive(a, idx) {
   const h = srcHole(a, idx);
@@ -389,6 +390,8 @@ const actions = {
     u.clubs = clubs; commit();
   },
   'bag-close'() { V.bagEdit = false; render(); },
+  'set-sex'(d) { const u = cur(); if (!u) return; u.avatarSex = ['n', 'm', 'w'].includes(d.s) ? d.s : 'n'; const b = u.avatarSex === 'w' ? 6 : u.avatarSex === 'm' ? 12 : 0; u.avatar = b + (u.avatarSkin || 0); u.golfer = null; commit(); },
+  'set-avskin'(d) { const u = cur(); if (!u) return; u.avatarSkin = Math.max(0, Math.min(5, Number(d.i) || 0)); const b = u.avatarSex === 'w' ? 6 : u.avatarSex === 'm' ? 12 : 0; u.avatar = b + u.avatarSkin; u.golfer = null; commit(); },
   'set-avatar'(d) { const u = cur(); if (u) { u.avatar = Number(d.i) || 0; u.golfer = null; commit(); } },
   'set-hue'(d) { const u = cur(); if (u) { u.avatarHue = Number(d.h) || 0; u.golfer = null; commit(); } },
   'golfer-custom'() { const u = cur(); if (u && !u.golfer) { u.golfer = Object.assign({}, GOLF_DEFAULT); commit(); } },
@@ -411,9 +414,10 @@ const actions = {
     const cid = (V.setupCourseId && COURSES[V.setupCourseId]) ? V.setupCourseId : 'campestre';
     const course = COURSES[cid].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '');
     const total = COURSES[cid].holes.length;
-    const holesCount = Math.min(V.setupHoles || (total >= 18 ? 18 : 9), total);
+    const holesCount = Math.min(V.setupHoles || (total >= 18 ? 18 : 9), 18);   // 9 o 18 (los campos de 9 repiten vuelta)
     let holeOffset = V.setupStart || 0;
-    if (holeOffset + holesCount > total) holeOffset = Math.max(0, total - holesCount);
+    if (holeOffset + holesCount > total && total >= 18) holeOffset = Math.max(0, total - holesCount);
+    if (total < 18) holeOffset = 0;   // campo de 9: siempre arranca en 1
     const tee = teeById(V.setupTee);
     S.active = { userId: S.session, course, courseId: cid, holesCount, holeOffset, holes: [], idx: 0, startedAt: Date.now(), teeId: tee.id, teeName: tee.name, teeF: tee.f };
     V.teeSheet = false;

@@ -592,11 +592,13 @@ function vAvatarCreator(u) {
   const idx = rankIdx(u.hcp);
   const curOutfit = (u && u.outfit) || 'rank';
   const curBg = (u && u.bg) || 'rank';
-  const curAv = (u && u.avatar != null) ? u.avatar : 0;
   const curHue = u.avatarHue || 0;
-  const golfistas = AVATARS.map((src, i) => `<button class="cre-golf ${i === curAv ? 'on' : ''}" data-act="set-avatar" data-i="${i}"><img src="${src}" style="${curHue ? `filter:hue-rotate(${curHue}deg)` : ''}" alt="Golfista ${i + 1}" loading="lazy"></button>`).join('');
+  let avSex = u.avatarSex, avSkin = u.avatarSkin;
+  if (avSex == null) { const a = (u && u.avatar) || 0; avSex = a >= 12 ? 'm' : a >= 6 ? 'w' : 'n'; avSkin = a % 6; }
+  const avBase = avSex === 'w' ? 6 : avSex === 'm' ? 12 : 0;
+  const sexRow = [['n', 'Neutral'], ['m', 'Hombre'], ['w', 'Mujer']].map(([k, l]) => `<button class="cre-sex ${avSex === k ? 'on' : ''}" data-act="set-sex" data-s="${k}">${l}</button>`).join('');
+  const skinTones = [0, 1, 2, 3, 4, 5].map(i => `<button class="cre-gcolor ${avSkin === i ? 'on' : ''}" data-act="set-avskin" data-i="${i}"><img src="${AVATARS[avBase + i]}" alt="" loading="lazy"></button>`).join('');
   const colors = GOLF_HUES.map(o => `<button class="cre-gcolor ${curHue === o.h ? 'on' : ''}" data-act="set-hue" data-h="${o.h}"><img src="${avatarSrc(u)}" style="filter:hue-rotate(${o.h}deg)" alt="" loading="lazy"></button>`).join('');
-  const customUI = `<div class="cre-grp"><span class="cre-lab">Color de playera</span><div class="cre-row cre-gcolors">${colors}</div></div>`;
   const outfits = OUTFITS.map(o => {
     const sw = o.sw === 'rank' ? `background:conic-gradient(${RANKS.map(r => r.c).join(',')})` : `background:${o.sw}`;
     return `<button class="cre-sw${curOutfit === o.k ? ' on' : ''}" data-act="set-outfit" data-k="${o.k}" title="${o.n}"><span style="${sw}"></span></button>`;
@@ -616,8 +618,9 @@ function vAvatarCreator(u) {
   return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">Crea tu golfista</h2><span class="small muted">hazlo tuyo</span></div>
     <div class="card cre-card">
       <div class="cre-preview" style="background:${profileBgGrad(u)}">${avatarImg(u, 'cre-hero', true)}<span class="cre-rank">${RANKS[idx].n}</span></div>
-      <div class="cre-grp"><span class="cre-lab">Golfista</span><div class="cre-row cre-golfs">${golfistas}</div></div>
-      ${customUI}
+      <div class="cre-grp"><span class="cre-lab">Tu golfista</span><div class="cre-row cre-sexes">${sexRow}</div></div>
+      <div class="cre-grp"><span class="cre-lab">Tono de piel</span><div class="cre-row cre-gcolors">${skinTones}</div></div>
+      <div class="cre-grp"><span class="cre-lab">Color de ropa</span><div class="cre-row cre-gcolors">${colors}</div></div>
       <div class="cre-grp"><span class="cre-lab">Aura</span><div class="cre-row cre-sws">${outfits}</div></div>
       <div class="cre-grp"><span class="cre-lab">Fondo de perfil</span><div class="cre-row cre-bgs">${bgs}</div></div>
       <p class="note" style="margin:10px 2px 0">Tu golfista está apagado (gris) y <b>se enciende</b> con tus buenas jugadas; brilla más fuerte con cada rango que subes. Algunos fondos se desbloquean al mejorar tu hándicap.</p>
