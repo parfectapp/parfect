@@ -394,9 +394,11 @@ function avatarImg(u, cls, lit) {
     const sat = spark < 0.5 ? 'saturate(0.82) ' : '';   // a media chispa todavía se está "prendiendo"
     fil = `${sat}${glow}`.trim();
   }
-  if (u && u.golfer) return golfAvatarSVG(u.golfer, cls, fil);
+  const hue = (u && u.avatarHue) ? `hue-rotate(${u.avatarHue}deg) ` : '';
+  fil = (hue + (fil || '')).trim();
   return `<img class="golfer ${cls || ''}" src="${avatarSrc(u)}"${fil ? ` style="filter:${fil}"` : ''} alt="" loading="lazy">`;
 }
+const GOLF_HUES = [{ h: 0, c: '#ff8a3d' }, { h: 25, c: '#ff5a3d' }, { h: 330, c: '#ff5a8a' }, { h: 285, c: '#9a5cd0' }, { h: 210, c: '#3a8fe0' }, { h: 165, c: '#2fa36b' }, { h: 110, c: '#7bbf3a' }, { h: 60, c: '#f2c33a' }];
 /* outfits icónicos del golf — preconfigurados (SVG) */
 const GOLF_OUTFITS = [
   { k: 'tiger', n: 'Tiger domingo', cfg: { type: 'hombre', skin: '#9c6b40', hair: '#1a1a1a', cap: '#1a1a1a', shirt: '#d11f2a', pants: '#16181c', face: 'normal' } },

@@ -179,15 +179,15 @@ function courseCrest(cid) {
   if (cid === 'campestre') {
     let dimples = '';
     for (let row = 0; row < 6; row++) for (let col = 0; col < 7; col++) {
-      const x = 36 + col * 8, y = 58 + row * 7.5;
-      if (Math.hypot(x - 60, y - 66) < 31 && y > 56) dimples += `<path d="M${x - 2.4} ${y} q2.4 2.6 4.8 0" fill="none" stroke="#cdb24e" stroke-width="1.5" stroke-linecap="round"/>`;
+      const x = 36 + col * 7.5, y = 52 + row * 7;
+      if (Math.hypot(x - 58, y - 62) < 26 && y > 52) dimples += `<path d="M${x - 2.2} ${y} q2.2 2.4 4.4 0" fill="none" stroke="#cdb24e" stroke-width="1.4" stroke-linecap="round"/>`;
     }
-    return `<div class="clogo"><svg viewBox="0 0 120 150" class="clogo-svg" aria-hidden="true">
-      <path d="M98 36 A48 48 0 1 0 98 100" fill="none" stroke="#5e8c3f" stroke-width="17" stroke-linecap="round"/>
-      <circle cx="60" cy="66" r="34" fill="#ffffff" stroke="#e6dcb4" stroke-width="1"/>
+    return `<div class="clogo"><svg viewBox="0 0 124 166" class="clogo-svg" aria-hidden="true">
+      <path d="M94 34 A42 42 0 1 0 94 90" fill="none" stroke="#5e8c3f" stroke-width="15" stroke-linecap="round"/>
+      <circle cx="58" cy="62" r="30" fill="#ffffff" stroke="#e6dcb4" stroke-width="1"/>
       ${dimples}
-      <text x="60" y="124" text-anchor="middle" class="clogo-t1" fill="#5e8c3f">Club Campestre</text>
-      <text x="60" y="142" text-anchor="middle" class="clogo-t2" fill="#5e8c3f">Morelia</text>
+      <text x="62" y="132" text-anchor="middle" class="clogo-t1" fill="#5e8c3f">Club Campestre</text>
+      <text x="62" y="152" text-anchor="middle" class="clogo-t2" fill="#5e8c3f">Morelia</text>
     </svg></div>`;
   }
   if (cid === 'tresmarias') {

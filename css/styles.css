@@ -2379,3 +2379,10 @@ svg.fd-av { object-fit: contain; }
 .dd2 .ddt2-ctrls .btn { flex: 1; padding: 10px; }
 .dd2 .ddt2-ctrls .btn.ghost { flex: 0 0 44px; }
 .dd2 .ddt2 { flex-direction: row; }
+
+/* ===== Golfista PNG (tonos de piel) + color ===== */
+.cre-golfs { display: flex; gap: 8px; flex-wrap: wrap; }
+.cre-golf { width: 52px; height: 58px; border-radius: 14px; border: 2px solid var(--line); background: var(--card2); display: grid; place-items: center; overflow: hidden; padding: 2px; cursor: pointer; }
+.cre-golf img { width: 100%; height: 100%; object-fit: contain; }
+.cre-golf.on { border-color: var(--lime); box-shadow: 0 4px 14px rgba(199,238,84,.45); }
+.cre-golf:active { transform: scale(.95); }
