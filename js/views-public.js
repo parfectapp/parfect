@@ -68,7 +68,7 @@ function lpFeatArt(kind) {
 }
 
 function vLanding() {
-  const feat = (kind, t, d) => `<div class="lp-feat reveal"><div class="lp-feat-art lpa-${kind}">${lpFeatArt(kind)}</div><h3>${t}</h3><p>${d}</p></div>`;
+  const feat = (kind, t, d) => `<div class="lp-feat reveal"><h3>${t}</h3><p>${d}</p></div>`;
   // (lpFeatArt definida abajo, a nivel de módulo)
   const lpHour = new Date().getHours();
   const lpNight = (lpHour < 7 || lpHour >= 19);
@@ -206,7 +206,7 @@ function vLanding() {
            ['02', 'Analízala con IA', 'La inteligencia lee tus rondas y encuentra exactamente dónde se te van los golpes.', 'ai'],
            ['03', 'Entrena inteligente', 'Recibes la sesión que toca: el drill exacto, las reps y el tiempo. Practicas lo justo.', 'stats'],
            ['04', 'Sé mejor', 'Bajas tu hándicap, subes de rango y lo ves en cada número. Tu progreso, claro.', 'trophy']]
-          .map(([n, t, d, kind]) => `<div class="lp-flowc reveal"><div class="lp-flowc-top"><span class="lp-flown">${n}</span><div class="lp-flowc-art lpa-${kind}">${lpFeatArt(kind)}</div></div><h3>${t}</h3><p>${d}</p></div>`).join('')}
+          .map(([n, t, d]) => `<div class="lp-flowc reveal"><div class="lp-flowc-top"><span class="lp-flown">${n}</span></div><h3>${t}</h3><p>${d}</p></div>`).join('')}
       </div>
     </section>
 
@@ -235,7 +235,7 @@ function vLanding() {
            ['round', 'Liga infantil', 'Las futuras estrellas entrenan con datos y suben de rango jugando.'],
            ['stats', 'La corta con amigos', 'Apuestas amistosas que se liquidan solas. El que pierde, paga.'],
            ['ai', 'Academias y clubes', 'Los coaches ven las stats de sus alumnos y les agendan clases.']]
-          .map(([kind, t, d]) => `<div class="lp-prescard reveal"><div class="lp-presic lpa-${kind}">${lpFeatArt(kind)}</div><h3>${t}</h3><p>${d}</p></div>`).join('')}
+          .map(([, t, d]) => `<div class="lp-prescard reveal"><h3>${t}</h3><p>${d}</p></div>`).join('')}
       </div>
     </section>
 

@@ -792,6 +792,15 @@ button.row { cursor: pointer; }
 .sc-table td.eagle { color: #0a0f06; background: var(--lime); border-radius: 4px; }
 .sc-table td.bogey { color: #d8e0cc; }
 .sc-table td.doble { color: var(--danger); }
+/* tarjeta apilada: 9 hoyos por piso, ancho completo (18 hoyos = dos pisos, sin alargar) */
+.sc-stack { display: flex; flex-direction: column; gap: 9px; margin-top: 10px; }
+.sc-wb { background: var(--card2); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.sc-table.sc-w { width: 100%; table-layout: fixed; font-size: 12px; }
+.sc-table.sc-w th, .sc-table.sc-w td { min-width: 0; padding: 6px 1px; border-bottom: 1px solid var(--line-soft); }
+.sc-table.sc-w tbody tr:last-child td { border-bottom: none; }
+.sc-table.sc-w .sc-name { position: static; width: 38px; min-width: 0; padding-left: 8px; background: transparent; font-size: 10.5px; }
+.sc-table.sc-w thead .sc-name { background: transparent; }
+.sc-table.sc-w .sc-tt { background: var(--lime-faint); }
 
 /* ============ Captura por jugador en party (score + stats) ============ */
 .ph { border-bottom: 1px solid var(--line-soft); padding: 11px 0; }
@@ -1012,8 +1021,8 @@ button.row { cursor: pointer; }
 .cps-cell:active .cps-sw { transform: scale(.96); }
 
 /* ===== tira horizontal de últimas rondas ===== */
-.rs-h { margin-top: 22px; display: flex; align-items: baseline; justify-content: space-between; }
-.rs-h h2 { font-size: 20px; }
+.lr-h { margin-top: 22px; display: flex; align-items: baseline; justify-content: space-between; background: none; }
+.lr-h h2 { font-size: 20px; }
 .sec-link { background: none; border: none; color: var(--lime-ink); font-size: 13px; font-weight: 800; cursor: pointer; }
 .rs-strip { display: flex; gap: 11px; overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-snap-type: x mandatory; padding: 10px 2px 4px; margin: 0 -2px; scrollbar-width: none; }
 .rs-strip::-webkit-scrollbar { display: none; }
@@ -1021,8 +1030,6 @@ button.row { cursor: pointer; }
 .rs-card:active { transform: scale(.98); }
 .rs-vibe { position: absolute; top: -7px; right: -5px; font-size: 18px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.22)); }
 .rs-card.vibe-fire { border-color: rgba(255,140,60,.5); } .rs-card.vibe-ice { border-color: rgba(90,170,230,.5); }
-/* color por resultado de la tirada (borde superior + tinte, según rango de la ronda) */
-.rs-card { border-top-width: 4px; border-top-style: solid; }
 .rs-date { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
 .rs-score { font-size: 34px; font-weight: 900; letter-spacing: -.03em; color: var(--text); line-height: 1.05; }
 .rs-par { font-size: 13px; font-weight: 800; color: var(--lime-ink); }

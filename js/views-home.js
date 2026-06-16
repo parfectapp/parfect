@@ -455,16 +455,15 @@ function vRecentStrip(rounds) {
     const s = Stats.roundStats(r);
     const course = (r.courseId && COURSES[r.courseId]) ? COURSES[r.courseId].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '') : r.course;
     const vibe = roundVibe(s, u.hcp);
-    const rk = roundRank(s);                                // color según el "hándicap" de esa tirada
-    return `<button class="rs-card" style="border-top-color:${rk.c};background:linear-gradient(180deg, ${rk.c}24, var(--card) 50%)" data-act="round-detail" data-id="${r.id}">
+    return `<button class="rs-card" data-act="round-detail" data-id="${r.id}">
       ${vibe ? `<span class="rs-vibe">${vibe.ic}</span>` : ''}
       <span class="rs-date">${fmtDate(r.date)}</span>
       <span class="rs-score">${s.score}</span>
-      <span class="rs-par" style="color:${rk.c}">${fmtToPar(s.toPar)}</span>
+      <span class="rs-par">${fmtToPar(s.toPar)}</span>
       <span class="rs-course">${esc(course)} · ${r.holes.length}h</span>
     </button>`;
   }).join('');
-  return `<div class="sec-h rs-h"><h2>Últimas rondas</h2>${rounds.length > 10 ? `<button class="sec-link" data-act="nav" data-view="ronda">Ver todas →</button>` : ''}</div>
+  return `<div class="sec-h lr-h"><h2>Últimas rondas</h2>${rounds.length > 10 ? `<button class="sec-link" data-act="nav" data-view="ronda">Ver todas →</button>` : ''}</div>
     <div class="rs-strip">${cards}</div>`;
 }
 

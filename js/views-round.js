@@ -42,31 +42,20 @@ function scTableCell(score, par, cur) {
  * holesCount, parOf(i)->par, rows = [{name, scoreOf(i)->score|null}], curIdx (resaltar)
  */
 function scorecardTable(holesCount, parOf, rows, curIdx, ydsOf) {
-  const has18 = holesCount > 9;
   const seg = (a, b) => Array.from({ length: Math.max(0, b - a) }, (_, k) => a + k);
-  const front = seg(0, Math.min(9, holesCount));
-  const back = has18 ? seg(9, holesCount) : [];
+  const has18 = holesCount > 9;
   const sumR = (fn, arr) => { let s = 0, any = false; for (const i of arr) { const v = fn(i); if (v != null) { s += v; any = true; } } return any ? s : ''; };
-  const all = [...front, ...back];
-
-  const headNums = arr => arr.map(i => `<th class="${i === curIdx ? 'sc-cur' : ''}">${i + 1}</th>`).join('');
-  const head = `<tr class="sc-hrow"><th class="sc-name">Hoyo</th>${headNums(front)}${has18 ? '<th class="sc-tt">id</th>' : ''}${headNums(back)}${has18 ? '<th class="sc-tt">vt</th>' : ''}<th class="sc-tt">TOT</th></tr>`;
-
-  const parCells = arr => arr.map(i => `<td>${parOf(i)}</td>`).join('');
-  const parRow = `<tr class="sc-parrow"><td class="sc-name">Par</td>${parCells(front)}${has18 ? `<td class="sc-tt">${sumR(parOf, front)}</td>` : ''}${parCells(back)}${has18 ? `<td class="sc-tt">${sumR(parOf, back)}</td>` : ''}<td class="sc-tt">${sumR(parOf, all)}</td></tr>`;
-
-  let ydsRow = '';
-  if (ydsOf) {
-    const ydsCells = arr => arr.map(i => `<td>${ydsOf(i) || '–'}</td>`).join('');
-    ydsRow = `<tr class="sc-ydsrow"><td class="sc-name">Yds</td>${ydsCells(front)}${has18 ? `<td class="sc-tt">${sumR(ydsOf, front)}</td>` : ''}${ydsCells(back)}${has18 ? `<td class="sc-tt">${sumR(ydsOf, back)}</td>` : ''}<td class="sc-tt">${sumR(ydsOf, all)}</td></tr>`;
-  }
-
-  const playerRows = rows.map(r => {
-    const cells = arr => arr.map(i => scTableCell(r.scoreOf(i), parOf(i), i === curIdx)).join('');
-    return `<tr><td class="sc-name">${esc(r.name)}</td>${cells(front)}${has18 ? `<td class="sc-tt">${sumR(r.scoreOf, front)}</td>` : ''}${cells(back)}${has18 ? `<td class="sc-tt">${sumR(r.scoreOf, back)}</td>` : ''}<td class="sc-tt">${sumR(r.scoreOf, all)}</td></tr>`;
-  }).join('');
-
-  return `<div class="sc-scroll"><table class="sc-table"><thead>${head}</thead><tbody>${parRow}${ydsRow}${playerRows}</tbody></table></div>`;
+  // un bloque = una fila de hasta 9 hoyos con su subtotal (no se alarga: 18 hoyos = dos pisos)
+  const block = (arr, totLabel) => {
+    const head = `<tr class="sc-hrow"><th class="sc-name">Hoyo</th>${arr.map(i => `<th class="${i === curIdx ? 'sc-cur' : ''}">${i + 1}</th>`).join('')}<th class="sc-tt">${totLabel}</th></tr>`;
+    const parRow = `<tr class="sc-parrow"><td class="sc-name">Par</td>${arr.map(i => `<td>${parOf(i)}</td>`).join('')}<td class="sc-tt">${sumR(parOf, arr)}</td></tr>`;
+    let ydsRow = '';
+    if (ydsOf) ydsRow = `<tr class="sc-ydsrow"><td class="sc-name">Yds</td>${arr.map(i => `<td>${ydsOf(i) || '–'}</td>`).join('')}<td class="sc-tt">${sumR(ydsOf, arr)}</td></tr>`;
+    const playerRows = rows.map(r => `<tr><td class="sc-name">${esc(r.name)}</td>${arr.map(i => scTableCell(r.scoreOf(i), parOf(i), i === curIdx)).join('')}<td class="sc-tt">${sumR(r.scoreOf, arr)}</td></tr>`).join('');
+    return `<div class="sc-wb"><table class="sc-table sc-w"><thead>${head}</thead><tbody>${parRow}${ydsRow}${playerRows}</tbody></table></div>`;
+  };
+  if (!has18) return `<div class="sc-stack">${block(seg(0, holesCount), 'TOT')}</div>`;
+  return `<div class="sc-stack">${block(seg(0, 9), 'OUT')}${block(seg(9, holesCount), 'IN')}</div>`;
 }
 
 /* ---------- Tab Ronda: historial ---------- */
@@ -154,7 +143,6 @@ function vRoundStatCard(r, hcp) {
   const s = Stats.roundStats(r);
   const course = (r.courseId && COURSES[r.courseId]) ? COURSES[r.courseId].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '') : r.course;
   const vibe = roundVibe(s, hcp);
-  const rk = roundRank(s);
   const holes = (r.holes || []).filter(Boolean);
   const birdies = holes.filter(x => x.score != null && x.score - x.par <= -1).length;
   const pct = (n, d) => d ? Math.round((n / d) * 100) : 0;
@@ -164,10 +152,9 @@ function vRoundStatCard(r, hcp) {
   const parOf = i => (r.holes[i] && r.holes[i].par != null) ? r.holes[i].par : (ch && ch[off + i] ? ch[off + i].par : 4);
   const ydsOf = (ch && ch.some(h => h.yds)) ? (i => (ch[off + i] ? ch[off + i].yds : null)) : null;
   const rows = [{ name: 'Tú', scoreOf: i => (r.holes[i] ? r.holes[i].score : null) }];
-  return `<button class="rc6" style="--rc:${rk.c}" data-act="round-detail" data-id="${r.id}">
-    <div class="rc6-bar"></div>
+  return `<button class="rc6" data-act="round-detail" data-id="${r.id}">
     <div class="rc6-head">
-      <div class="rc6-id"><span class="rc5-rank">${esc(rk.n)}</span><b>${esc(course)}${r.partyId ? ` <span class="rc5-party">${golfIcon('flag')}</span>` : ''}</b><span class="rc5-date">${fmtDate(r.date)} · ${s.holes} hoyos</span></div>
+      <div class="rc6-id"><b>${esc(course)}${r.partyId ? ` <span class="rc5-party">${golfIcon('flag')}</span>` : ''}</b><span class="rc5-date">${fmtDate(r.date)} · ${s.holes} hoyos</span></div>
       <div class="rc5-score ${scoreCls}">${vibe ? `<i>${vibe.ic}</i>` : ''}<b>${s.score}</b><span>${fmtToPar(s.toPar)}</span></div>
     </div>
     <div class="rc6-stats">
