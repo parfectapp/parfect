@@ -109,6 +109,32 @@ function trainerAreas(agg) {
     { cat: 'putt', label: 'Putt', level: Math.max(0, Math.min(100, (36 - agg.putts18) / 12 * 100)), val: agg.putts18.toFixed(0) + ' putts', gain: Math.max(0, (agg.putts18 - 30) * 0.8) },
   ];
 }
+/* Sección 1: el sensei dice qué entrenar + el enfoque por stats */
+function vTrainerPlan(agg) {
+  const areas = trainerAreas(agg).sort((a, b) => a.level - b.level);
+  const focus = areas[0];
+  const drill = DRILL_LIBRARY.find(d => d.cat === focus.cat) || DRILL_LIBRARY[0];
+  const focusName = focus.label.includes('·') ? focus.label.split('·')[1].trim() : focus.label;
+  const cards = areas.map((a, i) => {
+    const lv = a.level >= 60 ? 'strong' : a.level >= 40 ? 'mid' : 'weak';
+    return `<button class="tr-area ${i === 0 ? 'focus' : ''}" data-act="train-area" data-c="${a.cat}">
+      <span class="tr-rank ${lv}">${i + 1}</span>
+      <div class="tr-area-mid">
+        <div class="tr-area-top"><b>${a.label}</b><span>${a.val}</span></div>
+        <div class="tr-bar ${lv}"><i style="width:${Math.round(a.level)}%"></i></div>
+        <span class="tr-area-meta">${a.gain >= 0.3 ? `~${a.gain.toFixed(1)} golpes por ganar` : (i === 0 ? 'tu enfoque de hoy' : 'sólido · mantenlo')}</span>
+      </div>
+      <span class="tr-area-go">→</span>
+    </button>`;
+  }).join('');
+  return `<div class="sensei tr-sensei">
+      <div class="tr-sensei-av">${senseiBird()}</div>
+      <div class="sensei-bubble"><b class="sensei-name">Sensei</b><p>Tu mayor fuga es <b>${esc(focusName)}</b>. Hoy entrena <b>${esc(drill.name)}</b> y baja golpes.</p></div>
+    </div>
+    <button class="btn primary big" data-act="drill-open" data-name="${esc(drill.name)}" style="margin-top:12px">Ver ejercicio de hoy →</button>
+    <div class="sec-h" style="margin-top:20px"><h2 style="font-size:16px">Dónde ganar golpes</h2><span class="small muted">toca un área</span></div>
+    <div class="tr-areas">${cards}</div>`;
+}
 function vTrainer() {
   const agg = Stats.aggregate(myRounds());
   if (!agg) {
@@ -117,24 +143,11 @@ function vTrainer() {
       <p>Registra una ronda y te diré exactamente dónde pierdes golpes y qué practicar primero.</p>
       <button class="btn primary" data-act="quick-round">Registrar ronda</button></div>`;
   }
-  const areas = trainerAreas(agg).sort((a, b) => a.level - b.level);
-  const cards = areas.map((a, i) => {
-    const lv = a.level >= 60 ? 'strong' : a.level >= 40 ? 'mid' : 'weak';
-    return `<button class="tr-area ${i === 0 ? 'focus' : ''}" data-act="drill-cat" data-c="${a.cat}">
-      <span class="tr-rank ${lv}">${i + 1}</span>
-      <div class="tr-area-mid">
-        <div class="tr-area-top"><b>${a.label}</b><span>${a.val}</span></div>
-        <div class="tr-bar ${lv}"><i style="width:${Math.round(a.level)}%"></i></div>
-        <span class="tr-area-meta">${a.gain >= 0.3 ? `🎯 ~${a.gain.toFixed(1)} golpes por ganar` : (i === 0 ? '🎯 tu enfoque de hoy' : '💪 sólido · mantenlo')}</span>
-      </div>
-      <span class="tr-area-go">→</span>
-    </button>`;
-  }).join('');
+  const tab = V.trainerTab === 'drills' ? 'drills' : 'plan';
+  const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>
-    <div class="sec-h" style="margin-top:4px"><h2 style="font-size:16px">Dónde ganar golpes</h2><span class="small muted">según tus stats</span></div>
-    <div class="tr-areas">${cards}</div>
-    ${vTrainFeatured()}
-    ${vDrillsLibrary()}`;
+    <div class="tabs">${T('plan', 'Tu plan')}${T('drills', 'Drills')}</div>
+    ${tab === 'drills' ? vDrillsLibrary() : vTrainerPlan(agg)}`;
 }
 
 function vDiag() {

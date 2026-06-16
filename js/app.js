@@ -421,6 +421,7 @@ const actions = {
   'drill-close-detail'() { V.drillDetail = null; render(); },
   'drill-done'() { const d = V.drillDetail; V.drillDetail = null; if (d) S.practices.push({ id: Store.uid(), userId: S.session, date: today(), drill: d.name, area: (DRILL_CATS.find(c => c.id === d.cat) || {}).label || '', notes: 'entrenado' }); if (typeof celebrate === 'function') celebrate(false, '¡Bien hecho!'); commit(); },
   'sensei-toggle'() { V.senseiOpen = V.senseiOpen === false; render(); },
+  'train-area'(d) { V.drillCat = d.c; V.trainerTab = 'drills'; render(); window.scrollTo(0, 0); },
   'drill-hit'() {
     if (!V.drillLog) return;
     const d = V.drillLog;
