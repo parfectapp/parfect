@@ -79,10 +79,13 @@ function vRondaTab() {
     html += `<div class="card empty"><div class="e-ico">${golfIcon('flag')}</div><h3>Sin rondas todavía</h3><p>Tu primera ronda toma menos de 10 minutos en capturarse — 4 toques por hoyo.</p></div>`;
     return html;
   }
+  const myHcp = u.hcp;
   rows += rounds.map(r => {
     const s = Stats.roundStats(r);
     const course = (r.courseId && COURSES[r.courseId]) ? COURSES[r.courseId].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '') : r.course;
-    return `<button class="pl-rr" data-act="round-detail" data-id="${r.id}">
+    const vibe = roundVibe(s, myHcp);
+    return `<button class="pl-rr ${vibe ? 'vibe-' + vibe.k : ''}" data-act="round-detail" data-id="${r.id}">
+      ${vibe ? `<span class="rr-vibe">${vibe.ic}</span>` : ''}
       <div class="pl-rr-id"><b>${esc(course)}${r.partyId ? ' ' + golfIcon('flag') : ''}</b><span>${fmtDate(r.date)} · ${s.holes} hoyos · ${s.putts} putts</span></div>
       <span class="pl-rr-score">${s.score}<em>${fmtToPar(s.toPar)}</em></span>
     </button>`;

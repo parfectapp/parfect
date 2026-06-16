@@ -388,10 +388,13 @@ function vKeyStats(agg) {
 /* rondas recientes (tarjetas redondeadas tocables) */
 function vRecentRounds(rounds) {
   const list = rounds.slice(0, 6);
+  const hcp = cur().hcp;
   const rows = list.map(r => {
     const s = Stats.roundStats(r);
     const course = (r.courseId && COURSES[r.courseId]) ? COURSES[r.courseId].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '') : r.course;
-    return `<button class="pl-rr" data-act="round-detail" data-id="${r.id}">
+    const vibe = roundVibe(s, hcp);
+    return `<button class="pl-rr ${vibe ? 'vibe-' + vibe.k : ''}" data-act="round-detail" data-id="${r.id}">
+      ${vibe ? `<span class="rr-vibe">${vibe.ic}</span>` : ''}
       <div class="pl-rr-id"><b>${esc(course)}</b><span>${fmtDate(r.date)} · ${r.holes.length} ${t('holes')}</span></div>
       <span class="pl-rr-score">${s.score}<em>${fmtToPar(s.toPar)}</em></span>
     </button>`;
@@ -408,17 +411,17 @@ function vDashboard() {
   </div>`;
 
   if (!agg) {
-    return head + `<div class="card empty">
+    return `<div class="dash"><div class="dash-aura" aria-hidden="true"></div>${head}<div class="card empty">
       <div class="e-ico">${golfIcon('flag')}</div>
       <h3>${t('empty_h')}</h3>
       <p>${t('empty_p')}</p>
       <button class="btn primary" data-act="quick-round">${logoMark(15)} ${t('empty_cta')}</button>
       <button class="btn ghost" data-act="seed-demo">${t('empty_demo')}</button>
-    </div>`;
+    </div></div>`;
   }
 
-  return head + `
-    ${vPlayerCard(u, agg)}`;
+  return `<div class="dash"><div class="dash-aura" aria-hidden="true"></div>${head}
+    ${vPlayerCard(u, agg)}</div>`;
 }
 
 /* ---- reparto de score: birdies / pares / bogeys… ---- */
@@ -621,7 +624,7 @@ function pstRing(label, pct, icon) {
 
 /* ============ Perfil (página) ============ */
 function vPerfil() {
-  return `<div class="sec-h"><h2>Logros</h2><button class="sec-edit" data-act="profile-edit" aria-label="Personalizar">⚙ Personalizar</button></div>
+  return `<div class="sec-h"><h2>Tu perfil</h2><button class="sec-edit" data-act="profile-edit" aria-label="Personalizar">⚙ Personalizar</button></div>
     ${vLogros()}`;
 }
 

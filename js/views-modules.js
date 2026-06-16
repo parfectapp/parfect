@@ -87,6 +87,19 @@ function vRecommendedDrills(u, agg) {
 }
 
 /* ---------- Parfect Trainer ---------- */
+function vSensei(tab) {
+  const agg = Stats.aggregate(myRounds());
+  let msg;
+  if (tab === 'entreno') msg = 'Elige tu sesión de hoy y domina <b>un drill a la vez</b>. La maestría es repetición. 🥷';
+  else if (tab === 'objetivos') msg = 'Estas son tus metas. Vamos <b>una por una</b> — constancia sobre intensidad.';
+  else if (!agg) msg = 'Soy tu sensei. Registra una ronda y te diré <b>dónde ganar golpes</b>.';
+  else if (V.diag) msg = `Tu enfoque: <b>${esc((V.diag.focus[0] || {}).titulo || 'tu juego')}</b>. Entrénalo y baja golpes.`;
+  else msg = 'Genera tu <b>diagnóstico</b> y te marco exactamente qué practicar primero.';
+  return `<div class="sensei">
+    <div class="sensei-av">${avatarImg(cur(), 'sensei-img', true)}<span class="sensei-badge">🥷</span></div>
+    <div class="sensei-bubble"><b class="sensei-name">Sensei</b><p>${msg}</p></div>
+  </div>`;
+}
 function vTrainer() {
   const u = cur();
   const tab = V.trainerTab || 'diag';
@@ -94,6 +107,7 @@ function vTrainer() {
   const body = tab === 'entreno' ? entreno : tab === 'objetivos' ? vKeyTargets(u) : vDiag();
   const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>
+    ${vSensei(tab)}
     <div class="tabs scroll">
       ${T('diag', 'Resumen')}${T('entreno', 'Entrenamiento')}${T('objetivos', 'Objetivos')}
     </div>

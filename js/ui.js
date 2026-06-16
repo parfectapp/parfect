@@ -92,6 +92,16 @@ function teeIsFairway(h) { return h.teeLie ? h.teeLie === 'calle' : h.tee === 'f
 function teeIsPenal(h) { return !!h.pen || (h.teeLie ? h.teeLie === 'ob' : h.tee === 'penal'); }
 function teeDone(h) { return h.par === 3 ? true : (h.teeLie != null || h.tee != null); }
 
+/* clasifica una ronda 🔥/🧊 según qué tan buena fue vs tu hándicap */
+function roundVibe(s, hcp) {
+  if (!s || !s.holes) return null;
+  const exp = (Number(hcp) || 18) * (s.holes / 18);   // golpes sobre par esperados
+  const delta = s.toPar - exp;                          // negativo = mejor que tu hcp
+  if (delta <= -1) return { k: 'fire', ic: '🔥', t: 'En fuego' };
+  if (delta >= 4) return { k: 'ice', ic: '🧊', t: 'Ronda fría' };
+  return null;
+}
+
 /* rango por hándicap 0–36 (golf): tu golfista se tiñe y su aura crece al subir */
 const RANKS = [
   { max: 36, n: 'Novato', c: '#9aa6b0', f: 'saturate(.35) brightness(1.08)', aura: 0 },
