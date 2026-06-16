@@ -787,10 +787,10 @@ function partyCard() {
   const act = activeParty();
   const myActive = act && (act.hostUserId === u.id || act.players.some(x => x.userId === u.id));
   return `<div class="card">
-      <span class="label">${golfIcon('flag')} Parfect Party · juega con amigos</span>
-      <p class="small muted" style="margin-top:2px">Medal, Match play y La corta (puedes combinarlos). Crea la party, comparte el código y cada quien anota desde su celular.</p>
-      ${myActive ? `<button class="btn primary" data-act="party-resume">Continuar party ${esc(act.code)} ${act.status === 'live' ? `· hoyo ${act.idx + 1}` : '· lobby'}</button>`
-        : `<button class="btn primary" data-act="party-new">Crear party</button>`}
+      <span class="label">${golfIcon('flag')} Tee time con amigos</span>
+      <p class="small muted" style="margin-top:2px">Programa el tee time, elige la modalidad (Medal, Match o La corta) y comparte el código. Cada quien anota desde su celular.</p>
+      ${myActive ? `<button class="btn primary" data-act="party-resume">Continuar ${esc(act.code)} ${act.status === 'live' ? `· hoyo ${act.idx + 1}` : '· lobby'}</button>`
+        : `<button class="btn primary" data-act="party-new">Programar tee time</button>`}
       <div class="join-row" style="margin-top:12px">
         <input id="join-code" placeholder="Código (ej. K7M2)" maxlength="4" style="text-transform:uppercase">
         <button class="btn sm ghost" data-act="party-join" ${V.joining ? 'disabled' : ''}>${V.joining ? 'Buscando…' : 'Unirse'}</button>
