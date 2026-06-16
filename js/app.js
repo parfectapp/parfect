@@ -323,6 +323,7 @@ const actions = {
     commit();
   },
   'event-del'(d) { S.events = (S.events || []).filter(x => x.id !== d.id); commit(); },
+  'ev-join-up'(d) { const u = cur(); if (!u) return; u.joinedEvents = u.joinedEvents || {}; const was = !!u.joinedEvents[d.n]; if (was) delete u.joinedEvents[d.n]; else { u.joinedEvents[d.n] = true; if (typeof celebrate === 'function') celebrate(false, '¡Anotado!'); } commit(); },
   'academia-start'() { V.profileOpen = false; V.lesson = null; V.view = 'academia'; render(); window.scrollTo(0, 0); },
   'onboard-academy'() { const u = cur(); if (u) u.onboarded = true; V.lesson = null; V.view = 'academia'; commit(); window.scrollTo(0, 0); },
   'academia-exit'() { V.lesson = null; V.trainerTab = 'academia'; V.view = 'trainer'; render(); window.scrollTo(0, 0); },

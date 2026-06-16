@@ -420,7 +420,6 @@ function vSessionPlanner() {
       <h2 class="sp-q">¿Cómo armamos tu sesión?</h2>
       <button class="sp-modecard" data-act="plan-mode" data-m="ai"><span class="sp-modeic">${golfIcon('flag')}</span><div><b>Que la IA la arme por mí</b><span>Reparte el tiempo priorizando tus puntos débiles.</span></div></button>
       <button class="sp-modecard" data-act="plan-mode" data-m="me"><span class="sp-modeic">${golfIcon('bucket')}</span><div><b>Yo elijo qué entrenar</b><span>Escoge las áreas y nosotros repartimos el tiempo.</span></div></button>
-      <button class="sp-modecard" data-act="plan-mode" data-m="free"><span class="sp-modeic">${golfIcon('putter')}</span><div><b>Entrenamiento libre</b><span>Elige un bastón y dale al cronómetro. Guardamos cuánto entrenaste.</span></div></button>
       <button class="sp-back" data-act="plan-reset">← Cambiar tiempo</button>
     </div>`;
   }

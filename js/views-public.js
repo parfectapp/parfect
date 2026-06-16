@@ -20,7 +20,7 @@ function golfBallSVG() {
     <circle cx="100" cy="100" r="90" fill="url(#bg-ball)"/>
     <g fill="#8b9698" opacity="0.30">${ballDimples()}</g>
     <ellipse cx="70" cy="58" rx="30" ry="20" fill="#fff" opacity="0.55"/>
-    <circle cx="100" cy="100" r="89" fill="none" stroke="rgba(79,192,122,0.55)" stroke-width="1.5"/>
+    <circle cx="100" cy="100" r="89" fill="none" stroke="rgba(47,158,84,0.55)" stroke-width="1.5"/>
   </svg>`;
 }
 
@@ -50,7 +50,7 @@ function lpFeatArt(kind) {
     <circle class="lpa-ball" cx="18" cy="58" r="5.5" fill="#fff" stroke="#cdd5d7" stroke-width="1"/>
   </svg>`;
   if (kind === 'stats') return `<svg class="lpa" viewBox="0 0 96 78" aria-hidden="true">
-    <rect class="lpa-bar lpab1" x="20" y="18" width="15" height="46" rx="4" fill="#4fc07a"/>
+    <rect class="lpa-bar lpab1" x="20" y="18" width="15" height="46" rx="4" fill="#2f9e54"/>
     <rect class="lpa-bar lpab2" x="41" y="18" width="15" height="46" rx="4" fill="#46b0e0"/>
     <rect class="lpa-bar lpab3" x="62" y="18" width="15" height="46" rx="4" fill="#9a5cd0"/>
     <line x1="14" y1="65" x2="83" y2="65" stroke="#cbd5c0" stroke-width="2.5" stroke-linecap="round"/>
@@ -63,7 +63,7 @@ function lpFeatArt(kind) {
   </svg>`;
   return `<svg class="lpa" viewBox="0 0 96 78" aria-hidden="true">
     <g class="lpa-trophy"><path d="M34 22h28v9c0 9-6 16-14 16s-14-7-14-16z" fill="#f7d04a"/><rect x="45" y="47" width="6" height="8" fill="#c98a1e"/><rect x="37" y="55" width="22" height="5" rx="2" fill="#c98a1e"/><path d="M34 25c-6 0-9 3-8 8 1 4 5 6 9 6v-4c-3 0-5-2-5.5-4.5" fill="none" stroke="#f7d04a" stroke-width="3"/><path d="M62 25c6 0 9 3 8 8-1 4-5 6-9 6v-4c3 0 5-2 5.5-4.5" fill="none" stroke="#f7d04a" stroke-width="3"/></g>
-    <circle class="lpa-spark lpas1" cx="26" cy="20" r="2.6" fill="#4fc07a"/><circle class="lpa-spark lpas2" cx="71" cy="17" r="2.2" fill="#46b0e0"/><circle class="lpa-spark lpas3" cx="73" cy="42" r="2.6" fill="#ff6a88"/>
+    <circle class="lpa-spark lpas1" cx="26" cy="20" r="2.6" fill="#2f9e54"/><circle class="lpa-spark lpas2" cx="71" cy="17" r="2.2" fill="#46b0e0"/><circle class="lpa-spark lpas3" cx="73" cy="42" r="2.6" fill="#ff6a88"/>
   </svg>`;
 }
 
@@ -105,18 +105,11 @@ function vLanding() {
         <img class="lp-perch lpp2" src="assets/bird.png" alt="" />
       </div>
     </div>
-    <header class="lp-nav lp-nav-intro">
-      <span class="lp-logo">${logoMark(18)} PARFECT</span>
-      <nav class="lp-links">
-        <button data-act="go" data-view="login">Entrar</button>
-        <button class="lp-cta-sm" data-act="go" data-view="signup">Empezar</button>
-      </nav>
-    </header>
     <section class="lp-intro" aria-label="PARFECT">
       <div class="lp-intro-sun"></div>
       <span class="lp-icloud i1"></span><span class="lp-icloud i2"></span><span class="lp-icloud i3"></span>
-      <div class="lp-intrologo">${logoMark(56)} PARFECT</div>
-      <p class="lp-introtag">Tu mejor golf empieza aquí.</p>
+      <div class="lp-intrologo">PARFECT</div>
+      <p class="lp-introtag">IA Tracker</p>
       <span class="lp-introhint">Desliza ↓ y entra al club</span>
     </section>
 
@@ -264,7 +257,7 @@ function maybeCelebrate() {
   if (!key || window.__celebrated === key) return;
   window.__celebrated = key;
   if (matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const cols = ['#4fc07a', '#9ad13e', '#ffd56b', '#ff9f43', '#5aa9e0', '#ffffff'];
+  const cols = ['#2f9e54', '#9ad13e', '#ffd56b', '#ff9f43', '#5aa9e0', '#ffffff'];
   const wrap = document.createElement('div');
   wrap.className = 'confetti';
   let html = '';
