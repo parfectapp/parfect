@@ -1852,6 +1852,39 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 
 /* hoja de lección */
 .lsheet { max-height: 88vh; overflow-y: auto; }
+.ls-art { width: 100%; height: 130px; border-radius: 16px; overflow: hidden; margin: 4px 0 16px; background: linear-gradient(#cdeafd, #e8f6dd); }
+.ls-art .la { width: 100%; height: 100%; display: block; }
+.la-ball { filter: drop-shadow(0 2px 2px rgba(0,0,0,.2)); }
+.la-roll { animation: laRoll 2.4s ease-in-out infinite; }
+.la-roll2 { animation: laRoll 3s ease-in-out infinite; }
+.la-roll3 { animation: laRoll 3.6s linear infinite; }
+@keyframes laRoll { 0% { transform: translateX(0); opacity: 1; } 78% { transform: translateX(64px); opacity: 1; } 86% { transform: translateX(70px) scale(.6); opacity: .4; } 100% { transform: translateX(0); opacity: 1; } }
+.la-arc-low { animation: laArcLow 2.6s ease-in-out infinite; }
+@keyframes laArcLow { 0% { transform: translate(0,0); } 50% { transform: translate(42px,-14px); } 80% { transform: translate(80px,0); } 100% { transform: translate(0,0); } }
+.la-arc-high { animation: laArcHigh 2.8s ease-in-out infinite; }
+@keyframes laArcHigh { 0% { transform: translate(0,0); } 45% { transform: translate(44px,-44px); } 82% { transform: translate(86px,0); } 100% { transform: translate(0,0); } }
+.la-pop { animation: laPop 2.4s ease-out infinite; }
+@keyframes laPop { 0%,30% { transform: translate(0,0); opacity: 1; } 60% { transform: translate(34px,-30px); opacity: 1; } 75% { opacity: 0; } 100% { transform: translate(0,0); opacity: 0; } }
+.la-wave { transform-origin: left center; animation: laWave 1.3s ease-in-out infinite alternate; }
+@keyframes laWave { from { transform: scaleX(.86) skewY(-3deg); } to { transform: scaleX(1) skewY(3deg); } }
+.la-bob { animation: laBob 2.4s ease-in-out infinite; transform-origin: center bottom; }
+@keyframes laBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+.la-swing { transform-origin: 82px 64px; animation: laSwing 2.2s ease-in-out infinite; }
+@keyframes laSwing { 0% { transform: rotate(-38deg); } 45% { transform: rotate(8deg); } 60% { transform: rotate(8deg); } 100% { transform: rotate(-38deg); } }
+.la-splash { animation: laSplash 2.2s ease-out infinite; transform-origin: 56px 64px; }
+@keyframes laSplash { 0%,40% { opacity: 0; transform: translateY(6px) scale(.6); } 55% { opacity: 1; transform: translateY(-4px) scale(1); } 100% { opacity: 0; transform: translateY(-12px) scale(1.1); } }
+.la-trace, .la-arrow { stroke-dasharray: 4 5; animation: laDash 1.6s linear infinite; }
+@keyframes laDash { to { stroke-dashoffset: -18; } }
+.la-glow { animation: laGlow 1.8s ease-in-out infinite; }
+@keyframes laGlow { 0%,100% { opacity: .5; } 50% { opacity: 1; } }
+.la-pulse { animation: laPulse 2s ease-out infinite; transform-origin: 100px 66px; }
+@keyframes laPulse { 0% { transform: scale(.5); opacity: .9; } 100% { transform: scale(1.25); opacity: 0; } }
+.la-clock { transform-origin: 80px 42px; animation: laClock 3s steps(3) infinite; }
+@keyframes laClock { 0% { transform: rotate(-40deg); } 100% { transform: rotate(40deg); } }
+.la-spark, .la-spark2 { animation: laSpark 1.6s ease-in-out infinite; }
+.la-spark2 { animation-delay: .5s; }
+@keyframes laSpark { 0%,100% { opacity: .2; transform: scale(.6); } 50% { opacity: 1; transform: scale(1.2); } }
+@media (prefers-reduced-motion: reduce) { .ls-art .la * { animation: none !important; } }
 .ls-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
 .ls-tag .gi { width: 14px; height: 14px; }
 .ls-h { font-size: 22px; font-weight: 900; color: var(--text); margin: 6px 0 14px; }
