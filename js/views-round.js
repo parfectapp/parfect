@@ -25,10 +25,17 @@ function scorecard(holes, offset = 0) {
 }
 
 /* ---------- Tarjeta de golf en vivo (tabla, se llena hoyo a hoyo) ---------- */
+/* marca de golf clásica: círculo=birdie, doble=águila, cuadro=bogey, doble=doble bogey */
+function scoreMarker(score, par) {
+  if (score == null) return '·';
+  const d = score - par;
+  const sh = d <= -2 ? 'mk-circ2 mk-under' : d === -1 ? 'mk-circ mk-under' : d === 1 ? 'mk-sq mk-over' : d >= 2 ? 'mk-sq2 mk-over' : '';
+  return `<span class="sc-mark ${sh}">${score}</span>`;
+}
 function scTableCell(score, par, cur) {
   if (score == null) return `<td class="${cur ? 'sc-cur' : ''}">·</td>`;
   const cls = scCellClass(score - par);
-  return `<td class="${cls} ${cur ? 'sc-cur' : ''}">${score}</td>`;
+  return `<td class="${cls} ${cur ? 'sc-cur' : ''}">${scoreMarker(score, par)}</td>`;
 }
 
 /**
@@ -168,10 +175,13 @@ function vSetup() {
   const teeRow = TEES.map(t => `<button class="su-tee ${tid === t.id ? 'on' : ''}" data-act="setup-pick-tee" data-t="${t.id}">
       <span class="su-tee-dot" style="background:${teeCol[t.id] || '#ccc'}"></span>${esc(t.name)}
     </button>`).join('');
-  return `<div class="su-hero">
-      <span class="su-hero-tag">${golfIcon('flag')} Nueva ronda</span>
-      <h1 class="su-hero-h">¿Listo para jugar?</h1>
-      <p class="su-hero-sub">Elige tu campo y tus salidas. Registras cada hoyo en segundos.</p>
+  return `<div class="su-hero2">
+      <div class="su-hero2-txt">
+        <span class="su-hero-tag">${golfIcon('flag')} Nueva ronda</span>
+        <h1 class="su-hero-h">¿Listo para jugar?</h1>
+        <p class="su-hero-sub">Arma tu ronda en segundos.</p>
+      </div>
+      <div class="su-hero2-art">${holeScene(4)}</div>
     </div>
     <div class="su-block">
       <span class="su-lab">Campo</span>
@@ -696,6 +706,37 @@ function vSummary(a) {
 }
 
 /* ---------- Detalle de ronda guardada ---------- */
+/* Tarjeta de golf completa: par, yds, score con círculo/cuadro, y FW/GIR/U&D por hoyo */
+function vDetailCard(r, parOf, ydsOf) {
+  const n = r.holes.length;
+  const has18 = n > 9;
+  const seg = (a, b) => Array.from({ length: Math.max(0, b - a) }, (_, k) => a + k);
+  const front = seg(0, Math.min(9, n)), back = has18 ? seg(9, n) : [];
+  const blocks = has18 ? [['Ida', front], ['Vuelta', back]] : [['', front]];
+  const dot = v => v == null ? `<span class="dc-dot na"></span>` : `<span class="dc-dot ${v ? 'hit' : 'miss'}"></span>`;
+  const sumIf = (fn, arr) => { let s = 0, a = false; for (const i of arr) { const v = fn(i); if (v != null) { s += v; a = true; } } return a ? s : ''; };
+  const scoreOf = i => (r.holes[i] ? r.holes[i].score : null);
+  const blockHtml = ([lab, arr]) => {
+    const cells = (fn, cls) => arr.map(i => `<span class="dcell ${cls || ''}">${fn(i)}</span>`).join('');
+    const fwOf = i => { const h = r.holes[i]; return !h ? null : (h.par === 3 ? null : teeIsFairway(h)); };
+    const girOf = i => { const h = r.holes[i]; return !h ? null : (h.app === 'gir'); };
+    const udOf = i => { const h = r.holes[i]; if (!h || h.app === 'gir') return null; return h.upDown === true; };
+    return `<div class="dc-block">
+      <div class="dc-grid" style="grid-template-columns:54px repeat(${arr.length},1fr) 40px">
+        <span class="dc-rl dc-corner">${lab || 'Hoyo'}</span>${cells(i => i + 1, 'dc-num')}<span class="dc-rl dc-tt">TOT</span>
+        <span class="dc-rl">Par</span>${cells(i => parOf(i), 'dc-par')}<span class="dcell dc-tt">${sumIf(parOf, arr)}</span>
+        ${ydsOf ? `<span class="dc-rl">Yds</span>${cells(i => ydsOf(i) || '–', 'dc-yds')}<span class="dcell dc-tt">${sumIf(ydsOf, arr)}</span>` : ''}
+        <span class="dc-rl">Score</span>${cells(i => scoreMarker(scoreOf(i), parOf(i)), 'dc-score')}<span class="dcell dc-tt dc-tot">${sumIf(scoreOf, arr)}</span>
+        <span class="dc-rl">Calle</span>${cells(i => dot(fwOf(i)))}<span class="dc-rl dc-tt"></span>
+        <span class="dc-rl">Green</span>${cells(i => dot(girOf(i)))}<span class="dc-rl dc-tt"></span>
+        <span class="dc-rl">Up&down</span>${cells(i => dot(udOf(i)))}<span class="dc-rl dc-tt"></span>
+      </div>
+    </div>`;
+  };
+  return `<div class="dc-scroll">${blocks.map(blockHtml).join('')}</div>
+    <div class="dc-legend"><span><i class="dc-dot hit"></i> logrado</span><span><i class="dc-dot miss"></i> fallado</span><span><i class="dc-mark mk-circ">3</i> birdie</span><span><i class="dc-mark mk-sq">5</i> bogey</span></div>`;
+}
+
 function vRoundDetail() {
   const r = S.rounds.find(x => x.id === V.detail);
   if (!r) return vRondaTab();
@@ -723,8 +764,9 @@ function vRoundDetail() {
       ${statCard(String(s.putts), 'Putts', Stats.clamp(((38 - (s.putts * 18) / s.holes) / 11) * 100, 0, 100))}
     </div>
     <div class="card">
-      <span class="label">Tarjeta · ${esc(courseName)}</span>
-      ${scorecardTable(r.holes.length, parOf, [{ name: cur().name.split(' ')[0], scoreOf: i => (r.holes[i] ? r.holes[i].score : null) }], -1, ydsOf)}
+      <span class="label">${golfIcon('card')} Tu tarjeta · ${esc(courseName)}</span>
+      ${vDetailCard(r, parOf, ydsOf)}
     </div>
+    ${roundAnalysis(r, s)}
     <button class="btn danger" data-act="round-delete" data-id="${r.id}">${V.delArm === r.id ? '¿Seguro? Toca otra vez para eliminar' : 'Eliminar esta ronda'}</button>`;
 }
