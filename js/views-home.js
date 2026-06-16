@@ -435,21 +435,17 @@ function vDashboard() {
     ${vHomeLearn()}</div>`;
 }
 
-/* accesos a Academia y Clases desde Inicio (hasta abajo) */
+/* acceso a la Academia desde Inicio (hasta abajo) */
 function vHomeLearn() {
   return `<div class="sec-h" style="margin-top:22px"><h2 style="font-size:16px">Aprende y entrena</h2></div>
-    <div class="hl-grid">
-      <button class="hl-card" data-act="go-academia">
-        <span class="hl-ic">${golfIcon('flag')}</span>
-        <b>Academia</b><span>Aprende golf de 0 a élite, hoyo por hoyo.</span>
-        <i class="hl-go">Jugar →</i>
-      </button>
-      <button class="hl-card" data-act="go-clases">
-        <span class="hl-ic">${golfIcon('medal')}</span>
-        <b>Clases</b><span>Tu coach, próximas clases y comentarios.</span>
-        <i class="hl-go">Abrir →</i>
-      </button>
-    </div>`;
+    <button class="ac-launch" data-act="academia-start">
+      <div class="ac-launch-bird">${senseiBird('')}</div>
+      <div class="ac-launch-tx">
+        <b>Academia de golf</b>
+        <span>Recorre el campo hoyo por hoyo con tu guía. De 0 a élite.</span>
+      </div>
+      <span class="ac-launch-go">Jugar →</span>
+    </button>`;
 }
 
 /* Tira horizontal con tus últimas rondas (scroll) */
@@ -848,8 +844,10 @@ const TOURNAMENT = {
     ],
   },
   upcoming: [
-    { name: 'Torneo Aniversario', course: 'Tres Marías', date: '28 jun' },
-    { name: 'Match Play Amigos', course: 'Altozano', date: '5 jul' },
+    { type: 'torneo', name: 'Torneo Aniversario', course: 'Tres Marías', date: '28 jun' },
+    { type: 'clase', name: 'Clase: Wedges 50–90 m', course: 'Coach Hugo · Campestre', date: '24 jun · 9:00' },
+    { type: 'torneo', name: 'Match Play Amigos', course: 'Altozano', date: '5 jul' },
+    { type: 'clase', name: 'Clase: Putting & lag', course: 'Coach Hugo · Campestre', date: '1 jul · 17:30' },
   ],
 };
 function vTorneo(u) {
@@ -864,17 +862,20 @@ function vTorneo(u) {
       <span class="tr-score ${p.score <= 0 ? 'good' : ''}">${fmtToPar(p.score)}</span>
     </div>`;
   }).join('');
-  const ups = TOURNAMENT.upcoming.map(x => `<div class="tr-up">
-      <span class="tr-up-ic">${golfIcon('flag')}</span>
+  const ups = TOURNAMENT.upcoming.map(x => {
+    const clase = x.type === 'clase';
+    return `<div class="tr-up ${clase ? 'is-clase' : ''}">
+      <span class="tr-up-ic">${golfIcon(clase ? 'medal' : 'flag')}</span>
       <div class="tr-up-info"><b>${esc(x.name)}</b><span>${esc(x.course)} · ${esc(x.date)}</span></div>
-      <button class="tr-up-btn" data-act="noop">Apuntarme</button>
-    </div>`).join('');
+      <button class="tr-up-btn" data-act="noop">${clase ? 'Confirmar' : 'Apuntarme'}</button>
+    </div>`;
+  }).join('');
   return `<div class="sec-h"><h2>Torneo en juego ${golfIcon('trophy')}</h2><span class="small muted">${t.ends}</span></div>
     <div class="tr-card">
       <div class="tr-head"><b>${esc(t.name)}</b><span>${esc(t.course)}</span></div>
       <div class="tr-board">${rows}</div>
     </div>
-    <div class="sec-h" style="margin-top:20px"><h2 style="font-size:18px">Próximos torneos</h2></div>
+    <div class="sec-h" style="margin-top:20px"><h2 style="font-size:18px">Próximos eventos</h2></div>
     <div class="tr-ups">${ups}</div>`;
 }
 
@@ -954,9 +955,6 @@ function vProfile() {
           </div>
           <input type="file" id="import-file" accept="application/json,.json" style="display:none" onchange="parfectImport(this)">
           <p class="note">Tus datos viven en este dispositivo. Exporta una copia cada tanto para no perderlos si cambias de teléfono o limpias el navegador.</p>
-          <hr class="set-div">
-          <div class="set-row"><span class="set-lab">Soy coach<br><span class="note" style="margin:0">Activa el modo entrenador en la pestaña Clases</span></span>
-            <button class="switch ${u.isCoach ? 'on' : ''}" data-act="coach-mode" data-c="${u.isCoach ? '0' : '1'}" role="switch" aria-checked="${u.isCoach ? 'true' : 'false'}" aria-label="Soy coach"><span class="switch-dot"></span></button></div>
           <hr class="set-div">
           <button class="btn ghost" data-act="seed-demo">${t('load_demo')}</button>
           <button class="btn danger" data-act="wipe-mine">${V.wipeArm ? t('wipe_confirm') : t('wipe')}</button>

@@ -230,14 +230,28 @@ function vAcademy() {
   }).join('');
   const curLesson = currentId ? academyLesson(currentId) : null;
   const curNo = prog.done + 1;
-  return `<div class="ac-top">
-      <div class="ac-progwrap"><div class="ac-progbar"><i style="width:${pct}%"></i></div><span>Hoyo ${Math.min(curNo, prog.total)} de ${prog.total}</span></div>
-      ${curLesson
-      ? `<button class="btn primary big ac-play" data-act="lesson-open" data-id="${currentId}">${golfIcon('flag')} Jugar hoyo ${curNo}: ${esc(curLesson.t)} →</button>`
-      : `<p class="note" style="margin:10px 0 0">🏆 ¡Recorriste todo el campo! Eres leyenda de la Academia.</p>`}
+  const bubble = curLesson
+    ? `¡Vamos al hoyo ${curNo}!<br><b>${esc(curLesson.t)}</b>`
+    : `🏆 ¡Recorriste todo el campo!<br><b>Eres leyenda de la Academia.</b>`;
+  return `<div class="shell no-nav fade-in acw">
+    <svg class="acw-hills" viewBox="0 0 400 200" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <path d="M0,120 Q110,80 210,104 T400,96 L400,200 L0,200 Z" fill="#cfe9a8"/>
+      <path d="M0,150 Q120,116 250,138 T400,128 L400,200 L0,200 Z" fill="#a9d877"/>
+    </svg>
+    <div class="play-top">
+      <button class="x" data-act="academia-exit">✕ Salir</button>
+      <span class="label">Academia</span>
+      <span class="small muted">${Math.min(curNo, prog.total)}/${prog.total}</span>
     </div>
+    <div class="acw-guide">
+      <div class="acw-bird">${senseiBird('')}</div>
+      <div class="acw-bubble">${bubble}</div>
+    </div>
+    <div class="ac-progwrap acw-prog"><div class="ac-progbar"><i style="width:${pct}%"></i></div><span>Hoyo ${Math.min(curNo, prog.total)} de ${prog.total}</span></div>
+    ${curLesson ? `<button class="btn primary big ac-play" data-act="lesson-open" data-id="${currentId}">${golfIcon('flag')} Jugar hoyo ${curNo} →</button>` : ''}
     ${units}
-    ${V.lesson ? vLessonSheet() : ''}`;
+    ${V.lesson ? vLessonSheet() : ''}
+  </div>`;
 }
 
 function vLessonSheet() {

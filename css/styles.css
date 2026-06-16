@@ -1850,6 +1850,32 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .ac-hole.lock .ac-htx b { color: var(--muted); }
 @media (prefers-reduced-motion: reduce) { .ac-flag { animation: none !important; } }
 
+/* academia inmersiva (pantalla completa) */
+.acw { position: relative; min-height: 100vh; background: linear-gradient(180deg, #cdeafd 0%, #e6f5db 30%, var(--bg) 66%); }
+[data-theme="dark"] .acw { background: linear-gradient(180deg, #13283f 0%, #0e1f14 32%, var(--bg) 70%); }
+.acw-hills { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 30vh; z-index: 0; opacity: .5; pointer-events: none; }
+[data-theme="dark"] .acw-hills { opacity: .25; }
+.acw > *:not(.acw-hills) { position: relative; z-index: 1; }
+.acw-guide { display: flex; align-items: flex-start; gap: 12px; margin: 6px 0 14px; }
+.acw-bird { flex: none; width: 64px; height: 64px; }
+.acw-bird .sbird { width: 64px; height: 64px; }
+.acw-bubble { position: relative; flex: 1; background: var(--card); border: 1px solid var(--line); border-radius: 16px; border-top-left-radius: 4px; padding: 12px 14px; font-size: 14px; line-height: 1.4; color: var(--text); box-shadow: 0 8px 22px rgba(20,40,15,.08); }
+.acw-bubble b { color: var(--lime-ink); }
+.acw-prog { margin-bottom: 12px; }
+
+/* tarjeta para lanzar la academia (biblioteca / inicio) */
+.ac-launch { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 15px 14px; border-radius: 20px; border: 1px solid var(--line); background: linear-gradient(120deg, var(--lime-faint), var(--card)); cursor: pointer; box-shadow: 0 10px 26px rgba(20,40,15,.08); margin-bottom: 4px; }
+.ac-launch:active { transform: scale(.99); }
+.ac-launch-bird { flex: none; width: 54px; height: 54px; }
+.ac-launch-bird .sbird { width: 54px; height: 54px; }
+.ac-launch-tx { flex: 1; min-width: 0; }
+.ac-launch-tx b { display: block; font-size: 16px; font-weight: 900; color: var(--text); }
+.ac-launch-tx span { font-size: 12.5px; color: var(--muted); line-height: 1.4; }
+.ac-launch-bar { height: 6px; border-radius: 99px; background: var(--card2); overflow: hidden; margin: 8px 0 3px; }
+.ac-launch-bar i { display: block; height: 100%; background: var(--lime); border-radius: 99px; }
+.ac-launch-tx small { font-size: 10.5px; font-weight: 700; color: var(--muted); }
+.ac-launch-go { flex: none; font-size: 13px; font-weight: 900; color: var(--lime-ink); }
+
 /* hoja de lección */
 .lsheet { max-height: 88vh; overflow-y: auto; }
 .ls-art { width: 100%; height: 130px; border-radius: 16px; overflow: hidden; margin: 4px 0 16px; background: linear-gradient(#cdeafd, #e8f6dd); }
