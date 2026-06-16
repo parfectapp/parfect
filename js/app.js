@@ -211,6 +211,8 @@ const actions = {
   'set-skin'(d) { const u = cur(); if (u && CARD_SKINS.some(s => s.k === d.k)) { u.cardSkin = d.k; commit(); } },
   'stat-open'(d) { V.statOpen = (V.statOpen === d.k) ? null : d.k; render(); },
   'go-trofeos'() { V.profileOpen = false; V.trainerTab = 'objetivos'; go('trainer'); },
+  'go-academia'() { V.profileOpen = false; V.trainerTab = 'academia'; go('trainer'); window.scrollTo(0, 0); },
+  'go-clases'() { V.profileOpen = false; V.trainerTab = 'coach'; go('trainer'); window.scrollTo(0, 0); },
   'profile-close'() { V.profileOpen = false; V.wipeArm = false; render(); },
   'prof-campo'(d) {
     const u = cur();

@@ -32,13 +32,8 @@ function studentNotes(id) { return clubInit().notes.filter(n => n.studentId === 
 function vCoach() {
   const u = cur();
   const isCoach = !!u.isCoach;
-  const toggle = `<div class="cz-mode">
-    <button class="cz-tab ${!isCoach ? 'on' : ''}" data-act="coach-mode" data-c="0">Soy alumno</button>
-    <button class="cz-tab ${isCoach ? 'on' : ''}" data-act="coach-mode" data-c="1">Soy coach</button>
-  </div>`;
   return `<div class="cz-top">
-      <p class="note" style="margin:6px 0 12px">PARFECT para clubes: tu coach ve tus stats, te agenda clases y te deja comentarios. Cambia de rol para probar las dos vistas.</p>
-      ${toggle}
+      <p class="note" style="margin:6px 0 12px">${isCoach ? 'Modo coach activo. Gestiona a tus alumnos: stats, clases y comentarios.' : 'Tus clases y comentarios de tu coach. Si eres entrenador, activa el modo coach en tu perfil.'}</p>
     </div>
     ${isCoach ? vCoachPanel(u) : vStudentPanel(u)}`;
 }

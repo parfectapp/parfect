@@ -431,7 +431,25 @@ function vDashboard() {
 
   return `<div class="dash">${head}
     ${vPlayerCard(u, agg)}
-    ${rounds.length ? vRecentStrip(rounds) : ''}</div>`;
+    ${rounds.length ? vRecentStrip(rounds) : ''}
+    ${vHomeLearn()}</div>`;
+}
+
+/* accesos a Academia y Clases desde Inicio (hasta abajo) */
+function vHomeLearn() {
+  return `<div class="sec-h" style="margin-top:22px"><h2 style="font-size:16px">Aprende y entrena</h2></div>
+    <div class="hl-grid">
+      <button class="hl-card" data-act="go-academia">
+        <span class="hl-ic">${golfIcon('flag')}</span>
+        <b>Academia</b><span>Aprende golf de 0 a élite, hoyo por hoyo.</span>
+        <i class="hl-go">Jugar →</i>
+      </button>
+      <button class="hl-card" data-act="go-clases">
+        <span class="hl-ic">${golfIcon('medal')}</span>
+        <b>Clases</b><span>Tu coach, próximas clases y comentarios.</span>
+        <i class="hl-go">Abrir →</i>
+      </button>
+    </div>`;
 }
 
 /* Tira horizontal con tus últimas rondas (scroll) */
@@ -906,6 +924,9 @@ function vProfile() {
           </div>
           <input type="file" id="import-file" accept="application/json,.json" style="display:none" onchange="parfectImport(this)">
           <p class="note">Tus datos viven en este dispositivo. Exporta una copia cada tanto para no perderlos si cambias de teléfono o limpias el navegador.</p>
+          <hr class="set-div">
+          <div class="set-row"><span class="set-lab">Soy coach<br><span class="note" style="margin:0">Activa el modo entrenador en la pestaña Clases</span></span>
+            <button class="switch ${u.isCoach ? 'on' : ''}" data-act="coach-mode" data-c="${u.isCoach ? '0' : '1'}" role="switch" aria-checked="${u.isCoach ? 'true' : 'false'}" aria-label="Soy coach"><span class="switch-dot"></span></button></div>
           <hr class="set-div">
           <button class="btn ghost" data-act="seed-demo">${t('load_demo')}</button>
           <button class="btn danger" data-act="wipe-mine">${V.wipeArm ? t('wipe_confirm') : t('wipe')}</button>

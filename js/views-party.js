@@ -42,7 +42,8 @@ function vPartySetup() {
       <div class="pg-tx"><b>${g.name} <i class="pg-tag">${gmeta[k].tag}</i></b><p>${g.desc}</p></div>
       <span class="pg-check">${d.games[k] ? '✓' : ''}</span>
     </button>`).join('');
-  const stakeChips = [0, 10, 20, 50, 100].map(v => `<button class="chip ${(d.stake || 0) === v ? 'on' : ''}" data-act="pd-stake" data-v="${v}">${v === 0 ? 'Sin dinero' : '$' + v}</button>`).join('');
+  const betOn = (d.stake || 0) > 0;
+  const stakeChips = [10, 20, 50, 100].map(v => `<button class="chip ${d.stake === v ? 'on' : ''}" data-act="pd-stake" data-v="${v}">$${v}</button>`).join('');
   return `<div class="shell no-nav fade-in">
     <button class="auth-back" data-act="nav" data-view="social">← Social</button>
     <div class="su-hero2 party-hero su-hero-course">
@@ -62,9 +63,13 @@ function vPartySetup() {
       <div class="party-games">${gameCards}</div>
     </div>
     <div class="su-block">
-      <span class="su-lab">Apuesta por unidad</span>
-      <div class="chips">${stakeChips}</div>
-      ${(d.stake || 0) > 0 ? `<p class="su-meta">El que pierde paga <b class="lime">$${d.stake}</b> por cada unidad de diferencia · se liquida al final.</p>` : `<p class="su-meta">Sin dinero — solo por honor y presumir.</p>`}
+      <span class="su-lab">Apuesta</span>
+      <div class="chips">
+        <button class="chip ${!betOn ? 'on' : ''}" data-act="pd-bet" data-v="0">Sin dinero</button>
+        <button class="chip ${betOn ? 'on' : ''}" data-act="pd-bet" data-v="1">Con dinero</button>
+      </div>
+      ${betOn ? `<div class="chips" style="margin-top:8px">${stakeChips}</div>
+        <p class="su-meta">El que pierde paga <b class="lime">$${d.stake}</b> por cada unidad de diferencia · se liquida al final.</p>` : `<p class="su-meta">Sin dinero — solo por honor y presumir.</p>`}
     </div>
     <div class="su-block">
       <button class="pg-card net-card ${d.useNet ? 'on' : ''}" data-act="pd-net">
@@ -536,6 +541,7 @@ const partyActions = {
   'pd-game'(d) { V.partyDraft.games[d.g] = !V.partyDraft.games[d.g]; render(); },   // multi-selección
   'pd-net'() { V.partyDraft.useNet = !V.partyDraft.useNet; render(); },
   'pd-stake'(d) { V.partyDraft.stake = Number(d.v) || 0; render(); },
+  'pd-bet'(d) { V.partyDraft.stake = d.v === '1' ? (V.partyDraft.stake > 0 ? V.partyDraft.stake : 20) : 0; render(); },
   'party-create'() {
     const d = V.partyDraft;
     const u = cur();
