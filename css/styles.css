@@ -2168,3 +2168,23 @@ svg.fd-av { object-fit: contain; }
 /* vars de las escenas dentro del wizard */
 .wz { --sc-grass:#7fcf5a; --sc-grass2:#3f9d44; --sc-lit:#d8f86a; --sc-dim:#d2e4c2; --sc-line:#9fb98c; --sc-flag:#ff5a4d; --sc-ball:#ffffff; --sc-cup:#1f3a16; --sc-shadow:rgba(30,60,20,.1); --sc-water1:#7cc4e8; --sc-water2:#2f7fb0; }
 [data-theme="dark"] .wz { --sc-grass:#5fb84a; --sc-grass2:#2f7d3a; --sc-lit:#bdf24a; --sc-dim:#2c4030; --sc-line:#4a5e44; --sc-flag:#ff6a5a; --sc-ball:#eef5ee; --sc-cup:#0c1a0a; --sc-shadow:rgba(0,0,0,.3); --sc-water1:#3f9fd0; --sc-water2:#1d5a86; }
+
+/* ===== Fondo mejorado: 3er pájaro, bolas ocasionales, luna con cráteres ===== */
+.bb3 { top: 24%; right: 0; transform: scale(.85); animation: bgbird 31s linear infinite, flyBob .92s ease-in-out infinite alternate; animation-delay: -22s; filter: hue-rotate(265deg) saturate(1.3); }
+[data-theme="dark"] .bb3 { display: none; }
+/* bolas de golf que vuelan sutilmente, de vez en cuando */
+.bg-gball { width: 13px; height: 13px; }
+.gb1 { bottom: 34%; animation: bgball 22s ease-in-out infinite !important; }
+.gb2 { bottom: 22%; animation: bgball 27s ease-in-out infinite !important; animation-delay: -13s; }
+@keyframes bgball {
+  0%, 70% { transform: translate(-8vw, 0); opacity: 0; }
+  74% { opacity: .95; }
+  86% { transform: translate(52vw, -130px); opacity: .95; }
+  100% { transform: translate(112vw, 50px); opacity: 0; }
+}
+/* luna con cráteres en modo noche */
+[data-theme="dark"] .app-bg .bg-orb { position: absolute; }
+[data-theme="dark"] .app-bg .bg-orb::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background:
+  radial-gradient(5px 5px at 62% 38%, rgba(120,132,168,.55), transparent 60%),
+  radial-gradient(8px 8px at 40% 60%, rgba(120,132,168,.45), transparent 62%),
+  radial-gradient(4px 4px at 68% 68%, rgba(120,132,168,.5), transparent 60%); }
