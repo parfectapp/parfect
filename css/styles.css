@@ -1868,3 +1868,53 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .app-content.view-in .rc-list .rc2:nth-child(3) { animation-delay: .1s; }
 .app-content.view-in .rc-list .rc2:nth-child(4) { animation-delay: .15s; }
 .app-content.view-in .rc-list .rc2:nth-child(n+5) { animation-delay: .2s; }
+
+/* ===== Social enriquecido: historias + liga ===== */
+.story-row { display: flex; gap: 13px; overflow-x: auto; -webkit-overflow-scrolling: touch; padding: 4px 2px 12px; margin: 0 -2px; scrollbar-width: none; }
+.story-row::-webkit-scrollbar { display: none; }
+.story { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 5px; width: 60px; }
+.story-ring { width: 58px; height: 58px; border-radius: 50%; padding: 3px; background: conic-gradient(from 210deg, #C7EE54, #6ec24f, #46b0e0, #C7EE54); display: grid; place-items: center; }
+.story.me .story-ring { background: conic-gradient(from 210deg, #ffd76a, #e8a93a, #ffd76a); }
+.story-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: var(--card); border: 2px solid var(--card); }
+.story-nm { font-size: 11px; font-weight: 700; color: var(--text); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rk-card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 8px 8px 6px; box-shadow: 0 8px 22px rgba(20,40,15,.06); margin-top: 4px; }
+.rk-row { display: flex; align-items: center; gap: 11px; padding: 9px 10px; border-radius: 14px; }
+.rk-row.me { background: var(--lime-faint); }
+.rk-pos { flex: none; width: 24px; height: 24px; border-radius: 8px; display: grid; place-items: center; font-size: 13px; font-weight: 900; color: var(--muted); background: var(--card2); }
+.rk-pos.top1 { background: linear-gradient(140deg,#ffe79a,#e0a93a); color: #5a3d00; }
+.rk-pos.top2 { background: linear-gradient(140deg,#eef1f5,#b9c4ce); color: #3a444e; }
+.rk-pos.top3 { background: linear-gradient(140deg,#f0c69a,#c98a52); color: #4a2c12; }
+.rk-av { width: 34px; height: 34px; flex: none; border-radius: 50%; overflow: hidden; background: var(--card2); display: grid; place-items: center; }
+.rk-img { width: 31px; height: 31px; object-fit: contain; }
+.rk-info { flex: 1; min-width: 0; }
+.rk-info b { font-size: 14px; font-weight: 800; color: var(--text); }
+.rk-info span { display: block; font-size: 11px; color: var(--muted); }
+.rk-score { flex: none; font-size: 17px; font-weight: 900; letter-spacing: -.02em; color: var(--text); }
+.rk-score.good { color: #3aa055; }
+.rk-foot { font-size: 10.5px; color: var(--muted); text-align: center; margin: 6px 0 4px; }
+.fd-topc { font-size: 12.5px; color: var(--muted); margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-soft); line-height: 1.4; }
+.fd-topc b { color: var(--text); font-weight: 800; margin-right: 4px; }
+
+/* ===== Bolsa de golf visual ===== */
+.bag-visual { --bag-body:#3f8f3a; --bag-pocket:#357a32; --bag-line:#2a6128; --bag-strap:#2a6128; --bag-rim:#2a6128; --bag-hole:#16401c; --bag-shaft:#cfd6dd; --bag-wood:#2a3550; --bag-iron:#aeb8c2; --bag-wedge:#d2dae1; --sc-shadow:rgba(20,40,15,.12);
+  position: relative; display: flex; flex-direction: column; align-items: center; padding: 4px 0 6px; }
+[data-theme="dark"] .bag-visual { --bag-body:#2f7d3a; --bag-pocket:#276830; --bag-line:#1a4a22; --bag-strap:#1a4a22; --bag-rim:#1a4a22; --bag-hole:#0c2410; --bag-shaft:#aeb8c2; --bag-wood:#1b2540; --bag-iron:#8893a0; --bag-wedge:#b6c0c9; --sc-shadow:rgba(0,0,0,.3); }
+.bag-svg { width: 180px; height: 170px; display: block; filter: drop-shadow(0 8px 12px rgba(20,40,10,.18)); }
+.bag-count { display: inline-flex; align-items: baseline; gap: 5px; margin-top: 2px; padding: 4px 14px; border-radius: 99px; background: var(--lime-faint); }
+.bag-count b { font-size: 17px; font-weight: 900; color: var(--text); }
+.bag-count span { font-size: 12px; font-weight: 700; color: var(--muted); }
+.bgc-grp { display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 800; color: var(--muted); margin: 16px 0 8px; }
+.bgc-grp .gi { width: 15px; height: 15px; color: var(--lime); }
+.bgc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.bgc-tile { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 11px 13px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--card2); text-align: left; cursor: pointer; min-height: 56px; transition: transform .12s, border-color .15s, background .15s; }
+.bgc-tile:active { transform: scale(.97); }
+.bgc-tile.off { align-items: center; justify-content: center; flex-direction: row; gap: 7px; border-style: dashed; color: var(--muted); }
+.bgc-tile.on { border-color: #C7EE54; background: var(--lime-faint); }
+.bgc-plus { font-size: 17px; font-weight: 900; color: var(--lime); }
+.bgc-nm { font-size: 13.5px; font-weight: 800; color: var(--text); }
+.bgc-tile.off .bgc-nm { color: var(--muted); font-weight: 700; }
+.bgc-x { position: absolute; top: 7px; right: 7px; width: 20px; height: 20px; border-radius: 50%; border: none; background: var(--card); color: var(--muted); font-size: 14px; font-weight: 900; line-height: 1; display: grid; place-items: center; cursor: pointer; }
+.bgc-carry { display: inline-flex; align-items: baseline; gap: 3px; }
+.bgc-in { width: 58px; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 3px 4px; font-size: 14px; font-weight: 800; color: var(--text); text-align: center; -moz-appearance: textfield; }
+.bgc-in::-webkit-outer-spin-button, .bgc-in::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.bgc-carry i { font-size: 11px; font-style: normal; font-weight: 700; color: var(--muted); }

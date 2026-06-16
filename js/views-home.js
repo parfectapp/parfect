@@ -483,23 +483,33 @@ function vScoreDist(agg) {
 /* ---- carry de cada bastón de mi bolsa (editable aquí mismo) ---- */
 function vBagEditor(u) {
   const clubs = u.clubs || {};
-  const groupName = { largo: t('grp_woods'), hierros: t('grp_irons'), wedges: t('grp_wedges') };
-  const groupIc = { largo: 'club', hierros: 'tee', wedges: 'green' };
-  const sections = ['largo', 'hierros', 'wedges'].map(g => {
+  const hasSet = Object.keys(clubs).some(k => clubs[k] != null);
+  const ids = hasSet ? CLUBS.filter(c => clubs[c.id] != null).map(c => c.id) : DEFAULT_BAG.slice();
+  const inBag = id => ids.includes(id);
+  const groups = [['largo', 'Maderas e híbridos', 'club'], ['hierros', 'Hierros', 'tee'], ['wedges', 'Wedges', 'green']];
+  const sections = groups.map(([g, label, ic]) => {
     const tiles = CLUBS.filter(c => c.group === g).map(c => {
-      const cc = clubC(clubs, c.id);
-      return `<div class="carry-tile">
-        <input class="carry-in" id="club-c-${c.id}" type="number" inputmode="numeric" placeholder="${CLUB_DEFAULT[c.id]}" value="${cc != null ? cc : ''}">
-        <span>${esc(c.name)}</span>
-      </div>`;
+      const on = inBag(c.id);
+      const carry = clubC(clubs, c.id);
+      const cv = carry != null ? carry : CLUB_DEFAULT[c.id];
+      return on
+        ? `<div class="bgc-tile on">
+            <button class="bgc-x" data-act="bag-toggle" data-id="${c.id}" aria-label="Quitar">×</button>
+            <span class="bgc-nm">${esc(c.name)}</span>
+            <span class="bgc-carry"><input id="club-c-${c.id}" class="bgc-in" type="number" inputmode="numeric" value="${cv}"><i>yds</i></span>
+          </div>`
+        : `<button class="bgc-tile off" data-act="bag-toggle" data-id="${c.id}"><span class="bgc-plus">+</span><span class="bgc-nm">${esc(c.name)}</span></button>`;
     }).join('');
-    return `<p class="sd-sub">${golfIcon(groupIc[g])} ${groupName[g]}</p><div class="carry-grid">${tiles}</div>`;
+    return `<p class="bgc-grp">${golfIcon(ic)} ${label}</p><div class="bgc-grid">${tiles}</div>`;
   }).join('');
   return `<div class="card">
-    <span class="label">${golfIcon('club')} ${t('bag_title')}</span>
-    <p class="note" style="margin-top:0;margin-bottom:6px">${t('bag_note')}</p>
+    <div class="bag-visual">
+      ${golfBagSVG(ids)}
+      <div class="bag-count"><b>${ids.length}</b><span>de 14 palos</span></div>
+    </div>
+    <p class="note" style="margin:0 0 10px">Toca un palo para meterlo o sacarlo de tu bolsa. Ajusta las yardas de los que tengas.</p>
     ${sections}
-    <button class="btn primary" data-act="save-clubs" style="margin-top:14px">${t('bag_save')}</button>
+    <button class="btn primary" data-act="save-clubs" style="margin-top:14px">Guardar distancias</button>
   </div>`;
 }
 
@@ -681,11 +691,11 @@ function pstRing(label, pct, icon) {
 /* ============ Perfil (página) ============ */
 /* Posts de amigos (sembrados — sin backend) */
 const FRIENDS_FEED = [
-  { id: 'f3', name: 'Rodrigo Pérez', av: 3, hcp: 5, course: 'Campestre', holes: 18, score: 75, toPar: 3, fw: 72, gir: 67, putts: 29, when: 'hace 2 h', cmt: 5, likes: 24, cap: 'Tres birdies seguidos en los hoyos 5 al 7. Día redondo.' },
-  { id: 'f1', name: 'Diego Salinas', av: 1, hcp: 8, course: 'Tres Marías', holes: 18, score: 82, toPar: 10, fw: 61, gir: 50, putts: 31, when: 'hace 4 h', cmt: 3, likes: 12, cap: 'Por fin rompí 85. El putt cayó hoy.' },
-  { id: 'f2', name: 'Mariana Ortiz', av: 2, hcp: 14, course: 'Altozano', holes: 9, score: 44, toPar: 8, fw: 55, gir: 33, putts: 17, when: 'hace 6 h', cmt: 1, likes: 6, cap: 'Vientos pesados en la trasera nueve.' },
-  { id: 'f5', name: 'Andrés Gil', av: 5, hcp: 11, course: 'Altozano', holes: 18, score: 88, toPar: 16, fw: 50, gir: 44, putts: 33, when: 'ayer', cmt: 2, likes: 9, cap: 'El bunker del 14 me tiene de cliente.' },
-  { id: 'f4', name: 'Sofía Lara', av: 4, hcp: 19, course: 'Tres Marías', holes: 18, score: 95, toPar: 23, fw: 44, gir: 22, putts: 36, when: 'ayer', cmt: 4, likes: 7, cap: 'Salí a jugar aunque no estaba fina. Vale la pena igual.' },
+  { id: 'f3', name: 'Rodrigo Pérez', av: 3, hcp: 5, course: 'Campestre', holes: 18, score: 75, toPar: 3, fw: 72, gir: 67, putts: 29, when: 'hace 2 h', cmt: 5, likes: 24, cap: 'Tres birdies seguidos en los hoyos 5 al 7. Día redondo.', top: { by: 'Diego', txt: 'Crack absoluto, te alcanzo el finde.' } },
+  { id: 'f1', name: 'Diego Salinas', av: 1, hcp: 8, course: 'Tres Marías', holes: 18, score: 82, toPar: 10, fw: 61, gir: 50, putts: 31, when: 'hace 4 h', cmt: 3, likes: 12, cap: 'Por fin rompí 85. El putt cayó hoy.', top: { by: 'Mariana', txt: 'Ese putt del 18 estuvo brutal.' } },
+  { id: 'f2', name: 'Mariana Ortiz', av: 2, hcp: 14, course: 'Altozano', holes: 9, score: 44, toPar: 8, fw: 55, gir: 33, putts: 17, when: 'hace 6 h', cmt: 1, likes: 6, cap: 'Vientos pesados en la trasera nueve.', top: { by: 'Andrés', txt: 'Igual aguantaste bien el viento.' } },
+  { id: 'f5', name: 'Andrés Gil', av: 5, hcp: 11, course: 'Altozano', holes: 18, score: 88, toPar: 16, fw: 50, gir: 44, putts: 33, when: 'ayer', cmt: 2, likes: 9, cap: 'El bunker del 14 me tiene de cliente.', top: { by: 'Rodrigo', txt: 'Jaja ese bunker es trampa segura.' } },
+  { id: 'f4', name: 'Sofía Lara', av: 4, hcp: 19, course: 'Tres Marías', holes: 18, score: 95, toPar: 23, fw: 44, gir: 22, putts: 36, when: 'ayer', cmt: 4, likes: 7, cap: 'Salí a jugar aunque no estaba fina. Vale la pena igual.', top: { by: 'Sofía', txt: 'Esa actitud es la que cuenta.' } },
 ];
 
 function vSocialFeed() {
@@ -721,15 +731,58 @@ function vSocialFeed() {
         <button class="fd-like ${liked ? 'on' : ''}" data-act="feed-like" data-id="${p.id}">${heartIcon()}<span>${ln}</span></button>
         <span class="fd-cmt">${commentIcon()}<span>${p.cmt || 0}</span></span>
       </div>
+      ${p.top ? `<div class="fd-topc"><b>${esc(p.top.by)}</b> ${esc(p.top.txt)}</div>` : ''}
     </div>`;
   }).join('');
-  return `<div class="sec-h"><h2>Feed de amigos</h2><span class="small muted">${FRIENDS_FEED.length} jugando hoy</span></div>
+  return `<div class="sec-h" style="margin-top:6px"><h2>Feed de amigos</h2></div>
     <button class="fd-share" data-act="share-round">${golfIcon('flag')} Comparte tu última ronda</button>
     <div class="fd-list">${cards}</div>`;
 }
 
+/* tabla de tu liga de amigos (mejor ronda de la semana, normalizada a 18) */
+function socialLeaders(u) {
+  const mine = myRounds();
+  const e = FRIENDS_FEED.map(f => ({ name: f.name, av: f.av, hcp: f.hcp, toPar18: Math.round(f.toPar / f.holes * 18), score: f.score }));
+  if (mine.length) {
+    const s = Stats.roundStats(mine[0]);
+    e.push({ me: true, name: u.name, hcp: u.hcp, toPar18: Math.round(s.toPar / Math.max(1, s.holes) * 18), score: s.score });
+  }
+  return e.sort((a, b) => a.toPar18 - b.toPar18);
+}
+
+/* fila de historias: quién está jugando */
+function vStories(u) {
+  const cells = [`<div class="story me">
+      <span class="story-ring">${avatarImg(u, 'story-img')}</span><span class="story-nm">Tú</span></div>`]
+    .concat(FRIENDS_FEED.map(f => `<div class="story">
+      <span class="story-ring"><img class="story-img golfer" src="${AVATARS[f.av] || AVATARS[0]}" alt="" loading="lazy"></span>
+      <span class="story-nm">${esc(f.name.split(' ')[0])}</span></div>`)).join('');
+  return `<div class="story-row">${cells}</div>`;
+}
+
+/* liga de amigos: ranking */
+function vRanking(u) {
+  const lead = socialLeaders(u);
+  const myPos = lead.findIndex(e => e.me) + 1;
+  const rows = lead.map((e, i) => {
+    const pos = i + 1;
+    const av = e.me ? avatarImg(u, 'rk-img') : `<img class="rk-img golfer" src="${AVATARS[e.av] || AVATARS[0]}" alt="" loading="lazy">`;
+    return `<div class="rk-row ${e.me ? 'me' : ''}">
+      <span class="rk-pos ${pos <= 3 ? 'top' + pos : ''}">${pos}</span>
+      <span class="rk-av">${av}</span>
+      <div class="rk-info"><b>${esc(e.me ? e.name.split(' ')[0] + ' (tú)' : e.name)}</b><span>HCP ${fmtHcp(e.hcp)}</span></div>
+      <span class="rk-score ${e.toPar18 <= 0 ? 'good' : ''}">${e.toPar18 > 0 ? '+' : ''}${e.toPar18}</span>
+    </div>`;
+  }).join('');
+  return `<div class="sec-h"><h2>Liga de amigos</h2>${myPos ? `<span class="small muted">vas #${myPos} de ${lead.length}</span>` : ''}</div>
+    <div class="rk-card">${rows}<p class="rk-foot">Mejor ronda de la semana · ajustada a 18 hoyos</p></div>`;
+}
+
 function vPerfil() {
-  return vSocialFeed();
+  const u = cur();
+  return `${vStories(u)}
+    ${vRanking(u)}
+    ${vSocialFeed()}`;
 }
 
 /* ============ Bienvenida / onboarding (primer ingreso) ============ */

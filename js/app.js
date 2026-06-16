@@ -276,6 +276,19 @@ const actions = {
   'set-lang'(d) { S.settings = S.settings || {}; S.settings.lang = d.v === 'en' ? 'en' : 'es'; commit(); },
   'set-theme'(d) { S.settings = S.settings || {}; S.settings.theme = d.v === 'light' ? 'light' : 'dark'; commit(); },
   'bag-edit'() { V.bagEdit = true; render(); },
+  'bag-toggle'(d) {
+    const u = cur(); if (!u) return;
+    let clubs = (u.clubs && Object.keys(u.clubs).some(k => u.clubs[k] != null)) ? Object.assign({}, u.clubs) : {};
+    if (!Object.keys(clubs).length) DEFAULT_BAG.forEach(id => { clubs[id] = { c: CLUB_DEFAULT[id], e: CLUB_EFF_DEFAULT }; });
+    if (clubs[d.id] != null) {
+      if (Object.keys(clubs).length <= 1) return;
+      delete clubs[d.id];
+    } else {
+      if (Object.keys(clubs).length >= 14) return;
+      clubs[d.id] = { c: CLUB_DEFAULT[d.id], e: CLUB_EFF_DEFAULT };
+    }
+    u.clubs = clubs; commit();
+  },
   'bag-close'() { V.bagEdit = false; render(); },
   'set-avatar'(d) { const u = cur(); if (u) { u.avatar = Number(d.i) || 0; commit(); } },
   'set-outfit'(d) { const u = cur(); if (u) { u.outfit = d.k || 'rank'; commit(); } },

@@ -360,6 +360,38 @@ const GOLF_ICONS = {
   peak: `<path d="M3 27 L13 9 L17 17 L21 11 L29 27 Z" fill="#3a4a30"/><path d="M13 9 L9.5 16 L16.5 16 Z" fill="#eef3e6"/><rect x="20.5" y="4" width="1.5" height="9" rx=".7" fill="#cdd6c2"/><g class="gi-wave" style="transform-origin:21px 5px"><path d="M21.8 4 L28 6 L21.8 8.4 Z" fill="#c9f73e"/></g>`,
   hand: `<path d="M11 16 V8 a1.6 1.6 0 0 1 3.2 0 v6 m0 -1 V6.5 a1.6 1.6 0 0 1 3.2 0 V14 m0 -1 V7.5 a1.6 1.6 0 0 1 3.2 0 V15 m0 -2 a1.6 1.6 0 0 1 3.2 0 v5 a7 7 0 0 1 -7 7 h-2 a7 7 0 0 1 -6 -4 l-2.5 -4 a1.7 1.7 0 0 1 2.8 -1.8 L11 18 Z" fill="#ddcb8c"/>`,
 };
+/* ====== Bolsa de golf visual: clubs abanicados según los que tengas ====== */
+function golfBagSVG(ids) {
+  const list = (ids || []).map(id => (typeof CLUBS !== 'undefined' ? CLUBS.find(c => c.id === id) : null)).filter(Boolean);
+  const n = Math.min(list.length, 14);
+  const cx = 100, oy = 122, spread = 86;
+  let shafts = '';
+  for (let i = 0; i < n; i++) {
+    const c = list[i];
+    const tpos = n > 1 ? i / (n - 1) : 0.5;
+    const ang = (-spread / 2 + spread * tpos) * Math.PI / 180;
+    const len = 72 + (i % 2) * 9;
+    const ex = cx + Math.sin(ang) * len, ey = oy - Math.cos(ang) * len;
+    const deg = (ang * 180 / Math.PI).toFixed(0);
+    const isWood = c.group === 'largo';
+    const col = isWood ? 'var(--bag-wood)' : c.group === 'wedges' ? 'var(--bag-wedge)' : 'var(--bag-iron)';
+    shafts += `<line x1="${cx}" y1="${oy}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="var(--bag-shaft)" stroke-width="2.3" stroke-linecap="round"/>`;
+    shafts += isWood
+      ? `<ellipse cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" rx="7" ry="5" fill="${col}" transform="rotate(${deg} ${ex.toFixed(1)} ${ey.toFixed(1)})"/>`
+      : `<rect x="${(ex - 4.2).toFixed(1)}" y="${(ey - 5.5).toFixed(1)}" width="8.4" height="10" rx="1.8" fill="${col}" transform="rotate(${deg} ${ex.toFixed(1)} ${ey.toFixed(1)})"/>`;
+  }
+  const bag = `
+    <ellipse cx="100" cy="200" rx="44" ry="7" fill="var(--sc-shadow,rgba(20,40,15,.12))"/>
+    <path d="M70 122 Q70 113 79 113 L121 113 Q130 113 130 122 L133 190 Q133 198 124 198 L76 198 Q67 198 67 190 Z" fill="var(--bag-body)"/>
+    <rect x="74" y="132" width="52" height="32" rx="8" fill="var(--bag-pocket)"/>
+    <rect x="84" y="143" width="32" height="5" rx="2.5" fill="var(--bag-line)"/>
+    <rect x="84" y="152" width="22" height="4" rx="2" fill="var(--bag-line)"/>
+    <path d="M129 126 q17 30 6 66" fill="none" stroke="var(--bag-strap)" stroke-width="5.5" stroke-linecap="round"/>
+    <ellipse cx="100" cy="118" rx="33" ry="6.5" fill="var(--bag-rim)"/>
+    <ellipse cx="100" cy="117" rx="27" ry="4.5" fill="var(--bag-hole)"/>`;
+  return `<svg viewBox="0 24 200 184" class="bag-svg" aria-hidden="true">${shafts}${bag}</svg>`;
+}
+
 function heartIcon() { return `<svg class="fdi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.3C.7 9 2 5.6 5.2 5.1 7.2 4.8 9 5.9 12 8.8c3-2.9 4.8-4 6.8-3.7C22 5.6 23.3 9 22 11.7 19.5 16.4 12 21 12 21z"/></svg>`; }
 function commentIcon() { return `<svg class="fdi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l.9-5A8 8 0 1 1 21 12z"/></svg>`; }
 
