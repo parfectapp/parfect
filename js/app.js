@@ -170,6 +170,35 @@ function render() {
 let drillInt = null;
 function stopDrillTimer() { if (drillInt) { clearInterval(drillInt); drillInt = null; } if (V._tid) { clearInterval(V._tid); V._tid = null; } }
 function fmtClock(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+/* pitido(s) para la sesión guiada (Web Audio, sin assets) */
+function srBeep(n) {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    const ac = window.__ac || (window.__ac = new AC()); if (ac.state === 'suspended') ac.resume();
+    for (let i = 0; i < (n || 1); i++) {
+      const o = ac.createOscillator(), g = ac.createGain(); o.connect(g); g.connect(ac.destination);
+      o.type = 'sine'; o.frequency.value = 880; const t = ac.currentTime + i * 0.28;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.32, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.2);
+      o.start(t); o.stop(t + 0.22);
+    }
+  } catch (e) {}
+}
+/* corre la sesión guiada: cuenta regresiva por bloque, pita y avanza al cambiar */
+function srStartInterval() {
+  clearInterval(V._srtid);
+  V._srtid = setInterval(() => {
+    const r = V.sessionRun; if (!r || !r.running) { clearInterval(V._srtid); return; }
+    r.left--;
+    if (r.left <= 0) {
+      srBeep(1); r.idx++;
+      if (r.idx >= r.blocks.length) { clearInterval(V._srtid); srBeep(2); V.sessionRun = null; if (typeof celebrate === 'function') celebrate(true, '¡Sesión completa!'); render(); return; }
+      r.left = r.blocks[r.idx].min * 60; render(); return;
+    }
+    const el = document.getElementById('sr-clock'); if (!el) { clearInterval(V._srtid); return; }
+    el.textContent = fmtClock(r.left);
+    const bar = document.getElementById('sr-bar'); if (bar) { const tot = r.blocks[r.idx].min * 60; bar.style.width = (100 * (1 - r.left / tot)).toFixed(1) + '%'; }
+  }, 1000);
+}
 const actions = {
   noop() {},
 
@@ -582,6 +611,22 @@ const actions = {
   'session-min'(d) { V.sessionMin = Number(d.m) || 60; render(); },
   'plan-time'(d) { V.sessionMin = Number(d.m) || 60; V.planStep = 'mode'; render(); window.scrollTo(0, 0); },
   'plan-mode'(d) { V.planMode = d.m; if (d.m === 'me') V.planStep = 'areas'; else if (d.m === 'free') { V.planStep = 'free'; V.freeTimer = { secs: 0, running: false }; } else V.planStep = 'plan'; render(); window.scrollTo(0, 0); },
+  'session-run-start'() {
+    const u = cur(); if (!u) return;
+    const blocks = buildSessionBlocks(u, Stats.aggregate(myRounds()), V.sessionMin || 60, V.planMode, V.planAreas);
+    if (!blocks.length) return;
+    V.sessionRun = { blocks, idx: 0, left: blocks[0].min * 60, running: true };
+    srBeep(1); srStartInterval(); render(); window.scrollTo(0, 0);
+  },
+  'session-run-pause'() { clearInterval(V._srtid); if (V.sessionRun) V.sessionRun.running = false; render(); },
+  'session-run-resume'() { if (V.sessionRun) { V.sessionRun.running = true; srStartInterval(); render(); } },
+  'session-run-skip'() {
+    const r = V.sessionRun; if (!r) return;
+    srBeep(1); r.idx++;
+    if (r.idx >= r.blocks.length) { clearInterval(V._srtid); srBeep(2); V.sessionRun = null; if (typeof celebrate === 'function') celebrate(true, '¡Sesión completa!'); render(); return; }
+    r.left = r.blocks[r.idx].min * 60; render();
+  },
+  'session-run-stop'() { clearInterval(V._srtid); V.sessionRun = null; render(); },
   'free-club'(d) { V.freeClub = d.c; render(); },
   'free-start'() {
     if (!V.freeClub) return;

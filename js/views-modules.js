@@ -451,39 +451,65 @@ function vSessionPlanner() {
       <button class="sp-back" data-act="plan-mode-back">← Atrás</button>
     </div>`;
   }
-  // step plan: arma la línea de tiempo
+  // step plan: si hay sesión guiada corriendo, muéstrala; si no, la línea de tiempo + botón
+  if (V.sessionRun) return vSessionRunner();
+  const ai = V.planMode !== 'me';
+  const blocks = buildSessionBlocks(u, agg, T, V.planMode, V.planAreas);
+  let clock = 0;
+  const seg = (b) => {
+    const from = clock; clock += b.min;
+    return `<div class="sp-seg">
+      <span class="sp-time">${from}–${clock}'</span>
+      <span class="sp-dot ${b.warm ? 'warm' : ''}">${golfIcon(b.icon)}</span>
+      <div class="sp-body"><b>${esc(b.label)} <i class="sp-min">${b.min} min</i></b>
+        ${b.drill ? `<button class="sp-drill" data-act="drill-open" data-name="${esc(b.drill)}">${golfIcon('green')} ${esc(b.drill)} →</button>` : `<span class="sp-note">Calienta progresivo: wedge → hierros → driver</span>`}
+      </div></div>`;
+  };
+  const timeline = blocks.map(seg).join('');
+  return `<div class="card sp-card">
+    <div class="sp-head"><span class="label">${golfIcon('flag')} Tu sesión · ${spFmtMin(T)}</span><span class="sp-total">${ai ? 'IA' : 'tú eliges'}</span></div>
+    <div class="sp-timeline">${timeline}</div>
+    <button class="btn primary big" data-act="session-run-start" style="margin-top:14px">▶ Iniciar sesión guiada</button>
+    <button class="btn ghost" data-act="plan-reset" style="margin-top:8px">↺ Nueva sesión</button>
+    ${ai && !agg ? `<p class="note" style="margin-top:10px">Registra una ronda para que la IA ajuste el plan a tus debilidades reales.</p>` : ''}
+  </div>`;
+}
+
+/* arma los bloques de la sesión (calentamiento + áreas), usado por la línea de tiempo y el runner */
+function buildSessionBlocks(u, agg, T, mode, areas) {
   const warm = Math.max(5, Math.round(T * 0.12));
   const rem = T - warm;
   let blocks;
-  const ai = V.planMode !== 'me';
-  if (ai) {
+  if (mode !== 'me') {
     let focus = agg ? Trainer.analyze(agg, u).focus.slice(0, 4) : [];
     if (!focus.length) focus = Object.keys(SP_AREAS).map(k => ({ key: k, titulo: SP_AREAS[k].label, lost: 1, drills: [] }));
     const totalLost = focus.reduce((a, f) => a + Math.max(0.25, f.lost), 0);
     blocks = focus.map(f => ({ label: (SP_AREAS[f.key] || {}).label || f.titulo, icon: (SP_AREAS[f.key] || {}).icon || 'green', drill: (f.drills && f.drills[0]) ? f.drills[0].name : spDrill(f.key), min: Math.max(6, Math.round(rem * Math.max(0.25, f.lost) / totalLost)) }));
   } else {
-    const sel = (V.planAreas && V.planAreas.length) ? V.planAreas : ['driving', 'approach', 'short', 'putting'];
+    const sel = (areas && areas.length) ? areas : ['driving', 'approach', 'short', 'putting'];
     const per = Math.max(6, Math.round(rem / sel.length));
     blocks = sel.map(k => ({ label: SP_AREAS[k].label, icon: SP_AREAS[k].icon, drill: spDrill(k), min: per }));
   }
   const sum = blocks.reduce((a, b) => a + b.min, 0);
   if (blocks.length) blocks[blocks.length - 1].min = Math.max(5, blocks[blocks.length - 1].min + (rem - sum));
-  let clock = 0;
-  const seg = (label, icon, min, drill, lead) => {
-    const from = clock; clock += min;
-    return `<div class="sp-seg">
-      <span class="sp-time">${from}–${clock}'</span>
-      <span class="sp-dot ${lead ? 'warm' : ''}">${golfIcon(icon)}</span>
-      <div class="sp-body"><b>${esc(label)} <i class="sp-min">${min} min</i></b>
-        ${drill ? `<button class="sp-drill" data-act="drill-open" data-name="${esc(drill)}">${golfIcon('green')} ${esc(drill)} →</button>` : `<span class="sp-note">${esc(lead || '')}</span>`}
-      </div></div>`;
-  };
-  const timeline = seg('Calentamiento', 'bucket', warm, null, 'Calienta progresivo: wedge → hierros → driver') + blocks.map(b => seg(b.label, b.icon, b.min, b.drill)).join('');
-  return `<div class="card sp-card">
-    <div class="sp-head"><span class="label">${golfIcon('flag')} Tu sesión · ${spFmtMin(T)}</span><span class="sp-total">${ai ? 'IA' : 'tú eliges'}</span></div>
-    <div class="sp-timeline">${timeline}</div>
-    <button class="btn ghost" data-act="plan-reset" style="margin-top:12px">↺ Nueva sesión</button>
-    ${ai && !agg ? `<p class="note" style="margin-top:10px">Registra una ronda para que la IA ajuste el plan a tus debilidades reales.</p>` : ''}
+  return [{ label: 'Calentamiento', icon: 'bucket', drill: null, min: warm, warm: true }, ...blocks];
+}
+
+/* sesión guiada en curso: bloque actual + cuenta regresiva + pitidos al cambiar */
+function vSessionRunner() {
+  const r = V.sessionRun; const b = r.blocks[r.idx]; const next = r.blocks[r.idx + 1];
+  const tot = b.min * 60; const pct = Math.round(100 * (1 - r.left / tot));
+  return `<div class="card sp-card sr-card">
+    <div class="sp-phase">Sesión en curso · bloque ${r.idx + 1} de ${r.blocks.length}</div>
+    <div class="sr-now"><span class="sr-ic">${golfIcon(b.icon)}</span><div class="sr-nowtx"><b>${esc(b.label)}</b>${b.drill ? `<button class="sr-drill" data-act="drill-open" data-name="${esc(b.drill)}">${esc(b.drill)} →</button>` : `<span>Calienta progresivo</span>`}</div></div>
+    <div class="sr-clock" id="sr-clock">${fmtClock(r.left)}</div>
+    <div class="sr-bar"><i id="sr-bar" style="width:${pct}%"></i></div>
+    <p class="sr-next">${next ? 'Sigue: ' + esc(next.label) + ' · ' + next.min + ' min' : '¡Último bloque!'}</p>
+    <div class="ddt2-ctrls">
+      ${r.running ? `<button class="btn" data-act="session-run-pause">⏸ Pausar</button>` : `<button class="btn primary" data-act="session-run-resume">Reanudar ▶</button>`}
+      <button class="btn ghost" data-act="session-run-skip" aria-label="Saltar bloque">⏭</button>
+    </div>
+    <button class="sp-back" data-act="session-run-stop">Terminar sesión</button>
   </div>`;
 }
 

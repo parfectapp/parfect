@@ -1973,6 +1973,18 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .sp-areab.on { border-color: var(--lime); background: var(--lime-faint); }
 .sp-areaic { display: inline-flex; } .sp-areaic .gi { width: 18px; height: 18px; }
 .sp-back { display: block; margin: 12px auto 0; background: none; border: none; color: var(--muted); font-size: 12.5px; font-weight: 700; cursor: pointer; }
+/* sesión guiada en curso */
+.sr-card { text-align: center; }
+.sr-now { display: flex; align-items: center; gap: 12px; text-align: left; padding: 12px 14px; border-radius: 16px; background: var(--lime-faint); margin: 4px 0 14px; }
+.sr-ic { flex: none; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--card); }
+.sr-ic .gi { width: 24px; height: 24px; }
+.sr-nowtx b { display: block; font-size: 17px; font-weight: 900; color: var(--text); }
+.sr-nowtx span, .sr-drill { font-size: 12.5px; color: var(--muted); }
+.sr-drill { background: none; border: none; padding: 0; color: var(--lime-ink); font-weight: 800; cursor: pointer; }
+.sr-clock { display: block; font-size: 58px; font-weight: 900; letter-spacing: -.03em; color: var(--text); font-variant-numeric: tabular-nums; line-height: 1; }
+.sr-bar { height: 8px; border-radius: 99px; background: var(--card2); overflow: hidden; margin: 12px 0 8px; }
+.sr-bar i { display: block; height: 100%; border-radius: 99px; background: var(--lime); transition: width 1s linear; }
+.sr-next { font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 0 0 12px; }
 .free-clockbox { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 18px; border-radius: 18px; background: var(--card2); }
 .free-clock { font-size: 46px; font-weight: 900; letter-spacing: -.02em; color: var(--text); font-variant-numeric: tabular-nums; }
 .free-lab { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; color: var(--lime-ink); }
