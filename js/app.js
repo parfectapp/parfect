@@ -267,6 +267,32 @@ const actions = {
   'set-skin'(d) { const u = cur(); if (u && CARD_SKINS.some(s => s.k === d.k)) { u.cardSkin = d.k; commit(); } },
   'stat-open'(d) { V.statOpen = (V.statOpen === d.k) ? null : d.k; render(); },
   'go-trofeos'() { V.profileOpen = false; V.trainerTab = 'objetivos'; go('trainer'); },
+  'event-new'() { V.eventDraft = { name: '', courseId: 'campestre', date: (typeof addDays === 'function' ? addDays(today(), 3) : today()), time: '09:00', mode: 'casual', invitees: [] }; V.err = null; render(); },
+  'event-capName'() { if (V.eventDraft) V.eventDraft.name = (document.getElementById('ev-name') || {}).value || V.eventDraft.name; },
+  'event-course'(d) { actions['event-capName'](); if (V.eventDraft && COURSES[d.c]) V.eventDraft.courseId = d.c; render(); },
+  'event-mode'(d) { actions['event-capName'](); if (V.eventDraft) V.eventDraft.mode = d.m; render(); },
+  'event-invite'(d) { actions['event-capName'](); if (!V.eventDraft) return; const a = V.eventDraft.invitees; const i = a.indexOf(d.n); if (i >= 0) a.splice(i, 1); else a.push(d.n); render(); },
+  'event-create'() {
+    const d = V.eventDraft; if (!d) return;
+    const name = ((document.getElementById('ev-name') || {}).value || d.name || '').trim();
+    const date = (document.getElementById('ev-date') || {}).value || d.date;
+    const time = (document.getElementById('ev-time') || {}).value || d.time;
+    if (!name) { V.err = 'Ponle un nombre al evento.'; render(); return; }
+    const avOf = n => { const f = (typeof FRIENDS_FEED !== 'undefined') ? FRIENDS_FEED.find(x => x.name === n) : null; return f ? f.av : 0; };
+    S.events = S.events || [];
+    S.events.unshift({ id: Store.uid(), name, courseId: d.courseId, date, time, mode: d.mode, host: (cur() || {}).name, invitees: d.invitees.map(n => ({ name: n, av: avOf(n), status: 'pending' })) });
+    V.eventDraft = null; V.err = null;
+    if (typeof celebrate === 'function') celebrate(false, '¡Evento creado!');
+    commit();
+  },
+  'event-close'() { V.eventDraft = null; V.err = null; render(); },
+  'event-rsvp'(d) {
+    const e = (S.events || []).find(x => x.id === d.id); if (!e) return;
+    const inv = e.invitees.find(x => x.name === d.n); if (!inv) return;
+    inv.status = inv.status === 'pending' ? 'yes' : inv.status === 'yes' ? 'no' : 'pending';
+    commit();
+  },
+  'event-del'(d) { S.events = (S.events || []).filter(x => x.id !== d.id); commit(); },
   'academia-start'() { V.profileOpen = false; V.lesson = null; V.view = 'academia'; render(); window.scrollTo(0, 0); },
   'academia-exit'() { V.lesson = null; V.trainerTab = 'biblioteca'; V.view = 'trainer'; render(); window.scrollTo(0, 0); },
   'profile-close'() { V.profileOpen = false; V.wipeArm = false; render(); },

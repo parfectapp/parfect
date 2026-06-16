@@ -876,8 +876,49 @@ function vTorneo(u) {
       <div class="tr-head"><b>${esc(t.name)}</b><span>${esc(t.course)}</span></div>
       <div class="tr-board">${rows}</div>
     </div>
-    <div class="sec-h" style="margin-top:20px"><h2 style="font-size:18px">Próximos eventos</h2></div>
-    <div class="tr-ups">${ups}</div>`;
+    <div class="sec-h" style="margin-top:20px"><h2 style="font-size:18px">Próximos eventos</h2><button class="sec-link" data-act="event-new">+ Crear evento</button></div>
+    ${vEventsList(u)}
+    <div class="tr-ups">${ups}</div>
+    ${V.eventDraft ? vEventComposer(u) : ''}`;
+}
+
+const EV_MODE = { casual: 'Casual', medal: 'Medal', match: 'Match play', corta: 'La corta' };
+function evCourseName(c) { return (c && COURSES[c]) ? COURSES[c].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '') : (c || ''); }
+function vEventsList(u) {
+  const evs = S.events || [];
+  if (!evs.length) return '';
+  return evs.map(e => {
+    const yes = e.invitees.filter(i => i.status === 'yes').length;
+    const inv = e.invitees.map(i => `<button class="ev-inv st-${i.status}" data-act="event-rsvp" data-id="${e.id}" data-n="${esc(i.name)}" title="${esc(i.name)} · ${i.status === 'yes' ? 'va' : i.status === 'no' ? 'no va' : 'pendiente'}">${esc(initials(i.name))}</button>`).join('');
+    return `<div class="ev-card">
+      <div class="ev-top"><span class="ev-mode">${EV_MODE[e.mode] || e.mode}</span><button class="ev-del" data-act="event-del" data-id="${e.id}" aria-label="Borrar">✕</button></div>
+      <b class="ev-name">${esc(e.name)}</b>
+      <span class="ev-meta">${golfIcon('flag')} ${esc(evCourseName(e.courseId))} · ${esc(e.date)}${e.time ? ' · ' + esc(e.time) : ''}</span>
+      ${e.invitees.length ? `<div class="ev-invs">${inv}</div><span class="ev-conf">${yes}/${e.invitees.length} confirmaron · toca un amigo para marcar</span>` : `<span class="ev-conf">Sin invitados</span>`}
+    </div>`;
+  }).join('');
+}
+function vEventComposer(u) {
+  const d = V.eventDraft;
+  const courseChips = COURSE_ORDER.map(id => `<button class="chip sm ${d.courseId === id ? 'on' : ''}" data-act="event-course" data-c="${id}">${esc(evCourseName(id))}</button>`).join('');
+  const modeChips = Object.entries(EV_MODE).map(([k, l]) => `<button class="chip sm ${d.mode === k ? 'on' : ''}" data-act="event-mode" data-m="${k}">${l}</button>`).join('');
+  const friends = FRIENDS_FEED.map(f => `<button class="chip sm ${d.invitees.includes(f.name) ? 'on' : ''}" data-act="event-invite" data-n="${esc(f.name)}">${d.invitees.includes(f.name) ? '✓ ' : ''}${esc(f.name.split(' ')[0])}</button>`).join('');
+  return `<div class="overlay" data-act="event-close"><div class="sheet" data-act="noop">
+    <div class="grab"></div>
+    <h2>Crear evento</h2>
+    <p class="auth-sub">Organiza una jugada e invita a tus amigos. Cada quien confirma su lugar para cuadrar el tee time.</p>
+    <div class="field"><label>Nombre</label><input id="ev-name" placeholder="Ej. Domingo en Campestre" value="${esc(d.name || '')}"></div>
+    <div class="field"><label>Campo</label><div class="chips">${courseChips}</div></div>
+    <div class="cz-form2">
+      <div class="field"><label>Día</label><input id="ev-date" type="date" value="${esc(d.date)}"></div>
+      <div class="field"><label>Tee time</label><input id="ev-time" type="time" value="${esc(d.time)}"></div>
+    </div>
+    <div class="field"><label>Modalidad</label><div class="chips">${modeChips}</div></div>
+    <div class="field"><label>Invitar amigos</label><div class="chips" style="flex-wrap:wrap">${friends}</div></div>
+    ${V.err ? `<p class="form-err">${esc(V.err)}</p>` : ''}
+    <button class="btn primary" data-act="event-create">Crear e invitar</button>
+    <button class="btn" data-act="event-close">Cancelar</button>
+  </div></div>`;
 }
 
 function vPerfil() {

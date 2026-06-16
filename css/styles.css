@@ -110,6 +110,25 @@ body.in-app .app-bg .bg-cloud, body.in-app .app-bg .bg-bird, body.in-app .app-bg
 [data-theme="dark"] .bgc-green-sh { fill: #0a1530; }
 [data-theme="dark"] .bgc-sand { fill: #2a3550; }
 [data-theme="dark"] .bgc-fair { stroke: #1a2c44; opacity: 0.5; }
+/* paraíso de golf: árboles, lago con chorro, golfistas diminutos */
+.bgc-trunk { fill: #7a5230; } .bgc-leaf { fill: #3f9444; } .bgc-leaf2 { fill: #56af52; }
+[data-theme="dark"] .bgc-trunk { fill: #2a2438; } [data-theme="dark"] .bgc-leaf { fill: #173a26; } [data-theme="dark"] .bgc-leaf2 { fill: #1f4a30; }
+.bgc-lake { fill: #74c4e8; opacity: .8; } .bgc-lake-sh { fill: #fff; opacity: .4; animation: bgcShine 5s ease-in-out infinite; }
+[data-theme="dark"] .bgc-lake { fill: #1d4458; }
+@keyframes bgcShine { 0%,100% { transform: translateX(0); opacity: .3; } 50% { transform: translateX(7px); opacity: .5; } }
+.bgc-fpole { fill: #9fb0b3; } .bgc-fjet { stroke-dasharray: 3 4; animation: bgcJet 1.5s linear infinite; }
+@keyframes bgcJet { to { stroke-dashoffset: -14; } }
+.bgc-fdrop { animation: bgcDrop 1.4s ease-in infinite; } .bgc-fdrop.d2 { animation-delay: .5s; }
+@keyframes bgcDrop { 0% { transform: translateY(-4px); opacity: 0; } 35% { opacity: 1; } 100% { transform: translateY(12px); opacity: 0; } }
+.bgc-gsh { fill: #1a2a14; opacity: .2; } .bgc-gbody { fill: #34507a; } .bgc-gclub { stroke: #34507a; stroke-width: 1.4; stroke-linecap: round; transform-origin: 1px -8px; }
+[data-theme="dark"] .bgc-gbody { fill: #2a3a5a; } [data-theme="dark"] .bgc-gclub { stroke: #2a3a5a; }
+.bgc-ball { fill: #fff; }
+.bgc-golfer.gA .bgc-gclub { animation: bgcSwing 4s ease-in-out infinite; }
+.bgc-golfer.gB .bgc-gclub { animation: bgcSwing 4.6s ease-in-out infinite 1.2s; }
+@keyframes bgcSwing { 0%,60%,100% { transform: rotate(0deg); } 6% { transform: rotate(-54deg); } 14% { transform: rotate(26deg); } }
+.ballA { animation: bgcFly 4s ease-out infinite; } .ballB { animation: bgcFly 4.6s ease-out infinite 1.2s; }
+@keyframes bgcFly { 0%,12% { transform: translate(0,0); opacity: 0; } 16% { opacity: 1; } 55% { transform: translate(46px,-50px); opacity: 1; } 72% { transform: translate(82px,-12px); opacity: 0; } 100% { transform: translate(0,0); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .bgc-fjet, .bgc-fdrop, .bgc-lake-sh, .bgc-gclub, .bgc-ball { animation: none !important; } }
 body.is-scrolling .bg-cloud, body.is-scrolling .bg-bird, body.is-scrolling .bg-gball { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) { .bg-cloud, .bg-bird, .bg-gball, .bg-stars { animation: none !important; } .bg-bird { display: none; } }
 
@@ -2348,6 +2367,28 @@ svg.fd-av { object-fit: contain; }
 .c2-cell.up .c2-u, .c2-cell.up .c2-m { color: #3aa055; }
 .c2-cell.dn .c2-u, .c2-cell.dn .c2-m { color: var(--danger); }
 .c2-m { font-size: 11px; font-weight: 800; color: var(--muted); }
+
+/* eventos / jugadas próximas */
+.ev-card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px; margin-bottom: 10px; box-shadow: 0 8px 22px rgba(20,40,15,.06); }
+.ev-top { display: flex; align-items: center; justify-content: space-between; }
+.ev-mode { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: var(--lime-ink); background: var(--lime-faint); padding: 4px 10px; border-radius: 99px; }
+.ev-del { background: none; border: none; color: var(--muted); font-size: 15px; cursor: pointer; padding: 2px 4px; }
+.ev-name { display: block; font-size: 16px; font-weight: 900; color: var(--text); margin: 8px 0 3px; }
+.ev-meta { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); }
+.ev-meta .gi { width: 14px; height: 14px; color: var(--lime-ink); }
+.ev-invs { display: flex; flex-wrap: wrap; gap: 6px; margin: 11px 0 6px; }
+.ev-inv { position: relative; width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--line); background: var(--card2); font-size: 11px; font-weight: 900; color: var(--text); cursor: pointer; }
+.ev-inv.st-yes { border-color: #2fa36b; background: var(--lime-faint); color: #1f6b34; }
+[data-theme="dark"] .ev-inv.st-yes { color: #b7f08a; }
+.ev-inv.st-no { border-color: var(--danger); opacity: .6; text-decoration: line-through; }
+.ev-conf { font-size: 11px; font-weight: 700; color: var(--muted); }
+
+/* monto de apuesta personalizado */
+.su-stake-custom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 10px; padding: 8px 12px; border-radius: 14px; background: var(--card2); border: 1px solid var(--line); }
+.su-stakestep { display: flex; align-items: center; gap: 12px; }
+.su-stakestep b { font-size: 16px; font-weight: 900; color: var(--text); min-width: 56px; text-align: center; }
+.su-stakestep button { width: 34px; height: 34px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--card); color: var(--text); font-size: 19px; font-weight: 900; line-height: 1; cursor: pointer; }
+.su-stakestep button:active { transform: scale(.92); }
 
 /* extras de la corta con formato */
 .cx-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }

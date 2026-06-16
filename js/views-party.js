@@ -62,22 +62,27 @@ function vPartySetup() {
       <span class="su-lab">Juego de la party · elige uno o varios</span>
       <div class="party-games">${gameCards}</div>
     </div>
-    <div class="su-block">
-      <span class="su-lab">Apuesta</span>
+    ${selGames.length ? `<div class="su-block">
+      <span class="su-lab">¿Apostar? · ${selGames.join(' · ')}</span>
       <div class="chips">
         <button class="chip ${!betOn ? 'on' : ''}" data-act="pd-bet" data-v="0">Sin dinero</button>
         <button class="chip ${betOn ? 'on' : ''}" data-act="pd-bet" data-v="1">Con dinero</button>
       </div>
       ${betOn ? `<div class="chips" style="margin-top:8px">${stakeChips}</div>
+        <div class="su-stake-custom">
+          <span class="su-lab" style="margin:0">Monto personalizado</span>
+          <div class="su-stakestep"><button data-act="pd-stake-adj" data-d="-1" aria-label="Menos">−</button><b>$${d.stake}</b><button data-act="pd-stake-adj" data-d="1" aria-label="Más">+</button></div>
+        </div>
         <p class="su-meta">El que pierde paga <b class="lime">$${d.stake}</b> por cada unidad de diferencia · se liquida al final.</p>` : `<p class="su-meta">Sin dinero — solo por honor y presumir.</p>`}
     </div>
     <div class="su-block">
+      <span class="su-lab">Ventajas por hándicap</span>
       <button class="pg-card net-card ${d.useNet ? 'on' : ''}" data-act="pd-net">
         <span class="pg-ic">${golfIcon('medal')}</span>
-        <div class="pg-tx"><b>Jugar con hándicap (net)</b><p>Golpes de ventaja por jugador. Medal y Match se juegan con score neto.</p></div>
+        <div class="pg-tx"><b>Confirmar ventajas (net)</b><p>Da golpes de ventaja por jugador según su hándicap. Medal, Match y La corta se juegan con score neto. Ajustas los golpes de cada quien en el lobby.</p></div>
         <span class="pg-check">${d.useNet ? '✓' : ''}</span>
       </button>
-    </div>
+    </div>` : ''}
     <button class="btn primary big su-go" data-act="party-create" ${selGames.length ? '' : 'disabled'}>${golfIcon('flag')} ${selGames.length ? 'Crear party y código →' : 'Elige al menos un juego'}</button>
   </div>`;
 }
@@ -542,6 +547,7 @@ const partyActions = {
   'pd-net'() { V.partyDraft.useNet = !V.partyDraft.useNet; render(); },
   'pd-stake'(d) { V.partyDraft.stake = Number(d.v) || 0; render(); },
   'pd-bet'(d) { V.partyDraft.stake = d.v === '1' ? (V.partyDraft.stake > 0 ? V.partyDraft.stake : 20) : 0; render(); },
+  'pd-stake-adj'(d) { const cur = V.partyDraft.stake > 0 ? V.partyDraft.stake : 20; V.partyDraft.stake = Math.max(5, Math.min(2000, cur + Number(d.d) * 5)); render(); },
   'party-create'() {
     const d = V.partyDraft;
     const u = cur();
