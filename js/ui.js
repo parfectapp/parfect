@@ -360,6 +360,46 @@ const GOLF_ICONS = {
   peak: `<path d="M3 27 L13 9 L17 17 L21 11 L29 27 Z" fill="#3a4a30"/><path d="M13 9 L9.5 16 L16.5 16 Z" fill="#eef3e6"/><rect x="20.5" y="4" width="1.5" height="9" rx=".7" fill="#cdd6c2"/><g class="gi-wave" style="transform-origin:21px 5px"><path d="M21.8 4 L28 6 L21.8 8.4 Z" fill="#c9f73e"/></g>`,
   hand: `<path d="M11 16 V8 a1.6 1.6 0 0 1 3.2 0 v6 m0 -1 V6.5 a1.6 1.6 0 0 1 3.2 0 V14 m0 -1 V7.5 a1.6 1.6 0 0 1 3.2 0 V15 m0 -2 a1.6 1.6 0 0 1 3.2 0 v5 a7 7 0 0 1 -7 7 h-2 a7 7 0 0 1 -6 -4 l-2.5 -4 a1.7 1.7 0 0 1 2.8 -1.8 L11 18 Z" fill="#ddcb8c"/>`,
 };
+function heartIcon() { return `<svg class="fdi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-10-9.3C.7 9 2 5.6 5.2 5.1 7.2 4.8 9 5.9 12 8.8c3-2.9 4.8-4 6.8-3.7C22 5.6 23.3 9 22 11.7 19.5 16.4 12 21 12 21z"/></svg>`; }
+function commentIcon() { return `<svg class="fdi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 20l.9-5A8 8 0 1 1 21 12z"/></svg>`; }
+
+/* ====== Escenas 3D binarias para el registro de ronda (tócalas para marcar) ====== */
+function chkScene(kind, on) {
+  if (kind === 'fw') return `<svg viewBox="0 0 100 56" class="hs-svg" aria-hidden="true">
+    <defs><linearGradient id="hsfw" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="var(--sc-lit)"/><stop offset="1" stop-color="var(--sc-grass2)"/></linearGradient></defs>
+    <ellipse cx="50" cy="52" rx="38" ry="4.5" fill="var(--sc-shadow)"/>
+    <path d="M30 54 L70 54 L60 8 L40 8 Z" fill="${on ? 'url(#hsfw)' : 'var(--sc-dim)'}" stroke="var(--sc-line)" stroke-width="1.1"/>
+    <line x1="50" y1="8" x2="50" y2="54" stroke="var(--sc-line)" stroke-width="1" stroke-dasharray="3 4" opacity=".45"/>
+    <line x1="50" y1="8" x2="50" y2="2" stroke="var(--sc-cup)" stroke-width="1.3"/><path d="M50 2 L59 4.6 L50 7.2 Z" fill="var(--sc-flag)"/>
+    <circle cx="${on ? 50 : 80}" cy="${on ? 44 : 47}" r="3" fill="var(--sc-ball)" stroke="var(--sc-line)" stroke-width=".5"/>
+  </svg>`;
+  if (kind === 'gir') return `<svg viewBox="0 0 100 56" class="hs-svg" aria-hidden="true">
+    <defs><radialGradient id="hsgir" cx="50%" cy="36%" r="70%"><stop offset="0" stop-color="var(--sc-lit)"/><stop offset="1" stop-color="var(--sc-grass2)"/></radialGradient></defs>
+    <ellipse cx="50" cy="46" rx="40" ry="8" fill="var(--sc-dim)"/>
+    <ellipse cx="50" cy="32" rx="30" ry="12" fill="${on ? 'url(#hsgir)' : 'var(--sc-dim)'}" stroke="var(--sc-grass2)" stroke-width="1"/>
+    <line x1="58" y1="24" x2="58" y2="6" stroke="var(--sc-cup)" stroke-width="1.3"/><path d="M58 6 L67 8.6 L58 11.2 Z" fill="var(--sc-flag)"/>
+    <ellipse cx="58" cy="24" rx="2" ry=".8" fill="var(--sc-cup)"/>
+    <circle cx="${on ? 48 : 50}" cy="${on ? 34 : 50}" r="3" fill="var(--sc-ball)" stroke="var(--sc-line)" stroke-width=".5"/>
+  </svg>`;
+  if (kind === 'ud') {
+    const cx = on ? 44 : 72, cy = on ? 42 : 24, cr = on ? 4.6 : 3.4;
+    return `<svg viewBox="0 0 100 56" class="hs-svg" aria-hidden="true">
+      <ellipse cx="50" cy="48" rx="42" ry="7" fill="var(--sc-dim)"/>
+      <path d="M26 42 Q ${((26 + cx) / 2).toFixed(0)} ${(cy + 8).toFixed(0)} ${cx} ${cy}" fill="none" stroke="var(--sc-line)" stroke-width="1.3" stroke-dasharray="2.5 3" opacity=".7"/>
+      <ellipse cx="${cx}" cy="${cy}" rx="${cr}" ry="${(cr * 0.42).toFixed(1)}" fill="var(--sc-cup)"/>
+      <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy - 18}" stroke="var(--sc-cup)" stroke-width="1.3"/><path d="M${cx} ${cy - 18} L${cx + 9} ${cy - 15.4} L${cx} ${cy - 12.8} Z" fill="var(--sc-flag)"/>
+      <circle cx="26" cy="42" r="3.2" fill="var(--sc-ball)" stroke="var(--sc-line)" stroke-width=".5"/>
+    </svg>`;
+  }
+  return `<svg viewBox="0 0 100 56" class="hs-svg" aria-hidden="true">
+    <defs><linearGradient id="hspen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--sc-water1)"/><stop offset="1" stop-color="var(--sc-water2)"/></linearGradient></defs>
+    <ellipse cx="48" cy="50" rx="40" ry="5" fill="var(--sc-dim)"/>
+    <ellipse cx="${on ? 50 : 38}" cy="40" rx="${on ? 34 : 18}" ry="${on ? 13 : 7}" fill="url(#hspen)" stroke="var(--sc-water2)" stroke-width=".8" opacity="${on ? 1 : .8}"/>
+    ${on ? `<ellipse cx="50" cy="40" rx="9" ry="3.4" fill="none" stroke="#fff" stroke-width="1" opacity=".7"/><ellipse cx="50" cy="40" rx="15" ry="5.6" fill="none" stroke="#fff" stroke-width=".8" opacity=".38"/>` : ''}
+    <circle cx="${on ? 50 : 80}" cy="${on ? 40 : 45}" r="3" fill="var(--sc-ball)" stroke="var(--sc-line)" stroke-width=".5"/>
+  </svg>`;
+}
+
 function golfIcon(name, cls = '') {
   const body = GOLF_ICONS[name] || GOLF_ICONS.flag;
   return `<span class="gi ${cls}"><svg viewBox="0 0 32 32" aria-hidden="true">${body}</svg></span>`;

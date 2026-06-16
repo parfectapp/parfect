@@ -679,8 +679,58 @@ function pstRing(label, pct, icon) {
 }
 
 /* ============ Perfil (página) ============ */
+/* Posts de amigos (sembrados — sin backend) */
+const FRIENDS_FEED = [
+  { id: 'f3', name: 'Rodrigo Pérez', av: 3, hcp: 5, course: 'Campestre', holes: 18, score: 75, toPar: 3, fw: 72, gir: 67, putts: 29, when: 'hace 2 h', cmt: 5, likes: 24, cap: 'Tres birdies seguidos en los hoyos 5 al 7. Día redondo.' },
+  { id: 'f1', name: 'Diego Salinas', av: 1, hcp: 8, course: 'Tres Marías', holes: 18, score: 82, toPar: 10, fw: 61, gir: 50, putts: 31, when: 'hace 4 h', cmt: 3, likes: 12, cap: 'Por fin rompí 85. El putt cayó hoy.' },
+  { id: 'f2', name: 'Mariana Ortiz', av: 2, hcp: 14, course: 'Altozano', holes: 9, score: 44, toPar: 8, fw: 55, gir: 33, putts: 17, when: 'hace 6 h', cmt: 1, likes: 6, cap: 'Vientos pesados en la trasera nueve.' },
+  { id: 'f5', name: 'Andrés Gil', av: 5, hcp: 11, course: 'Altozano', holes: 18, score: 88, toPar: 16, fw: 50, gir: 44, putts: 33, when: 'ayer', cmt: 2, likes: 9, cap: 'El bunker del 14 me tiene de cliente.' },
+  { id: 'f4', name: 'Sofía Lara', av: 4, hcp: 19, course: 'Tres Marías', holes: 18, score: 95, toPar: 23, fw: 44, gir: 22, putts: 36, when: 'ayer', cmt: 4, likes: 7, cap: 'Salí a jugar aunque no estaba fina. Vale la pena igual.' },
+];
+
+function vSocialFeed() {
+  const u = cur();
+  const likes = u.likes || {};
+  const shared = u.shared || [];
+  const sname = c => (c && COURSES[c]) ? COURSES[c].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', '') : c;
+  const pct = (n, d) => d ? Math.round((n / d) * 100) : 0;
+  const myPosts = myRounds().filter(r => shared.includes(r.id)).map(r => {
+    const s = Stats.roundStats(r);
+    return { id: 'me-' + r.id, mine: true, name: u.name, course: r.courseId ? sname(r.courseId) : r.course, holes: s.holes, score: s.score, toPar: s.toPar, fw: pct(s.fw, s.fwTot), gir: pct(s.gir, s.girTot), putts: s.putts, when: fmtDate(r.date), cmt: 0, likes: 0, cap: '' };
+  });
+  const feed = [...myPosts, ...FRIENDS_FEED];
+  const cards = feed.map(p => {
+    const liked = !!likes[p.id];
+    const ln = (p.likes || 0) + (liked ? 1 : 0);
+    const scoreCls = p.toPar <= 0 ? 'good' : p.toPar <= Math.round(p.holes * 0.33) ? 'par' : 'over';
+    const av = p.mine ? avatarImg(u, 'fd-av') : `<img class="fd-av golfer" src="${AVATARS[p.av] || AVATARS[0]}" alt="" loading="lazy">`;
+    return `<div class="fd-card">
+      <div class="fd-head">
+        <span class="fd-avwrap">${av}</span>
+        <div class="fd-who"><b>${esc(p.name)}${p.mine ? ' <span class="fd-you">tú</span>' : ''}</b><span>${p.mine ? 'Tú · ' + p.when : 'HCP ' + fmtHcp(p.hcp) + ' · ' + p.when}</span></div>
+      </div>
+      ${p.cap ? `<p class="fd-cap">${esc(p.cap)}</p>` : ''}
+      <div class="fd-round">
+        <div class="fd-course"><b>${esc(p.course)}</b><span>${p.holes} hoyos</span></div>
+        <div class="fd-score ${scoreCls}"><b>${p.score}</b><span>${fmtToPar(p.toPar)}</span></div>
+      </div>
+      <div class="fd-stats">
+        <span><b>${p.fw}%</b> calles</span><span><b>${p.gir}%</b> GIR</span><span><b>${p.putts}</b> putts</span>
+      </div>
+      <div class="fd-actions">
+        <button class="fd-like ${liked ? 'on' : ''}" data-act="feed-like" data-id="${p.id}">${heartIcon()}<span>${ln}</span></button>
+        <span class="fd-cmt">${commentIcon()}<span>${p.cmt || 0}</span></span>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="sec-h"><h2>Feed de amigos</h2><span class="small muted">${FRIENDS_FEED.length} jugando hoy</span></div>
+    <button class="fd-share" data-act="share-round">${golfIcon('flag')} Comparte tu última ronda</button>
+    <div class="fd-list">${cards}</div>`;
+}
+
 function vPerfil() {
-  return `<div class="sec-h"><h2>Tu perfil</h2></div>
+  return `${vSocialFeed()}
+    <div class="sec-h" style="margin-top:24px"><h2>Tu perfil</h2></div>
     ${vLogros()}`;
 }
 

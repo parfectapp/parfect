@@ -522,10 +522,10 @@ function vPlay() {
   const ready = h.putts != null;
   const gir = h.app === 'gir';
 
-  const chk = (k, on, ic, label, sub) => `<button class="chk-row ${on ? 'on' : ''}" data-act="h-toggle" data-k="${k}">
-      <span class="chk-ic ic-${k}">${golfIcon(ic)}</span>
-      <span class="chk-lab">${label}<small>${sub}</small></span>
-      <span class="chk-box">${on ? '✓' : ''}</span>
+  const tile = (k, on, label, sub) => `<button class="hs-tile ic-${k} ${on ? 'on' : ''}" data-act="h-toggle" data-k="${k}">
+      <div class="hs-art">${chkScene(k, on)}</div>
+      <span class="hs-lab">${label}<small>${sub}</small></span>
+      <span class="hs-box">${on ? '✓' : ''}</span>
     </button>`;
 
   return `<div class="shell no-nav fade-in">
@@ -547,12 +547,12 @@ function vPlay() {
     </div>
 
     <div class="card hole-card">
-      <span class="hc-title">${golfIcon('tee')} Tu tiro</span>
-      <div class="hc-checks">
-        ${h.par !== 3 ? chk('fw', h.teeLie === 'calle', 'club', 'Fairway', 'le pegaste a la calle') : ''}
-        ${chk('gir', gir, 'green', 'Green en regulación', 'llegaste al green a tiempo')}
-        ${!gir ? chk('ud', h.upDown === true, 'flag', 'Up &amp; down', 'salvaste el par') : ''}
-        ${chk('pen', !!h.pen, 'bucket', 'Penalti / OB', 'agua, fuera de límites…')}
+      <span class="hc-title">${golfIcon('tee')} Tu tiro · toca lo que lograste</span>
+      <div class="hs-grid">
+        ${h.par !== 3 ? tile('fw', h.teeLie === 'calle', 'Fairway', 'le pegaste a la calle') : ''}
+        ${tile('gir', gir, 'Green', 'llegaste a tiempo')}
+        ${!gir ? tile('ud', h.upDown === true, 'Up &amp; down', 'salvaste el par') : ''}
+        ${tile('pen', !!h.pen, 'Penalti / OB', 'agua, fuera de límites')}
       </div>
     </div>
 

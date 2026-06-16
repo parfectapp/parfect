@@ -188,6 +188,17 @@ const actions = {
   /* ---- perfil ---- */
   'profile-open'() { V.wipeArm = false; go('perfil'); },
   'profile-edit'() { V.profileOpen = true; render(); },
+  'feed-like'(d) { const u = cur(); if (!u) return; u.likes = u.likes || {}; if (u.likes[d.id]) delete u.likes[d.id]; else u.likes[d.id] = true; commit(); },
+  'share-round'() {
+    const u = cur(); if (!u) return;
+    const rs = myRounds();
+    if (!rs.length) return;
+    u.shared = u.shared || [];
+    const last = rs[0].id;
+    if (!u.shared.includes(last)) u.shared.unshift(last);
+    if (typeof celebrate === 'function') celebrate(false, '¡Ronda compartida!');
+    commit();
+  },
   'card-picker'() { V.cardPicker = true; render(); },
   'card-picker-close'() { V.cardPicker = false; render(); },
   'set-skin'(d) { const u = cur(); if (u && CARD_SKINS.some(s => s.k === d.k)) { u.cardSkin = d.k; commit(); } },
