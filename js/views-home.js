@@ -587,6 +587,7 @@ function vAvatarCreator(u) {
     ? `<button class="cre-sw cre-none${curV === 'none' ? ' on' : ''}" data-act="gset" data-k="${k}" data-v="none" title="Sin gorra"><span>∅</span></button>`
     : `<button class="cre-sw${curV === v ? ' on' : ''}" data-act="gset" data-k="${k}" data-v="${v}"><span style="background:${v}"></span></button>`).join('')}</div>`;
   const customUI = usingCustom ? `
+    <div class="cre-grp"><span class="cre-lab">Tipo</span><div class="cre-row">${GOLF_TYPE.map(([v, n]) => `<button class="chip sm${g.type === v ? ' on' : ''}" data-act="gset" data-k="type" data-v="${v}">${n}</button>`).join('')}</div></div>
     <div class="cre-grp"><span class="cre-lab">Piel</span>${swRow('skin', GOLF_SKIN, g.skin)}</div>
     <div class="cre-grp"><span class="cre-lab">Pelo</span>${swRow('hair', GOLF_HAIR, g.hair)}</div>
     <div class="cre-grp"><span class="cre-lab">Gorra</span>${swRow('cap', GOLF_CAP, g.cap)}</div>

@@ -94,35 +94,49 @@ const GOLF_CAP = ['none', '#C7EE54', '#e8483a', '#2a3550', '#3a8fe0', '#f2c33a',
 const GOLF_SHIRT = ['#C7EE54', '#e8483a', '#3a8fe0', '#ff8a3d', '#9a5cd0', '#2fa36b', '#16241A', '#ffffff'];
 const GOLF_PANTS = ['#2a3550', '#5b6470', '#16241A', '#b5651d', '#3f8f3a', '#cdd3da', '#8a3d3d', '#5a3da0'];
 const GOLF_FACE = [['normal', 'Normal'], ['glasses', 'Lentes'], ['shades', 'Gafas de sol'], ['beard', 'Barba']];
-const GOLF_DEFAULT = { skin: '#f6d0aa', hair: '#2a1c12', cap: '#C7EE54', shirt: '#C7EE54', pants: '#2a3550', face: 'normal' };
+const GOLF_TYPE = [['hombre', 'Hombre'], ['mujer', 'Mujer'], ['nino', 'Niño'], ['nina', 'Niña']];
+const GOLF_DEFAULT = { type: 'hombre', skin: '#f6d0aa', hair: '#2a1c12', cap: 'none', shirt: '#C7EE54', pants: '#2a3550', face: 'normal' };
 function golferCfg(u) { return Object.assign({}, GOLF_DEFAULT, (u && u.golfer) || {}); }
 function golfAvatarSVG(cfg, cls, fil) {
   const c = Object.assign({}, GOLF_DEFAULT, cfg || {});
+  const female = c.type === 'mujer' || c.type === 'nina';
+  const kid = c.type === 'nino' || c.type === 'nina';
   const hasCap = c.cap && c.cap !== 'none';
-  const beard = c.face === 'beard' ? `<path d="M33 40 Q33 60 50 62 Q67 60 67 40 Q60 51 50 51 Q40 51 33 40Z" fill="${c.hair}"/>` : '';
+  const hr = kid ? 20.5 : 18.5;               // radio de cabeza
+  const beardC = (c.face === 'beard' && !female) ? `<path d="M33 40 Q33 60 50 62 Q67 60 67 40 Q60 51 50 51 Q40 51 33 40Z" fill="${c.hair}"/>` : '';
   let eyes = `<circle cx="43.5" cy="39" r="2.4" fill="#2a2118"/><circle cx="56.5" cy="39" r="2.4" fill="#2a2118"/>`, glasses = '';
   if (c.face === 'glasses') glasses = `<g stroke="#2a2118" stroke-width="1.7" fill="none"><circle cx="43.5" cy="39" r="5.3"/><circle cx="56.5" cy="39" r="5.3"/><line x1="48.8" y1="39" x2="51.2" y2="39"/></g>`;
   if (c.face === 'shades') { eyes = ''; glasses = `<g fill="#15161a"><rect x="36.5" y="36" width="11" height="7.5" rx="2.4"/><rect x="52.5" y="36" width="11" height="7.5" rx="2.4"/><rect x="47" y="38.4" width="6" height="2.4"/></g>`; }
-  const hair = !hasCap ? `<path d="M31 34 Q30 13 50 13 Q70 13 69 34 Q63 23 50 23 Q37 23 31 34Z" fill="${c.hair}"/>` : '';
+  const cheeks = kid ? `<circle cx="39.5" cy="43.5" r="2.8" fill="#ff8f8f" opacity=".45"/><circle cx="60.5" cy="43.5" r="2.8" fill="#ff8f8f" opacity=".45"/>` : '';
+  const lips = female ? `<path d="M45 47 Q50 51 55 47" stroke="#d05a6e" stroke-width="2.4" fill="none" stroke-linecap="round"/>` : `<path d="M44 46.5 Q50 51.5 56 46.5" stroke="#9c5b3b" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  // pelo largo (mujer/niña): mechones laterales detrás de la cabeza, visibles aun con gorra
+  const longHair = female ? `<path d="M30 32 Q24 60 33 66 Q37 52 39 44 Q33 36 30 32Z" fill="${c.hair}"/><path d="M70 32 Q76 60 67 66 Q63 52 61 44 Q67 36 70 32Z" fill="${c.hair}"/>` : '';
+  const topHair = !hasCap ? (female
+    ? `<path d="M30 36 Q28 12 50 12 Q72 12 70 36 Q66 22 50 22 Q34 22 30 36Z" fill="${c.hair}"/>`
+    : `<path d="M31 34 Q30 13 50 13 Q70 13 69 34 Q63 23 50 23 Q37 23 31 34Z" fill="${c.hair}"/>`) : '';
   const cap = hasCap ? `<g><path d="M30 31 Q30 9 50 9 Q70 9 70 31 Q50 25 30 31Z" fill="${c.cap}"/><path d="M68 31 Q78 30 80 35 Q74 36 66 34 Z" fill="${c.cap}"/><circle cx="50" cy="11.5" r="2.3" fill="${c.cap}" stroke="rgba(0,0,0,.14)"/></g>` : '';
+  const ponytail = (c.type === 'nina') ? `<circle cx="74" cy="30" r="5" fill="${c.hair}"/>` : '';
   const sty = fil ? ` style="filter:${fil}"` : '';
+  // niños: cuerpo un poco más corto (piernas + torso) para leer "niño/niña"
+  const legY = kid ? 88 : 84, legH = kid ? 23 : 27, shoeY = kid ? 113 : 113;
   return `<svg viewBox="0 0 100 120" class="golfer ${cls || ''}"${sty} preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-    <rect x="40" y="84" width="8" height="27" rx="3.5" fill="${c.pants}"/>
-    <rect x="52" y="84" width="8" height="27" rx="3.5" fill="${c.pants}"/>
-    <ellipse cx="44" cy="113" rx="7" ry="4" fill="#1c1c1c"/>
-    <ellipse cx="56" cy="113" rx="7" ry="4" fill="#1c1c1c"/>
-    <path d="M33 60 Q50 53 67 60 L70 90 Q50 96 30 90 Z" fill="${c.shirt}"/>
-    <rect x="25" y="60" width="9" height="27" rx="4.5" fill="${c.shirt}"/>
-    <rect x="66" y="60" width="9" height="27" rx="4.5" fill="${c.shirt}"/>
-    <circle cx="29.5" cy="87" r="4.6" fill="${c.skin}"/>
-    <circle cx="70.5" cy="87" r="4.6" fill="${c.skin}"/>
+    <rect x="40" y="${legY}" width="8" height="${legH}" rx="3.5" fill="${c.pants}"/>
+    <rect x="52" y="${legY}" width="8" height="${legH}" rx="3.5" fill="${c.pants}"/>
+    <ellipse cx="44" cy="${shoeY}" rx="7" ry="4" fill="#1c1c1c"/>
+    <ellipse cx="56" cy="${shoeY}" rx="7" ry="4" fill="#1c1c1c"/>
+    <path d="M33 ${kid ? 62 : 60} Q50 ${kid ? 56 : 53} 67 ${kid ? 62 : 60} L70 90 Q50 96 30 90 Z" fill="${c.shirt}"/>
+    <rect x="25" y="${kid ? 62 : 60}" width="9" height="${kid ? 24 : 27}" rx="4.5" fill="${c.shirt}"/>
+    <rect x="66" y="${kid ? 62 : 60}" width="9" height="${kid ? 24 : 27}" rx="4.5" fill="${c.shirt}"/>
+    <circle cx="29.5" cy="${kid ? 85 : 87}" r="4.6" fill="${c.skin}"/>
+    <circle cx="70.5" cy="${kid ? 85 : 87}" r="4.6" fill="${c.skin}"/>
     <path d="M44 56 L50 63 L56 56 L54 54 L50 59 L46 54 Z" fill="#ffffff" opacity=".9"/>
     <rect x="46" y="50" width="8" height="9" fill="${c.skin}"/>
+    ${ponytail}${longHair}
     <circle cx="31" cy="39" r="3.2" fill="${c.skin}"/><circle cx="69" cy="39" r="3.2" fill="${c.skin}"/>
-    <circle cx="50" cy="37" r="18.5" fill="${c.skin}"/>
-    ${beard}${eyes}${glasses}
-    <path d="M44 46.5 Q50 51.5 56 46.5" stroke="#9c5b3b" stroke-width="2" fill="none" stroke-linecap="round"/>
-    ${hair}${cap}
+    <circle cx="50" cy="37" r="${hr}" fill="${c.skin}"/>
+    ${beardC}${cheeks}${eyes}${glasses}
+    ${lips}
+    ${topHair}${cap}
   </svg>`;
 }
 
