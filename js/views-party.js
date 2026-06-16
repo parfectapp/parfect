@@ -189,17 +189,124 @@ function vCortaBar(p, idx) {
   </div>`;
 }
 
+/* ---- Propiedad por dispositivo: cada quien controla su(s) jugador(es) ---- */
+function pMyPlayers(p) { return p.players.filter(pl => !pl.device || pl.device === DEVICE_ID); }
+function pIsMine(p, pid) { const pl = p.players.find(x => x.pid === pid); return !!pl && (!pl.device || pl.device === DEVICE_ID); }
+function pScoreOf(h, pl) {
+  const cc = h.cap && h.cap[pl.pid];
+  if (cc) { const sg = suggestScore(cc); return cc.touched ? cc.score : sg; }
+  return h.scores[pl.pid] != null ? h.scores[pl.pid] : null;
+}
+
+/* pajaritos volando para el resumen del hoyo (motion) */
+function birdSky() {
+  const b = (cls, d) => `<svg class="hs-bird ${cls}" style="animation-delay:${d}s" viewBox="0 0 24 12"><path d="M2 8 Q6 2 11 7 Q16 2 22 8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>`;
+  return b('b1', 0) + b('b2', 1.1) + b('b3', 2.3);
+}
+
+/* Por qué cada jugador sumó/restó en La corta este hoyo (desglose) */
+function pHoleReasons(p, idx, pid) {
+  const h = p.holes[idx];
+  const played = p.players.filter(pl => h.scores[pl.pid] != null).map(pl => pl.pid);
+  const r = [];
+  const s = h.scores[pid];
+  if (s != null) { const d = s - h.par; if (d <= -2) r.push({ t: 'Águila', good: true }); else if (d === -1) r.push({ t: 'Birdie', good: true }); }
+  if (s != null && played.length >= 2) {
+    const min = Math.min(...played.map(x => h.scores[x]));
+    if (s === min && played.filter(x => h.scores[x] === min).length === 1) r.push({ t: 'Ganó el hoyo', good: true });
+  }
+  if ((h.sandy || []).includes(pid)) r.push({ t: 'Sandy', good: true });
+  if ((h.holeout || []).includes(pid)) r.push({ t: 'Hole-out', good: true });
+  const lp = (h.longputt && !Array.isArray(h.longputt)) ? (h.longputt[pid] || 0) : 0;
+  if (lp) r.push({ t: lp > 1 ? `Bandera ×${lp}` : 'Bandera', good: true });
+  if (h.reg && !Array.isArray(h.reg)) {
+    const regs = played.map(x => [x, h.reg[x] || 0]).filter(([, v]) => v > 0);
+    if (regs.length) { const min = Math.min(...regs.map(([, v]) => v)); const who = regs.filter(([, v]) => v === min); if (who.length === 1 && who[0][0] === pid) r.push({ t: 'Más cerca', good: true }); }
+  }
+  if ((h.threeputt || []).includes(pid)) r.push({ t: '3 putts', good: false });
+  if ((h.espanol || []).includes(pid)) r.push({ t: 'Español', good: false });
+  return r;
+}
+
+/* Resumen del hoyo: cómo quedó la apuesta + desglose + Continuar */
+function vHoleSummary(p, idx) {
+  const h = p.holes[idx];
+  const before = Party.unidades(p, idx);
+  const after = Party.unidades(p, idx + 1);
+  const stake = p.stake || 0;
+  const last = idx + 1 === p.holesCount;
+  const rows = p.players.map(pl => ({
+    pl, score: h.scores[pl.pid],
+    delta: (after[pl.pid] || 0) - (before[pl.pid] || 0),
+    total: after[pl.pid] || 0,
+    reasons: p.games.corta ? pHoleReasons(p, idx, pl.pid) : [],
+  })).sort((a, b) => (b.score != null) - (a.score != null) || (b.delta - a.delta) || ((a.score || 99) - (b.score || 99)));
+  const badge = sc => sc == null ? '' : (sc - h.par <= -2 ? 'eagle' : sc - h.par === -1 ? 'bird' : sc - h.par === 0 ? 'par' : sc - h.par === 1 ? 'bog' : 'dbl');
+  const list = rows.map(r => {
+    const reasons = r.reasons.map(x => `<span class="hs-rea ${x.good ? 'g' : 'b'}">${x.good ? '+' : '−'} ${esc(x.t)}</span>`).join('');
+    const side = p.games.corta
+      ? `<div class="hs-side"><b class="hs-delta ${r.delta > 0 ? 'up' : r.delta < 0 ? 'dn' : 'ze'}">${r.delta > 0 ? '+' : ''}${r.delta}</b><span class="hs-tot">va ${r.total > 0 ? '+' : ''}${r.total}${stake ? ` · ${r.total >= 0 ? '+' : '−'}$${Math.abs(r.total * stake)}` : ''}</span></div>`
+      : '';
+    return `<div class="hs-row">
+      <span class="hs-bdg ${badge(r.score)}">${r.score != null ? r.score : '–'}</span>
+      <div class="hs-mid"><b>${esc(r.pl.name.split(' ')[0])}</b><span class="hs-rel">${r.score != null ? relScore(r.score - h.par) : 'sin score'}</span>${reasons ? `<div class="hs-reas">${reasons}</div>` : ''}</div>
+      ${side}
+    </div>`;
+  }).join('');
+  let statusLine = '';
+  if (p.games.match) { const msx = Party.matchStatus(p, idx + 1); if (msx) statusLine = msx.is2p ? (msx.up === 0 ? 'Match igualado' : `${esc(plName(p, msx.leader).split(' ')[0])} ${msx.decided ? 'gana' : 'va'} ${msx.text}`) : msx.text; }
+  else if (p.games.medal && !p.games.corta) { const stt = Party.standings(p, idx + 1).filter(x => x.holes); if (stt.length) statusLine = `${esc(stt[0].name.split(' ')[0])} lidera ${fmtToPar(stt[0].toPar)}`; }
+  return `<div class="card hs-card pop3d">
+    <div class="hs-birds">${birdSky()}</div>
+    <div class="hs-head"><span class="hs-h">${golfIcon('flag')} Hoyo ${idx + 1} cerrado</span><span class="hs-par">Par ${h.par}</span></div>
+    <p class="hs-sub">${p.games.corta ? `${golfIcon('card')} Así quedó La corta este hoyo` : 'Resultado del hoyo'}</p>
+    <div class="hs-list">${list}</div>
+    ${statusLine ? `<p class="hs-status">${statusLine}</p>` : ''}
+    <button class="btn primary big hs-go" data-act="${last ? 'pa-finish' : 'pa-next'}">${last ? 'Finalizar party →' : 'Continuar al hoyo ' + (idx + 2) + ' →'}</button>
+    <button class="hs-edit" data-act="pa-edit-hole">← Corregir mi hoyo</button>
+  </div>`;
+}
+
+/* Tarjeta de solo-lectura del hoyo de un amigo (lo controla él) */
+function pReadOnlyCard(p, h, pid) {
+  const c = (h.cap && h.cap[pid]) || {};
+  const score = pScoreOf(h, p.players.find(x => x.pid === pid));
+  const done = h.done && h.done[pid];
+  const pill = (lab, val) => `<div class="ro-pill"><span>${lab}</span><b>${val}</b></div>`;
+  const tee = c.tee === 'fw' ? 'Calle' : c.tee === 'penal' ? 'OB' : c.tee ? 'Falló' : '—';
+  const app = c.app === 'gir' ? 'GIR' : c.app ? 'Falló' : '—';
+  const ud = c.upDown === true ? 'Sí' : c.upDown === false ? 'No' : '—';
+  return `<div class="card ro-card">
+    <div class="ro-head"><div class="ro-who">${avatarImg(p.players.find(x => x.pid === pid), 'mini')}<b>${esc(plName(p, pid).split(' ')[0])}</b></div>
+      <span class="ro-state ${done ? 'done' : ''}">${done ? '✓ Terminó' : '⏺ Registrando…'}</span></div>
+    <div class="ro-grid">${h.par >= 4 ? pill('Calle', tee) : ''}${pill('Green', app)}${c.app && c.app !== 'gir' ? pill('Up&D', ud) : ''}${pill('Putts', c.putts != null ? c.putts : '—')}${pill('Score', score != null ? score : '—')}</div>
+    <p class="ro-note">Solo ${esc(plName(p, pid).split(' ')[0])} puede editar su hoyo desde su teléfono.</p>
+  </div>`;
+}
+
 function vPartyLive() {
   const p = activeParty();
   if (!p || p.status === 'cancelled') { S.activeParty = null; V.view = 'social'; return vShell(vSocial()); }
   if (p.status === 'done') { V.partyView = p.id; return vPartyDone(); }
+  if (V.pSeenIdx !== p.idx) { V.pWizStep = null; V.pSeenIdx = p.idx; }
   const h = p.holes[p.idx];
+  h.done = h.done || {};
   const chole = partyHole(p, p.idx);
-  const st = Party.standings(p, p.idx);
-  const toParOf = {}; st.forEach(r => { toParOf[r.pid] = r; });
   const ms = p.games.match ? Party.matchStatus(p, p.idx) : null;
   const last = p.idx + 1 === p.holesCount;
-  return `<div class="shell no-nav fade-in">
+
+  const myPlayers = pMyPlayers(p);
+  const doneCount = p.players.filter(pl => h.done[pl.pid]).length;
+  const allDone = doneCount === p.players.length;
+  const myAllDone = myPlayers.length > 0 && myPlayers.every(pl => h.done[pl.pid]);
+  const pendingNames = p.players.filter(pl => !h.done[pl.pid]).map(pl => pl.name.split(' ')[0]);
+
+  let ap = (V.capPid && p.players.some(x => x.pid === V.capPid)) ? V.capPid : (myPlayers[0] || p.players[0]).pid;
+  const apl = p.players.find(x => x.pid === ap);
+  const mine = pIsMine(p, ap);
+  const scoreOf = pl => pScoreOf(h, pl);
+
+  const header = `<div class="shell no-nav fade-in">
     <div class="play-top">
       <button class="x" data-act="party-exit">✕ Salir</button>
       <span class="label">Party ${esc(p.code)} ${syncBadge()}</span>
@@ -208,56 +315,83 @@ function vPartyLive() {
     <div class="progress"><i style="width:${(p.idx / p.holesCount) * 100}%"></i></div>
     <div class="hole-head"><span class="hnum">Hoyo ${p.idx + 1}</span>
       <span class="hof">Par ${h.par}${chole && chole.yds ? ` · ${chole.yds} yds` : ''}${ms ? ` · ${ms.text}` : ''}</span></div>
-    ${vCortaBar(p, p.idx)}
+    ${vCortaBar(p, p.idx)}`;
 
-    ${(() => {
-      const ap = (V.capPid && p.players.some(x => x.pid === V.capPid)) ? V.capPid : p.players[0].pid;
-      const apl = p.players.find(x => x.pid === ap);
-      const c = pcap(h, ap, h.par);
-      const sugg = suggestScore(c);
-      const score = c.touched ? c.score : sugg;
-      const scoreOf = pl => { const cc = h.cap && h.cap[pl.pid]; if (!cc) return null; const sg = suggestScore(cc); return cc.touched ? cc.score : sg; };
-      const filled = pl => scoreOf(pl) != null;
-      const has = (k) => (h[k] || []).includes(ap);
-      const reg = (h.reg && h.reg[ap]) || 0;
-      const lpv = (h.longputt && h.longputt[ap]) || 0;
-      const net = p.games.corta ? Party.unidades(p, p.idx + 1)[ap] : null;
-      const bdg = score != null ? (score - h.par <= -2 ? 'Águila' : score - h.par === -1 ? 'Birdie' : '') : '';
-      const gir = c.app === 'gir';
-      const scoreCls = score == null ? '' : (score - h.par <= -1 ? 'good' : score - h.par === 0 ? 'par' : score - h.par === 1 ? 'over' : 'bad');
-      const nm = esc(apl.name.split(' ')[0]);
-      const steps = partySteps(c, h.par);
-      const curK = (V.pWizStep && steps.includes(V.pWizStep)) ? V.pWizStep : partyDerived(c, h.par);
-      const tabLab = { tee: 'Calle', app: 'Green', ud: 'Up&D', putts: 'Putts', score: 'Score' };
-      const ansOf = k => k === 'tee' ? (c.tee === 'fw' ? 'Sí' : c.tee === 'penal' ? 'OB' : c.tee ? 'No' : null)
-        : k === 'app' ? (c.app === 'gir' ? 'Sí' : c.app ? 'No' : null)
-          : k === 'ud' ? (c.upDown === true ? 'Sí' : c.upDown === false ? 'No' : null)
-            : k === 'putts' ? (c.putts != null ? c.putts + 'p' : null)
-              : (score != null ? String(score) : null);
-      const tabs = steps.map(s => `<button class="wz-tab ${s === curK ? 'on' : ''} ${ansOf(s) != null ? 'ans' : ''}" data-act="pa-wiz-tab" data-s="${s}"><span>${tabLab[s]}</span><b>${ansOf(s) || '·'}</b></button>`).join('');
-      const yn = (scene, onYes, onNo, yesAttr, noAttr, q, extra) => `<h3 class="wz-q">${q}</h3><div class="wz-art">${chkScene(scene, onYes)}</div><div class="wz-yn"><button class="wz-opt yes ${onYes ? 'on' : ''}" data-act="pa-fast" ${yesAttr}>Sí</button><button class="wz-opt no ${onNo ? 'on' : ''}" data-act="pa-fast" ${noAttr}>No</button></div>${extra || ''}`;
-      const penPill = `<div class="wz-extra"><button class="wz-pen ${c.tee === 'penal' ? 'on' : ''}" data-act="pa-pen" data-pid="${ap}">${c.tee === 'penal' ? '✓ ' : ''}Penalti / OB</button></div>`;
-      let body;
-      if (curK === 'tee') body = yn('fw', c.tee === 'fw', !!c.tee && c.tee !== 'fw' && c.tee !== 'penal', `data-pid="${ap}" data-k="tee" data-v="fw"`, `data-pid="${ap}" data-k="tee" data-v="rough"`, `¿${nm} pegó a la calle?`, penPill);
-      else if (curK === 'app') body = yn('gir', gir, !!c.app && !gir, `data-pid="${ap}" data-k="app" data-v="gir"`, `data-pid="${ap}" data-k="app" data-v="miss"`, '¿Green en regulación?', h.par === 3 ? penPill : '');
-      else if (curK === 'ud') body = yn('ud', c.upDown === true, c.upDown === false, `data-pid="${ap}" data-k="ud" data-v="si"`, `data-pid="${ap}" data-k="ud" data-v="no"`, '¿Salvó el par? (up &amp; down)');
-      else if (curK === 'putts') { const opts = c.upDown === true ? [[0, '0'], [1, '1']] : [[0, '0'], [1, '1'], [2, '2'], [3, '3'], [4, '4+']]; body = `<h3 class="wz-q">¿Cuántos putts?</h3><div class="wz-putts ${opts.length === 2 ? 'wz-putts2' : ''}">${opts.map(([v, l]) => `<button class="wz-putt ${c.putts === v ? 'on' : ''}" data-act="pa-fast" data-pid="${ap}" data-k="putts" data-v="${v}">${l}</button>`).join('')}</div>`; }
-      else body = `<h3 class="wz-q">Score de ${nm}</h3><div class="wz-scorebox ${scoreCls}"><span class="sc-num">${score != null ? score : '–'}</span><span class="sc-rel">${score != null ? relScore(score - h.par) : ''}</span><div class="stepper"><button data-act="pa-cap-score" data-pid="${ap}" data-d="-1">−</button><button data-act="pa-cap-score" data-pid="${ap}" data-d="1">+</button></div></div>`;
-      const ci = steps.indexOf(curK);
-      return `
-    <div class="group">
-      <div class="g-lab"><span class="label">Jugador</span><span class="small muted">cada quien llena su hoyo</span></div>
-      <div class="chips">${p.players.map(pl => `<button class="chip ${pl.pid === ap ? 'on' : ''}" data-act="pa-player" data-pid="${pl.pid}">${filled(pl) ? '✓ ' : ''}${esc(pl.name.split(' ')[0])}${scoreOf(pl) != null ? ` · ${scoreOf(pl)}` : ''}</button>`).join('')}</div>
+  /* selector de jugadores: ✓ listo / 👁 ver al amigo */
+  const playerChips = `<div class="group">
+      <div class="g-lab"><span class="label">Jugadores</span><span class="small muted">${doneCount}/${p.players.length} listos</span></div>
+      <div class="chips pa-players">${p.players.map(pl => {
+    const isDone = !!h.done[pl.pid]; const own = pIsMine(p, pl.pid); const sc = scoreOf(pl);
+    return `<button class="chip ${pl.pid === ap ? 'on' : ''} ${isDone ? 'pdone' : ''}" data-act="pa-player" data-pid="${pl.pid}">${isDone ? '✓ ' : own ? '' : '👁 '}${esc(pl.name.split(' ')[0])}${sc != null && (isDone || !own) ? ` · ${sc}` : own ? ' (tú)' : ''}</button>`;
+  }).join('')}</div>
+    </div>`;
+
+  /* barra de progreso de "listos" */
+  const progressBar = `<div class="pa-prog">
+      <div class="pa-prog-bar"><i style="width:${(doneCount / p.players.length) * 100}%"></i></div>
+      <span>${myAllDone && !allDone ? `Esperando a ${pendingNames.join(', ')}…` : `${doneCount} de ${p.players.length} terminaron${pendingNames.length ? ' · faltan ' + pendingNames.join(', ') : ''}`}</span>
+    </div>`;
+
+  /* ---- modo RESUMEN (todos listos) ---- */
+  if (allDone) {
+    return `${header}
+    ${vHoleSummary(p, p.idx)}
+    <div class="card" style="margin-top:14px">
+      <span class="label">Tarjeta</span>
+      ${scorecardTable(p.holesCount,
+      i => (p.holes[i] ? p.holes[i].par : (partyHole(p, i) ? partyHole(p, i).par : Stats.PAR_SEQ[i % 18])),
+      p.players.map(pl => ({ name: pl.name.split(' ')[0], scoreOf: i => (p.holes[i] ? p.holes[i].scores[pl.pid] : null) })),
+      p.idx)}
     </div>
+    ${V.showMoney ? `<div class="overlay" data-act="pa-money-close"><div class="sheet" data-act="noop">
+      <div class="grab"></div><h2>${golfIcon('card')} Tabla en vivo</h2>
+      ${p.games.corta ? vCortaBar(p, p.idx) : ''}${vPartyTable(p, p.idx)}
+      <button class="btn" data-act="pa-money-close">Cerrar</button>
+    </div></div>` : ''}
+  </div>`;
+  }
 
-    <div class="card wz">
+  /* ---- modo CAPTURA ---- */
+  const curScore = scoreOf(apl);
+  const curDone = !!h.done[ap];
+  let capBody;
+  if (!mine) {
+    capBody = pReadOnlyCard(p, h, ap);
+  } else {
+    const c = pcap(h, ap, h.par);
+    const sugg = suggestScore(c);
+    const score = c.touched ? c.score : sugg;
+    const has = (k) => (h[k] || []).includes(ap);
+    const reg = (h.reg && h.reg[ap]) || 0;
+    const lpv = (h.longputt && h.longputt[ap]) || 0;
+    const gir = c.app === 'gir';
+    const scoreCls = score == null ? '' : (score - h.par <= -1 ? 'good' : score - h.par === 0 ? 'par' : score - h.par === 1 ? 'over' : 'bad');
+    const nm = esc(apl.name.split(' ')[0]);
+    const steps = partySteps(c, h.par);
+    const curK = (V.pWizStep && steps.includes(V.pWizStep)) ? V.pWizStep : partyDerived(c, h.par);
+    const tabLab = { tee: 'Calle', app: 'Green', ud: 'Up&D', putts: 'Putts', score: 'Score' };
+    const ansOf = k => k === 'tee' ? (c.tee === 'fw' ? 'Sí' : c.tee === 'penal' ? 'OB' : c.tee ? 'No' : null)
+      : k === 'app' ? (c.app === 'gir' ? 'Sí' : c.app ? 'No' : null)
+        : k === 'ud' ? (c.upDown === true ? 'Sí' : c.upDown === false ? 'No' : null)
+          : k === 'putts' ? (c.putts != null ? c.putts + 'p' : null)
+            : (score != null ? String(score) : null);
+    const tabs = steps.map(s => `<button class="wz-tab ${s === curK ? 'on' : ''} ${ansOf(s) != null ? 'ans' : ''}" data-act="pa-wiz-tab" data-s="${s}"><span>${tabLab[s]}</span><b>${ansOf(s) || '·'}</b></button>`).join('');
+    const yn = (scene, onYes, onNo, yesAttr, noAttr, q, extra) => `<h3 class="wz-q">${q}</h3><div class="wz-art">${chkScene(scene, onYes)}</div><div class="wz-yn"><button class="wz-opt yes ${onYes ? 'on' : ''}" data-act="pa-fast" ${yesAttr}>Sí</button><button class="wz-opt no ${onNo ? 'on' : ''}" data-act="pa-fast" ${noAttr}>No</button></div>${extra || ''}`;
+    const penPill = `<div class="wz-extra"><button class="wz-pen ${c.tee === 'penal' ? 'on' : ''}" data-act="pa-pen" data-pid="${ap}">${c.tee === 'penal' ? '✓ ' : ''}Penalti / OB</button></div>`;
+    let body;
+    if (curK === 'tee') body = yn('fw', c.tee === 'fw', !!c.tee && c.tee !== 'fw' && c.tee !== 'penal', `data-pid="${ap}" data-k="tee" data-v="fw"`, `data-pid="${ap}" data-k="tee" data-v="rough"`, `¿${nm} pegó a la calle?`, penPill);
+    else if (curK === 'app') body = yn('gir', gir, !!c.app && !gir, `data-pid="${ap}" data-k="app" data-v="gir"`, `data-pid="${ap}" data-k="app" data-v="miss"`, '¿Green en regulación?', h.par === 3 ? penPill : '');
+    else if (curK === 'ud') body = yn('ud', c.upDown === true, c.upDown === false, `data-pid="${ap}" data-k="ud" data-v="si"`, `data-pid="${ap}" data-k="ud" data-v="no"`, '¿Salvó el par? (up &amp; down)');
+    else if (curK === 'putts') { const opts = c.upDown === true ? [[0, '0'], [1, '1']] : [[0, '0'], [1, '1'], [2, '2'], [3, '3'], [4, '4+']]; body = `<h3 class="wz-q">¿Cuántos putts?</h3><div class="wz-putts ${opts.length === 2 ? 'wz-putts2' : ''}">${opts.map(([v, l]) => `<button class="wz-putt ${c.putts === v ? 'on' : ''}" data-act="pa-fast" data-pid="${ap}" data-k="putts" data-v="${v}">${l}</button>`).join('')}</div>`; }
+    else body = `<h3 class="wz-q">Score de ${nm}</h3><div class="wz-scorebox ${scoreCls}"><span class="sc-num">${score != null ? score : '–'}</span><span class="sc-rel">${score != null ? relScore(score - h.par) : ''}</span><div class="stepper"><button data-act="pa-cap-score" data-pid="${ap}" data-d="-1">−</button><button data-act="pa-cap-score" data-pid="${ap}" data-d="1">+</button></div></div>`;
+    const ci = steps.indexOf(curK);
+    capBody = `<div class="card wz">
       <div class="wz-tabs">${tabs}</div>
       <div class="wz-body">${body}</div>
       ${ci > 0 ? `<button class="wz-back" data-act="pa-wiz-back">← Atrás</button>` : ''}
     </div>
-
     ${p.games.corta ? `<div class="card cx">
-      <span class="label">La corta · extras de ${esc(apl.name.split(' ')[0])}</span>
+      <span class="label">La corta · extras de ${nm}</span>
       <div class="cx-grid">
         <button class="cx-btn ${has('sandy') ? 'on' : ''}" data-act="pa-sandy" data-pid="${ap}"><span class="cx-lab">Sandy</span><span class="cx-val pos">+1</span></button>
         <button class="cx-btn ${has('holeout') ? 'on' : ''}" data-act="pa-holeout" data-pid="${ap}"><span class="cx-lab">Hole-out</span><span class="cx-val pos">+1</span></button>
@@ -267,27 +401,29 @@ function vPartyLive() {
         <button class="cx-btn neg ${has('espanol') ? 'on' : ''}" data-act="pa-espanol" data-pid="${ap}"><span class="cx-lab">Español</span><span class="cx-val neg">−1</span></button>
       </div>
     </div>` : ''}`;
-    })()}
+  }
 
+  const readyBlock = mine
+    ? `<button class="btn primary big pa-ready ${curDone ? 'is-done' : ''}" data-act="pa-ready" data-pid="${ap}" ${curScore == null ? 'disabled' : ''}>${curDone ? '✓ Terminaste · toca para editar' : (curScore == null ? 'Registra tu score para terminar' : 'Terminé mi hoyo ✓')}</button>`
+    : `<div class="pa-watch">${golfIcon('flag')} Viendo a <b>${esc(apl.name.split(' ')[0])}</b> · él controla su registro</div>`;
+
+  return `${header}
+    ${playerChips}
+    ${capBody}
+    ${readyBlock}
+    ${progressBar}
     <button class="btn ghost" data-act="pa-money">${golfIcon('card')} Ver tabla</button>
-    <div class="btn-row">
-      ${p.idx > 0 ? `<button class="btn" style="flex:0 0 30%" data-act="pa-prev">←</button>` : ''}
-      <button class="btn primary" data-act="${last ? 'pa-finish' : 'pa-next'}">${last ? 'Finalizar party' : 'Siguiente hoyo →'}</button>
-    </div>
-
-    <div class="card" style="margin-top:18px">
+    ${p.idx > 0 ? `<button class="pa-prevlink" data-act="pa-prev">← Hoyo anterior</button>` : ''}
+    <div class="card" style="margin-top:14px">
       <span class="label">Tarjeta</span>
-      ${scorecardTable(
-        p.holesCount,
-        i => (p.holes[i] ? p.holes[i].par : (partyHole(p, i) ? partyHole(p, i).par : Stats.PAR_SEQ[i % 18])),
-        p.players.map(pl => ({ name: pl.name.split(' ')[0], scoreOf: i => (p.holes[i] ? p.holes[i].scores[pl.pid] : null) })),
-        p.idx
-      )}
+      ${scorecardTable(p.holesCount,
+    i => (p.holes[i] ? p.holes[i].par : (partyHole(p, i) ? partyHole(p, i).par : Stats.PAR_SEQ[i % 18])),
+    p.players.map(pl => ({ name: pl.name.split(' ')[0], scoreOf: i => (p.holes[i] ? p.holes[i].scores[pl.pid] : null) })),
+    p.idx)}
     </div>
     ${V.showMoney ? `<div class="overlay" data-act="pa-money-close"><div class="sheet" data-act="noop">
       <div class="grab"></div><h2>${golfIcon('card')} Tabla en vivo</h2>
-      ${p.games.corta ? vCortaBar(p, p.idx) : ''}
-      ${vPartyTable(p, p.idx)}
+      ${p.games.corta ? vCortaBar(p, p.idx) : ''}${vPartyTable(p, p.idx)}
       <button class="btn" data-act="pa-money-close">Seguir jugando</button>
     </div></div>` : ''}
   </div>`;
@@ -374,7 +510,7 @@ function partyHole(p, i) { return (p.courseId && COURSES[p.courseId] && COURSES[
 function makeHoleForParty(p, i) {
   const ch = partyHole(p, i);
   const par = ch ? ch.par : Stats.PAR_SEQ[i % 18];
-  return { par, scores: {}, putts: {}, cap: {}, fw: [], gir: [], ud: [], sandy: [], holeout: [], threeputt: [], espanol: [], reg: {}, longputt: {} };
+  return { par, scores: {}, putts: {}, cap: {}, done: {}, fw: [], gir: [], ud: [], sandy: [], holeout: [], threeputt: [], espanol: [], reg: {}, longputt: {} };
 }
 
 /* pasos del wizard de party (por jugador) */
@@ -456,10 +592,13 @@ const partyActions = {
     if (!code) { V.err = 'Escribe el código de la party.'; render(); return; }
     const u = cur();
     const enter = (p) => {
-      if (!p.players.some(x => x.userId === u.id && x.device === DEVICE_ID) && !p.players.some(x => x.userId === u.id && !x.device)) {
-        p.players.push({ pid: Store.uid(), name: u.name, userId: u.id, strokes: 0, device: DEVICE_ID });
+      let mine = p.players.find(x => x.userId === u.id && x.device === DEVICE_ID) || p.players.find(x => x.userId === u.id && !x.device);
+      if (!mine) {
+        mine = { pid: Store.uid(), name: u.name, userId: u.id, strokes: 0, device: DEVICE_ID };
+        p.players.push(mine);
       }
       S.activeParty = p.id;
+      V.capPid = mine.pid;
       Sync.watch(p.code);
       V.err = null; V.joining = false; V.view = p.status === 'live' ? 'party-live' : 'party-lobby';
       pcommit(p); window.scrollTo(0, 0);
@@ -580,15 +719,32 @@ const partyActions = {
   'pa-longputt'(d) { const p = activeParty(); const h = p.holes[p.idx]; if (!h.longputt || Array.isArray(h.longputt)) h.longputt = {}; const c = h.longputt[d.pid] || 0; h.longputt[d.pid] = Math.max(0, Math.min(9, c + Number(d.d))); pcommit(p); },
   'pa-3putt'(d) { const p = activeParty(); const h = p.holes[p.idx]; h.threeputt = h.threeputt || []; h.threeputt = h.threeputt.includes(d.pid) ? h.threeputt.filter(x => x !== d.pid) : [...h.threeputt, d.pid]; pcommit(p); },
   'pa-espanol'(d) { const p = activeParty(); const h = p.holes[p.idx]; h.espanol = h.espanol || []; h.espanol = h.espanol.includes(d.pid) ? h.espanol.filter(x => x !== d.pid) : [...h.espanol, d.pid]; pcommit(p); },
+  'pa-ready'(d) {
+    const p = activeParty(); const h = p.holes[p.idx]; h.done = h.done || {};
+    if (!pIsMine(p, d.pid)) return;
+    if (h.done[d.pid]) { delete h.done[d.pid]; pcommit(p); return; }   // toca de nuevo = editar
+    const c = pcap(h, d.pid, h.par); psync(h, d.pid);                  // fija score sugerido
+    if (pScoreOf(h, p.players.find(x => x.pid === d.pid)) == null) return;
+    h.done[d.pid] = true;
+    const next = pMyPlayers(p).find(pl => !h.done[pl.pid]);            // salta al siguiente jugador mío
+    if (next) { V.capPid = next.pid; V.pWizStep = null; }
+    pcommit(p); window.scrollTo(0, 0);
+  },
+  'pa-edit-hole'() {
+    const p = activeParty(); const h = p.holes[p.idx]; h.done = h.done || {};
+    pMyPlayers(p).forEach(pl => { delete h.done[pl.pid]; });
+    V.capPid = (pMyPlayers(p)[0] || p.players[0]).pid; V.pWizStep = null;
+    pcommit(p); window.scrollTo(0, 0);
+  },
   'pa-next'() {
     const p = activeParty();
     if (p.idx + 1 >= p.holesCount) return;
     p.idx++;
     if (!p.holes[p.idx]) p.holes[p.idx] = makeHoleForParty(p, p.idx);
-    V.capPid = p.players[0].pid; V.pWizStep = null;
+    V.capPid = (pMyPlayers(p)[0] || p.players[0]).pid; V.pWizStep = null;
     pcommit(p); window.scrollTo(0, 0);
   },
-  'pa-prev'() { const p = activeParty(); if (p.idx > 0) { p.idx--; V.capPid = p.players[0].pid; V.pWizStep = null; pcommit(p); window.scrollTo(0, 0); } },
+  'pa-prev'() { const p = activeParty(); if (p.idx > 0) { p.idx--; V.capPid = (pMyPlayers(p)[0] || p.players[0]).pid; V.pWizStep = null; pcommit(p); window.scrollTo(0, 0); } },
   'pa-money'() { V.showMoney = true; render(); },
   'pa-money-close'() { V.showMoney = false; render(); },
   'pa-finish'() {

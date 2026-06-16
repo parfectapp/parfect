@@ -75,30 +75,61 @@
 - **Link in bio:** https://rorropirrorro69.github.io/parfect/ (o tu link corto)
 
 ## Primeros 9 posts (la cuadrícula de arranque) — orden DATOS primero
-1. **Reel/teaser:** "¿Sabes de verdad cómo juegas?" → captura del radar de 6 ejes.
-2. **Post:** Diagnóstico IA → "Fallaste corto el 60% de los greens. Aquí está por qué." (captura del diagnóstico).
-3. **Carrusel "Anota un hoyo en 4 toques"** → 4 capturas del registro de ronda. "30 seg por hoyo."
-4. **Post:** evolución de score → "Esto es mejorar con datos, no con corazonadas."
-5. **Carrusel "¿Qué te falta para bajar a 10?"** → tabla por hándicap (Trofeos).
-6. **Post:** scrambling/putts → "El dato que te está costando más golpes y no lo sabías."
-7. **Reel (anzuelo):** Parfect Party en vivo → "El que pierde paga 🍺" (Medal/Match + liquidación).
-8. **Post:** biblioteca de drills → "50 ejercicios. Cada uno con dosis y métrica de éxito."
-9. **Post CTA:** "Busco 50 fundadores en Morelia. Gratis, hoy, en tu cel." → link in bio.
+> Ya están creadas como imágenes en `posts/` (ver `posts/README.md`). Publica en orden 1 → 9.
 
-## Captions listos (pega y publica)
-**Post 1 (radar):**
+1. `post1-gancho` — radar de 6 ejes: *"¿Sabes de verdad cómo juegas?"*
+2. `post2-stats` — dashboard: hándicap 7 + 56/51/41. *"Tus números reales."*
+3. `post3-diagnostico` — Prioridad 1 Putting. *"Deja de practicar al azar."*
+4. `post4-evolucion` — score de 92 a 82. *"Mejora con datos, no con corazonadas."*
+5. `post5-handicap` — barras por meta. *"¿Qué te falta para bajar a 10?"*
+6. `post6-dato` — 41% up&down. *"El dato que te cuesta más golpes."*
+7. `post7-party` — Liga de amigos (anzuelo). *"El que pierde, paga."*
+8. `post8-drills` — 6 ejercicios con dosis. *"50 ejercicios."*
+9. `post9-fundadores` — CTA. *"Busco 50 fundadores en Morelia."*
+
+## Captions por imagen (las 9) — pega y publica
+> Las imágenes están en `posts/`. Publica en orden 1 → 9. Rota hashtags (10–15 por post).
+
+**`post1-gancho.png`**
 > ¿Crees que sabes cómo juegas? La mayoría se equivoca.
 > PARFECT mide tus 6 ejes: salida, approach, around-the-green, putt, GIR y scrambling. El radar no miente.
-> ¿Dónde crees que pierdes más golpes tú? 👇
-> Gratis · link en bio · #golf #golfmexico #golfmx
+> ¿Dónde crees que pierdes más golpes tú? 👇 Gratis · link en bio.
+> #golf #golfmexico #golfmx #golfmorelia #handicap
 
-**Post 2 (diagnóstico):**
+**`post2-stats.png`**
+> Tus números reales, en segundos. Hándicap, calles, greens, putts, salvadas… todo de tus rondas.
+> Deja de jugar a ciegas. Link en bio. ⛳📊
+> #golfstats #golfmx #golfmorelia #parfect
+
+**`post3-diagnostico.png`**
 > "Practica más" no es un plan.
-> PARFECT te dice la **causa raíz**: ej. fallas corto el 60% de los greens → es selección de palo, no tu swing. Y te da el drill exacto, con dosis y métrica.
+> PARFECT te dice la **causa raíz** y el drill exacto, con dosis y métrica de éxito. Hoy te toca putting.
 > Deja de practicar al azar. Link en bio. #golftraining #handicap #golfmx
 
-**Post 9 (CTA fundadores):**
-> Busco **50 golfistas de Morelia** para estrenar PARFECT.
+**`post4-evolucion.png`**
+> De 92 a 82. Esto es mejorar con datos, no con corazonadas.
+> PARFECT te muestra tu score ronda a ronda. ¿Vas subiendo o bajando? 📉 Link en bio.
+> #golf #golfmx #handicap #golfmorelia
+
+**`post5-handicap.png`**
+> ¿Qué te falta para bajar a 10? PARFECT te lo marca: calles, greens, salvadas y putts vs. tu meta.
+> Números claros, plan claro. Link en bio. ⛳ #golfmx #handicap #golftips
+
+**`post6-dato.png`**
+> El dato que te cuesta más golpes y no lo sabías.
+> Aquí: salvas el par solo el 41% → −2.4 golpes por ronda. PARFECT lo detecta por ti. Link en bio.
+> #golfstats #golftraining #golfmx #golfmorelia
+
+**`post7-party.png`**
+> El que pierde, paga. 🍺 Parfect Party lleva las cuentas en vivo: Skins, La corta, Medal, Match.
+> Arma una con tu foursome (código de 4 letras). Link en bio. #golfmexico #golfmx #golfmorelia
+
+**`post8-drills.png`**
+> 50 ejercicios para cada parte de tu juego — cada uno con dosis y métrica de éxito.
+> Practica con propósito. Link en bio. #golftraining #golfpractice #golftips #golfmx
+
+**`post9-fundadores.png`**
+> Busco **50 fundadores de Morelia** para estrenar PARFECT.
 > Anota tu ronda, mira tus stats reales y mejora con datos. Gratis. Hoy.
 > ¿Entras? Link en bio 👇 #golfmorelia #golfmx #parfect
 

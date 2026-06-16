@@ -2129,6 +2129,71 @@ svg.fd-av { object-fit: contain; }
 .cx-ctrl { display: flex; align-items: center; gap: 8px; flex: none; }
 .cx-ctrl b { font-size: 16px; font-weight: 900; min-width: 16px; text-align: center; color: var(--text); }
 
+/* ===== Party: selector de jugadores, progreso, espera ===== */
+.pa-players .chip.pdone { border-color: var(--lime); background: var(--lime-faint); color: var(--text); }
+.pa-prog { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.pa-prog-bar { height: 7px; border-radius: 99px; background: var(--card2); overflow: hidden; }
+.pa-prog-bar i { display: block; height: 100%; border-radius: 99px; background: var(--lime); transition: width .4s cubic-bezier(.2,.8,.2,1); }
+.pa-prog span { font-size: 12px; font-weight: 700; color: var(--muted); text-align: center; }
+.pa-watch { margin-top: 4px; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 14px; border-radius: 16px; background: var(--card2); border: 1px dashed var(--line); font-size: 13.5px; font-weight: 700; color: var(--muted); }
+.pa-watch .gi { width: 16px; height: 16px; color: var(--lime-ink); }
+.pa-watch b { color: var(--text); }
+.pa-ready { margin-top: 4px; }
+.pa-ready.is-done { background: var(--card2); color: var(--muted); border: 1.5px solid var(--lime); box-shadow: none; }
+.pa-prevlink { display: block; margin: 10px auto 0; background: none; border: none; color: var(--muted); font-size: 12.5px; font-weight: 700; cursor: pointer; }
+
+/* tarjeta de solo lectura (hoyo del amigo) */
+.ro-card { margin-top: 4px; }
+.ro-head { display: flex; align-items: center; justify-content: space-between; }
+.ro-who { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 800; color: var(--text); }
+.ro-who .golfer { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: var(--card2); }
+.ro-state { font-size: 11.5px; font-weight: 800; color: var(--muted); padding: 4px 10px; border-radius: 99px; background: var(--card2); }
+.ro-state.done { color: #2a7d3e; background: var(--lime-faint); }
+[data-theme="dark"] .ro-state.done { color: #b7f08a; }
+.ro-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ro-pill { flex: 1 0 auto; min-width: 64px; display: flex; flex-direction: column; gap: 2px; align-items: center; padding: 9px 8px; border-radius: 13px; background: var(--card2); }
+.ro-pill span { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); }
+.ro-pill b { font-size: 16px; font-weight: 900; color: var(--text); }
+.ro-note { font-size: 11.5px; color: var(--muted); margin-top: 10px; text-align: center; }
+
+/* ===== Resumen del hoyo (apuesta + desglose) con motion ===== */
+.hs-card { position: relative; overflow: hidden; margin-top: 4px; }
+.pop3d { animation: pop3d .5s cubic-bezier(.2,.9,.25,1.1) both; transform-origin: 50% 0; }
+@keyframes pop3d { 0% { opacity: 0; transform: perspective(700px) rotateX(-14deg) translateY(14px); } 100% { opacity: 1; transform: perspective(700px) rotateX(0) translateY(0); } }
+.hs-birds { position: absolute; inset: 0 0 auto 0; height: 60px; pointer-events: none; overflow: hidden; }
+.hs-bird { position: absolute; top: 14px; width: 22px; height: 11px; color: var(--lime-ink); opacity: .55; animation: hsFly 6s linear infinite; }
+.hs-bird.b2 { top: 26px; width: 16px; animation-duration: 7.5s; opacity: .4; }
+.hs-bird.b3 { top: 8px; width: 18px; animation-duration: 5.2s; opacity: .5; }
+@keyframes hsFly { 0% { left: -12%; transform: translateY(0) scaleX(1); } 50% { transform: translateY(-7px) scaleX(1); } 100% { left: 112%; transform: translateY(2px) scaleX(1); } }
+.hs-head { position: relative; display: flex; align-items: center; justify-content: space-between; }
+.hs-h { display: inline-flex; align-items: center; gap: 7px; font-size: 17px; font-weight: 900; color: var(--text); }
+.hs-h .gi { width: 17px; height: 17px; color: var(--lime-ink); }
+.hs-par { font-size: 12px; font-weight: 800; color: var(--muted); }
+.hs-sub { position: relative; display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 4px 0 12px; }
+.hs-sub .gi { width: 14px; height: 14px; color: var(--lime-ink); }
+.hs-list { display: flex; flex-direction: column; gap: 8px; }
+.hs-row { display: flex; align-items: center; gap: 11px; padding: 11px 12px; border-radius: 15px; background: var(--card2); animation: hsRowIn .45s ease both; }
+.hs-row:nth-child(2) { animation-delay: .06s; } .hs-row:nth-child(3) { animation-delay: .12s; } .hs-row:nth-child(4) { animation-delay: .18s; }
+@keyframes hsRowIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+.hs-bdg { flex: none; width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; font-size: 17px; font-weight: 900; color: #fff; background: var(--muted2); }
+.hs-bdg.eagle { background: #d6a429; } .hs-bdg.bird { background: #3aa055; } .hs-bdg.par { background: var(--muted2); }
+.hs-bdg.bog { background: #e0873a; } .hs-bdg.dbl { background: var(--danger); }
+.hs-mid { flex: 1; min-width: 0; }
+.hs-mid b { font-size: 15px; font-weight: 800; color: var(--text); }
+.hs-rel { font-size: 11.5px; font-weight: 700; color: var(--muted); margin-left: 6px; }
+.hs-reas { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.hs-rea { font-size: 10.5px; font-weight: 800; padding: 3px 8px; border-radius: 99px; }
+.hs-rea.g { color: #2a7d3e; background: var(--lime-faint); }
+[data-theme="dark"] .hs-rea.g { color: #b7f08a; }
+.hs-rea.b { color: var(--danger); background: rgba(255,122,107,.12); }
+.hs-side { flex: none; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+.hs-delta { font-size: 22px; font-weight: 900; line-height: 1; letter-spacing: -.03em; color: var(--muted); }
+.hs-delta.up { color: #3aa055; } .hs-delta.dn { color: var(--danger); } .hs-delta.ze { color: var(--muted); }
+.hs-tot { font-size: 10.5px; font-weight: 700; color: var(--muted); }
+.hs-status { position: relative; text-align: center; font-size: 13px; font-weight: 800; color: var(--text); margin: 12px 0 4px; }
+.hs-go { margin-top: 14px; }
+.hs-edit { display: block; margin: 10px auto 0; background: none; border: none; color: var(--muted); font-size: 12.5px; font-weight: 700; cursor: pointer; }
+
 /* ===== Diagnóstico IA más escaneable (menos texto, plan por pasos) ===== */
 .diag-lead { font-size: 14.5px; font-weight: 800; color: var(--text); margin-top: 10px; line-height: 1.4; }
 .diag-rest { font-size: 12.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }

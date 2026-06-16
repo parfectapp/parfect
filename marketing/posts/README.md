@@ -1,32 +1,36 @@
-# Posts de Instagram — imágenes listas
+# Posts de Instagram — la primera cuadrícula (9 imágenes)
 
-PNG 1080×1080, **fieles al design system real de la app** (fondo verde-cielo claro,
-hero con degradado lima `#C7EE54`, números navy `#1B2A18`, tarjetas blancas redondeadas,
-wordmark itálico y los **personajes 3D reales** golfista/bandera embebidos).
+PNG **1080×1080, RGB sin alfa** (no se ven negras), fieles a la marca real:
+fondo verde-cielo, hero lima, números navy, tarjetas blancas redondeadas, personajes 3D, wordmark itálico.
 
-| Imagen | Pilar | Caption (en `../MENSAJES.md`) |
-|---|---|---|
-| `post1-stats.png` | Datos | *"¿Sabes de verdad cómo juegas?"* — réplica del dashboard (hándicap 7 + 56/51/41) |
-| `post2-diagnostico.png` | Entrenador IA | *"Deja de practicar al azar."* — Prioridad 1: Putting + drill |
-| `post3-fundadores.png` | CTA | *"Busco 50 fundadores en Morelia."* + golfista y bandera 3D |
+Vista rápida del conjunto: **`grid-preview.png`**.
 
-## De dónde salió el look
-Se construyó mirando la app **en vivo** (no el kit viejo, que estaba en negro y ya no aplica):
-fondo diurno, hero lima, personajes 3D, Inter, esquinas de 18px. Ver tokens en `../MARCA.md` §8.
+| # | Archivo | Pilar | Gancho |
+|---|---|---|---|
+| 1 | `post1-gancho.png` | Datos | Radar 6 ejes — *"¿Sabes de verdad cómo juegas?"* |
+| 2 | `post2-stats.png` | Datos | Dashboard — hándicap 7 + 56/51/41 |
+| 3 | `post3-diagnostico.png` | Entrenador IA | *"Deja de practicar al azar"* — Prioridad 1: Putting |
+| 4 | `post4-evolucion.png` | Datos | Evolución de score — *"Mejora con datos, no corazonadas"* |
+| 5 | `post5-handicap.png` | Datos | *"¿Qué te falta para bajar a 10?"* — barras por meta |
+| 6 | `post6-dato.png` | Datos | *"El dato que te cuesta más golpes"* — 41% up&down |
+| 7 | `post7-party.png` | Social (anzuelo) | *"El que pierde, paga"* — Liga de amigos |
+| 8 | `post8-drills.png` | Entrenador IA | *"50 ejercicios"* — dosis + métrica |
+| 9 | `post9-fundadores.png` | CTA | *"Busco 50 fundadores en Morelia"* |
 
-## Aún mejor: capturas reales
-Tus pantallas reales son contenido de primera (dashboard, Liga de amigos, diagnóstico,
-trofeos). Con los datos demo cargados, abre la app y captura directo para stories.
+Captions listas para cada una en `../MENSAJES.md` → "Captions por imagen (las 9)".
+
+## Orden y cadencia
+Publica **1 → 9** en orden (lidera con datos, cierra con el CTA de fundadores).
+A 3 posts/semana = 3 semanas de contenido. Intercala 2-3 stories/semana (tu tarjeta de ronda, encuestas).
 
 ## Editar / regenerar
-Los SVG se generan con un script que **incrusta tus PNG reales** (`assets/golfer.png`, etc.):
+Todo se genera con Pillow (incrusta tus PNG reales de `assets/`):
 ```bash
 cd ~/claude/parfect/marketing/posts
-python3 _build_posts.py                      # regenera los .svg
-qlmanage -t -s 1080 -o . post1-stats.svg && mv -f post1-stats.svg.png post1-stats.png
+python3 _build_posts.py     # regenera las 9 + grid-preview.png
 ```
-Edita textos/datos en `_build_posts.py` y vuelve a correr.
+Cambia textos/datos demo (7, 56%, 32.3 putts, scores…) en las funciones `p1..p9` de `_build_posts.py`.
 
-## Notas
-- Datos ilustrativos (7, 56%, 32.3 putts…). Cámbialos en `_build_posts.py` por los tuyos reales.
-- Tipografía del render: si esta Mac no tiene Inter instalada, cae a Helvetica (casi idéntica).
+## Nota
+Datos **ilustrativos**. Cuando quieras, los cambio por tus números reales y regenero todo.
+Tipografía del render: Arial Black/Bold (Inter no está instalada en esta Mac; el look pesado es casi idéntico).
