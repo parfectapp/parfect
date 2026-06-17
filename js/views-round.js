@@ -52,8 +52,14 @@ function scorecardTable(holesCount, parOf, rows, curIdx, ydsOf) {
     const playerRows = rows.map(r => `<tr><td class="sc-name">${esc(r.name)}</td>${arr.map(i => scTableCell(r.scoreOf(i), parOf(i), i === curIdx)).join('')}<td class="sc-tt">${sumR(r.scoreOf, arr)}</td></tr>`).join('');
     return `<div class="sc-wb"><table class="sc-table sc-w"><thead>${head}</thead><tbody>${parRow}${playerRows}</tbody></table></div>`;
   };
-  if (!has18) return `<div class="sc-stack">${block(seg(0, holesCount), 'TOT')}</div>`;
-  return `<div class="sc-stack">${block(seg(0, 9), 'OUT')}${block(seg(9, holesCount), 'IN')}</div>`;
+  if (holesCount <= 9) return `<div class="sc-stack">${block(seg(0, holesCount), 'TOT')}</div>`;
+  // siempre en grupos de 9 (18 = 2 filas, 27 = 3 filas) — nunca amontonado
+  const labels = ['OUT', 'IN', '3ª', '4ª'];
+  let blocks = '';
+  for (let i = 0, n = 0; i < holesCount; i += 9, n++) {
+    blocks += block(seg(i, Math.min(i + 9, holesCount)), labels[n] || 'TOT');
+  }
+  return `<div class="sc-stack">${blocks}</div>`;
 }
 
 /* ---------- Tab Ronda: historial ---------- */
@@ -635,6 +641,40 @@ function holeViz(h, chole, holeNum, teeF) {
   </div>`;
 }
 
+/* coach del hoyo: overall de cómo jugarlo + consejo tiro por tiro */
+function vHoleCoach(a, h, holeNo, yds) {
+  const par = h.par;
+  const agg = Stats.aggregate(myRounds());
+  let weak = '';
+  if (agg) {
+    const issues = [
+      ['céntrate en meter la bola en juego desde el tee', 55 - (agg.fwPct || 0)],
+      ['apunta al centro del green, no a la bandera', 52 - (agg.girPct || 0)],
+      ['asegura el up&down dejando el chip cuesta arriba', 48 - (agg.scrPct || 0)],
+      ['el primer putt, déjala a un palo del hoyo', ((agg.putts18 || 30) - 31) * 4],
+    ].sort((x, y) => y[1] - x[1]);
+    weak = issues[0][0];
+  }
+  const overall = par <= 3
+    ? `Par 3${yds ? ` · ${yds} yds` : ''}. Tiro directo a green: elige el palo que llegue al <b>centro</b> y comprométete con el swing.`
+    : par >= 5
+      ? `Par 5${yds ? ` · ${yds} yds` : ''}. Drive al centro; si quedas bien, ataca en dos. Si no, deja un <b>wedge cómodo</b> a tu distancia favorita.`
+      : `Par 4${yds ? ` · ${yds} yds` : ''}. Prioriza la <b>calle</b> y ataca al lado abierto del green.`;
+  const shots = [
+    ['Salida', par <= 3 ? 'Tee a la altura justa, swing suave y completo hacia el centro del green.' : 'Driver o híbrido al centro de la calle. Menos club, más fairway.'],
+    ['Approach', 'Saca tu distancia exacta y apunta al centro del green, sin dudar.'],
+    ['Juego corto', 'Si fallas el green, deja el chip cuesta arriba para subir el siguiente.'],
+    ['Putt', 'Lee la caída; el primer putt, a dejarla a un palo.'],
+  ];
+  const open = V.holeCoachOpen;
+  return `<div class="hc">
+    <div class="hc-head"><span class="hc-ava">IA</span><div class="hc-htx"><span class="hc-tag">Coach · hoyo ${holeNo}</span><p class="hc-over">${overall}</p></div></div>
+    ${weak ? `<p class="hc-weak">Tu prioridad hoy: ${weak}.</p>` : ''}
+    <button class="hc-toggle" data-act="hole-coach-toggle">${open ? 'Ocultar tiro por tiro ▴' : 'Ver consejo tiro por tiro ▾'}</button>
+    ${open ? `<div class="hc-shots">${shots.map(([t, d]) => `<div class="hc-shot"><b>${t}</b><span>${d}</span></div>`).join('')}</div>` : ''}
+  </div>`;
+}
+
 function vPlay() {
   const a = S.active;
   if (!a) return vRondaTab();
@@ -665,7 +705,10 @@ function vPlay() {
     </div>
     <div class="progress"><i style="width:${pct}%"></i></div>
 
-    <div class="hole-banner">
+    <div class="hole-banner hb-scene">
+      <div class="hb-sky" aria-hidden="true"><span class="hb-sun"></span><span class="hb-cloud"></span>
+        <svg class="hb-green" viewBox="0 0 300 70" preserveAspectRatio="none"><path d="M0,40 Q150,18 300,38 L300,70 L0,70Z" fill="#9fd06a"/><path d="M0,54 Q150,36 300,52 L300,70 L0,70Z" fill="#7cbf52"/><g transform="translate(238 40)"><ellipse cx="0" cy="6" rx="34" ry="9" fill="#6fb045"/><rect x="-1" y="-26" width="2.4" height="30" fill="#cfd6d8"/><path d="M1.4 -26 L16 -21 L1.4 -16 Z" fill="#ff5a4d"/><circle cx="0" cy="6" r="2.2" fill="#2c3b1c"/></g></svg>
+      </div>
       <div class="hb-info">
         <span class="hb-course">${esc(a.course)}${a.teeName ? ` · ${esc(a.teeName)}` : ''}</span>
         <div class="hb-head">
@@ -674,7 +717,7 @@ function vPlay() {
         </div>
       </div>
     </div>
-    ${(typeof vCoachLive === 'function') ? vCoachLive('course', h) : ''}
+    ${vHoleCoach(a, h, holeNo, yds)}
 
     ${(() => {
       const steps = playSteps(h);
