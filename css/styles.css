@@ -60,7 +60,7 @@ input, select, textarea { font-size: 16px; }
 #root { display: contents; }
 
 /* ============ Fondo inmersivo de toda la app (día/noche) ============ */
-.app-bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: linear-gradient(180deg,#4faee0 0%,#69bfe6 28%,#93d2ed 52%,#bce4f2 74%,#e6f4f8 100%); }
+.app-bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: linear-gradient(180deg,#5fbdef 0%,#7cc7ef 20%,#9fd6f1 38%,#c6e6ed 54%,#e8dced 64%,#ffe3ca 74%,#ffd2bf 82%,#d6ebc0 92%,#a9d877 100%); }
 /* dentro de la app, el fondo es un ambiente sutil para que la app sea lo principal */
 body.in-app .app-bg::after { content: ''; position: absolute; inset: 0; background: var(--bg); opacity: 0.3; }
 body.in-app .app-bg .bg-cloud, body.in-app .app-bg .bg-bird, body.in-app .app-bg .bg-gball { opacity: 0.72; }

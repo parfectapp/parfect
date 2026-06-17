@@ -544,7 +544,6 @@ function vLanding() {
       </div>
     </section>
 
-    ${lpGallery()}
 
 
 
@@ -568,11 +567,6 @@ function vLanding() {
         <span class="lp-j lp-j-a">🇲🇽<small>Torneo local</small></span>
         <span class="lp-j lp-j-p">✈️</span>
         <span class="lp-j lp-j-b">🎓<small>Beca afuera</small></span>
-      </div>
-      <div class="lp-caminoshots reveal">
-        ${lpCaminoShot('camino-1.jpg', 'Juega tu torneo', lpClubTee())}
-        ${lpCaminoShot('camino-2.jpg', 'Compite y crece', lpClubGreen())}
-        ${lpCaminoShot('camino-3.jpg', 'Llega más lejos', lpClubSunset())}
       </div>
       <div class="lp-presgrid">
         ${[['🏆', 'Torneos que cuentan', 'Cada torneo suma para el ranking juvenil nacional. Tus resultados te posicionan.'],
