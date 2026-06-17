@@ -86,6 +86,13 @@ function lpFeatArt(kind) {
 function lpPhone(scr, cls) {
   return `<div class="lp-phone ${cls || ''}"><span class="lp-phone-notch"></span><div class="lp-phone-scr">${scr}</div></div>`;
 }
+/* teléfono que muestra un screenshot real de assets/ si existe; si no, renderiza el componente */
+function lpPhoneShot(imgFile, comp, cls) {
+  return `<div class="lp-phone ${cls || ''}"><span class="lp-phone-notch"></span><div class="lp-phone-scr">
+    <img class="lp-shotimg" src="assets/${imgFile}" alt="" onload="if(this.naturalWidth){var c=this.parentElement.querySelector('.lp-shotcomp');if(c)c.style.display='none'}else{this.remove()}" onerror="this.remove()">
+    <div class="lp-shotcomp">${comp}</div>
+  </div></div>`;
+}
 /* pantalla real: renderiza componentes reales de la app, escalados dentro del teléfono */
 function lpReal(inner) { return `<div class="lp-realscr"><div class="lp-realwrap">${inner}</div></div>`; }
 function lpScrStats() {
@@ -101,9 +108,19 @@ function lpScrPlay() {
   return lpReal(`<div class="lpsr-hb"><span class="lpsr-hb-c">Campestre · Azules</span><div class="lpsr-hb-r"><b>Hoyo 3</b><span>Par 4 · 380 yds</span></div></div><div class="hs-tiles">${tiles}</div>`);
 }
 function lpScrCoach() {
-  const bars = [['Salidas', 62], ['Juego corto', 55], ['Putt', 40]]
-    .map(([t, w]) => `<button class="diag-bar" style="--c:#3f9d44"><span class="diag-bar-ic">${golfIcon('flag')}</span><div class="diag-bar-main"><div class="diag-bar-top"><b>${t}</b></div><div class="diag-bar-track"><i style="width:${w}%"></i></div></div></button>`).join('');
-  return lpReal(`<div class="diag-hero" style="--c:#2fa36b"><div class="diag-hero-top"><span class="diag-hero-ic">${golfIcon('green')}</span><span class="diag-hero-tag">Tu fuga #1</span></div><h2 class="diag-hero-h">Approach</h2><div class="diag-hero-lost"><b>−1.2</b><span>golpes / ronda</span></div><p class="diag-hero-tip">Practica wedges a 50 / 75 / 100 m hasta dejarla a 3 m.</p></div><div class="diag-bars" style="margin-top:12px">${bars}</div>`);
+  return lpReal(`<div class="lps-rhd"><b>Análisis IA</b><span>10 rondas</span></div>
+    <div class="diag-cta" style="margin:0"><span class="diag-cta-ic">${golfIcon('green')}</span><h2 class="diag-cta-h">Tu coach IA está listo</h2><p class="diag-cta-p">La IA cruza tus 162 hoyos y 10 rondas para encontrar dónde se te van los golpes y qué entrenar.</p><button class="btn primary big">${golfIcon('flag')} Generar análisis IA</button></div>`);
+}
+function lpScrRondas() {
+  const round = (course, date, score, toPar, fw, gir, ud) => `<div class="lps-rd">
+    <div class="lps-rd-top"><div class="lps-rd-info"><b>${course}</b><span>${date}</span></div><div class="lps-rd-sc"><b>${score}</b><small>${toPar}</small></div></div>
+    <div class="pst-rings lps-rd-rings">${pstSceneStatic('fw', fw, 'Fairways')}${pstSceneStatic('gir', gir, 'GIR')}${pstSceneStatic('ud', ud, 'Up & down')}</div>
+  </div>`;
+  return lpReal(`<div class="lps-rhd"><b>Tus rondas</b><span>10 registradas</span></div>${round('Tres Marías', '17 jun · 27 hoyos', '115', '+7', 67, 59, 73)}${round('Campestre', '12 jun · 18 hoyos', '74', '+2', 64, 56, 63)}`);
+}
+function lpScrLogros() {
+  const t = (name, sub, on) => `<div class="lps-troph ${on ? 'on' : ''}"><span class="lps-tr-ic">🏆</span><b>${name}</b><span>${sub}</span></div>`;
+  return lpReal(`<div class="lps-rhd"><b>Logros</b><span>🏆 6 / 8</span></div><div class="lps-trophs">${t('Maestro de Calles', '✓ Desbloqueado', 1)}${t('Guardián del Green', 'vas 57% · meta 58%', 0)}${t('Mago del Up & Down', '✓ Desbloqueado', 1)}${t('Hechicero del Putt', '✓ Desbloqueado', 1)}</div>`);
 }
 
 /* sellos de credibilidad + logos (slots para imágenes oficiales en assets/) */
@@ -208,7 +225,7 @@ function vLanding() {
         </div>
         <p class="lp-trust">Gratis para empezar · Tus datos viven en tu dispositivo</p>
       </div>
-      <div class="lp-herophone reveal">${lpPhone(lpScrStats())}</div>
+      <div class="lp-herophone reveal">${lpPhoneShot('shot-inicio.png', lpScrStats())}</div>
     </section>
 
     <section class="lp-sec">
@@ -227,9 +244,9 @@ function vLanding() {
       <span class="lp-eyebrow reveal">La app por dentro</span>
       <h2 class="lp-h2 reveal">Funciones reales,<br/><span class="lime">no promesas.</span></h2>
       <div class="lp-shots">
-        <div class="lp-shot reveal">${lpPhone(lpScrPlay())}<div class="lp-shot-tx"><h3>Registra cada hoyo</h3><p>Salida, green, juego corto y putts en segundos. Tu tarjeta, completa, sin lápiz ni papel.</p></div></div>
-        <div class="lp-shot lp-shot-r reveal">${lpPhone(lpScrCoach())}<div class="lp-shot-tx"><h3>Tu coach IA</h3><p>Cruza tus rondas, encuentra dónde pierdes golpes y te dice exactamente qué entrenar.</p></div></div>
-        <div class="lp-shot reveal">${lpPhone(lpScrStats())}<div class="lp-shot-tx"><h3>Mira tus números</h3><p>Calles, GIR, up & down, putts y más. Sabes de verdad cómo juegas y cómo subir.</p></div></div>
+        <div class="lp-shot reveal">${lpPhoneShot('shot-rondas.png', lpScrRondas())}<div class="lp-shot-tx"><h3>Registra y revisa tus rondas</h3><p>Cada hoyo en segundos. Calles, greens, up & down y tu tarjeta completa, lista al instante.</p></div></div>
+        <div class="lp-shot lp-shot-r reveal">${lpPhoneShot('shot-analisis.png', lpScrCoach())}<div class="lp-shot-tx"><h3>Tu coach IA</h3><p>Cruza tus rondas, encuentra dónde pierdes golpes y te dice exactamente qué entrenar.</p></div></div>
+        <div class="lp-shot reveal">${lpPhoneShot('shot-logros.png', lpScrLogros())}<div class="lp-shot-tx"><h3>Sube de rango con logros</h3><p>Trofeos míticos por cada meta que alcanzas. Tu progreso, gamificado y claro.</p></div></div>
       </div>
     </section>
 

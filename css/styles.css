@@ -3259,6 +3259,30 @@ body.is-scrolling .ht-trace, body.is-scrolling .ht-ball { animation-play-state: 
 .lp-realwrap .pl-hero { margin: 0 0 12px; padding: 16px 18px; }
 .lp-realwrap .pst-rings { margin: 0; }
 .lp-realwrap .pst-grid { margin-top: 10px; }
+/* slot de screenshot real (assets/) sobre el componente */
+.lp-shotimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2; }
+.lp-shotcomp { width: 100%; height: 100%; }
+/* encabezado de pantalla (Tus rondas / Análisis IA / Logros) */
+.lps-rhd { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+.lps-rhd b { font-size: 21px; font-weight: 900; color: var(--text); }
+.lps-rhd span { font-size: 12px; font-weight: 700; color: var(--muted); }
+/* tarjeta de ronda */
+.lps-rd { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px; margin-bottom: 12px; box-shadow: 0 6px 16px rgba(20,40,15,.06); }
+.lps-rd-top { display: flex; align-items: flex-start; justify-content: space-between; }
+.lps-rd-info b { font-size: 17px; font-weight: 900; color: var(--text); }
+.lps-rd-info span { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.lps-rd-sc { text-align: right; }
+.lps-rd-sc b { font-size: 26px; font-weight: 900; color: var(--text); }
+.lps-rd-sc small { display: block; font-size: 12px; color: #e0873a; font-weight: 800; }
+.lps-rd-rings { margin-top: 12px !important; }
+/* logros */
+.lps-trophs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.lps-troph { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px; box-shadow: 0 6px 16px rgba(20,40,15,.06); }
+.lps-troph.on { background: var(--lime-faint); border-color: var(--lime-dim); }
+.lps-tr-ic { font-size: 30px; filter: grayscale(.7); }
+.lps-troph.on .lps-tr-ic { filter: none; }
+.lps-troph b { font-size: 13px; font-weight: 900; color: var(--text); }
+.lps-troph span { font-size: 10.5px; font-weight: 700; color: var(--muted); }
 .lpsr-hb { background: linear-gradient(120deg, #8fd06a, #4ca055); border-radius: 16px; padding: 13px 16px; color: #fff; margin-bottom: 13px; }
 .lpsr-hb-c { font-size: 12px; font-weight: 700; opacity: .92; }
 .lpsr-hb-r { display: flex; justify-content: space-between; align-items: baseline; margin-top: 3px; }
