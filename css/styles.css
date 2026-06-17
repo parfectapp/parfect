@@ -60,7 +60,7 @@ input, select, textarea { font-size: 16px; }
 #root { display: contents; }
 
 /* ============ Fondo inmersivo de toda la app (día/noche) ============ */
-.app-bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: linear-gradient(180deg,#3fa3ec 0%,#5fb8ef 14%,#8fd2f1 28%,#c4e6ee 42%,#e6d8ee 51%,#ffe0c6 60%,#ffccb4 68%,#ffd2c6 74%,#dcecc4 85%,#a9d877 100%); }
+.app-bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: linear-gradient(180deg,#5fbdef 0%,#7cc7ef 20%,#9fd6f1 38%,#c6e6ed 54%,#e8dced 64%,#ffe3ca 74%,#ffd2bf 82%,#d6ebc0 92%,#a9d877 100%); }
 /* dentro de la app, el fondo es un ambiente sutil para que la app sea lo principal */
 body.in-app .app-bg::after { content: ''; position: absolute; inset: 0; background: var(--bg); opacity: 0.3; }
 body.in-app .app-bg .bg-cloud, body.in-app .app-bg .bg-bird, body.in-app .app-bg .bg-gball { opacity: 0.72; }
@@ -96,7 +96,7 @@ body.in-app .app-bg .bg-cloud, body.in-app .app-bg .bg-bird, body.in-app .app-bg
 [data-theme="dark"] .bg-gball { opacity: 0.4; }
 @keyframes bgball { 0% { transform: translate(-6vw, 0); opacity: 0; } 12% { opacity: 1; } 50% { transform: translate(45vw, -120px); } 90% { opacity: 1; } 100% { transform: translate(96vw, 30px); opacity: 0; } }
 /* fondo: campo de golf estilizado (en vez de montañas lisas) */
-.bg-course { position: absolute; left: 0; bottom: 0; width: 100%; height: 62%; display: block; }
+.bg-course { position: absolute; left: 0; bottom: 0; width: 100%; height: 52%; display: block; }
 .bgc-far { fill: #8fc75a; }
 .bgc-mid { fill: #6fae47; }
 .bgc-front { fill: #569338; }
@@ -831,14 +831,18 @@ button.row { cursor: pointer; }
 .sc-table td.bogey { color: #d8e0cc; }
 .sc-table td.doble { color: var(--danger); }
 /* tarjeta apilada: 9 hoyos por piso, ancho completo (18 hoyos = dos pisos, sin alargar) */
-.sc-stack { display: flex; flex-direction: column; gap: 9px; margin-top: 10px; }
-.sc-wb { background: var(--card2); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.sc-stack { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.sc-wb { background: var(--card2); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; padding: 2px 2px 4px; }
 .sc-table.sc-w { width: 100%; table-layout: fixed; font-size: 12px; }
-.sc-table.sc-w th, .sc-table.sc-w td { min-width: 0; padding: 6px 1px; border-bottom: 1px solid var(--line-soft); }
-.sc-table.sc-w tbody tr:last-child td { border-bottom: none; }
-.sc-table.sc-w .sc-name { position: static; width: 38px; min-width: 0; padding-left: 8px; background: transparent; font-size: 10.5px; }
+.sc-table.sc-w th, .sc-table.sc-w td { min-width: 0; padding: 7px 1px; border-bottom: none; }
+.sc-table.sc-w thead .sc-hrow th { color: var(--muted2); font-weight: 800; font-size: 9.5px; letter-spacing: .07em; padding: 10px 1px 8px; border-bottom: 1px solid var(--line); }
+.sc-table.sc-w .sc-parrow td { color: var(--muted); font-weight: 700; padding-top: 9px; }
+.sc-table.sc-w tbody tr:not(.sc-parrow) td { font-weight: 800; color: var(--text); padding-bottom: 9px; }
+/* las marcas llevan el color: neutraliza las clases viejas a nivel celda */
+.sc-table.sc-w td.birdie, .sc-table.sc-w td.eagle, .sc-table.sc-w td.bogey, .sc-table.sc-w td.doble { background: transparent; color: var(--text); border-radius: 0; }
+.sc-table.sc-w .sc-name { position: static; width: 40px; min-width: 0; padding-left: 10px; background: transparent; font-size: 9px; letter-spacing: .05em; text-transform: uppercase; }
 .sc-table.sc-w thead .sc-name { background: transparent; }
-.sc-table.sc-w .sc-tt { background: var(--lime-faint); }
+.sc-table.sc-w .sc-tt { background: var(--lime-faint); color: var(--lime-ink); font-weight: 900; }
 
 /* ============ Captura por jugador en party (score + stats) ============ */
 .ph { border-bottom: 1px solid var(--line-soft); padding: 11px 0; }
@@ -2342,13 +2346,12 @@ svg.fd-av { object-fit: contain; }
 .bgc-carry i { font-size: 11px; font-style: normal; font-weight: 700; color: var(--muted); }
 
 /* ===== Marca de golf (círculo birdie / cuadro bogey) ===== */
-.sc-mark { display: inline-grid; place-items: center; min-width: 20px; height: 20px; line-height: 1; }
-.sc-mark.mk-circ { border: 1.8px solid currentColor; border-radius: 50%; }
-.sc-mark.mk-circ2 { border: 1.8px solid currentColor; border-radius: 50%; box-shadow: 0 0 0 2px var(--card), 0 0 0 3.6px currentColor; }
-.sc-mark.mk-sq { border: 1.8px solid currentColor; border-radius: 4px; }
-.sc-mark.mk-sq2 { border: 1.8px solid currentColor; border-radius: 4px; box-shadow: 0 0 0 2px var(--card), 0 0 0 3.6px currentColor; }
-.sc-mark.mk-under { color: #3aa055; }
-.sc-mark.mk-over { color: #e2873a; }
+/* marcas de score estilo Nike: alto contraste, lima sólido para lo bueno */
+.sc-mark { display: inline-grid; place-items: center; min-width: 22px; height: 22px; line-height: 1; font-weight: 800; border-radius: 50%; }
+.sc-mark.mk-circ { background: var(--lime); color: #0a0f06; }
+.sc-mark.mk-circ2 { background: var(--lime); color: #0a0f06; box-shadow: 0 0 0 2px var(--card2), 0 0 0 3.6px var(--lime); }
+.sc-mark.mk-sq { border-radius: 7px; border: 1.6px solid var(--line-strong, var(--line)); color: var(--muted); }
+.sc-mark.mk-sq2 { border-radius: 7px; background: var(--danger); color: #fff; }
 
 /* ===== Tarjeta de ronda detallada (matriz) ===== */
 .dc-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 8px -4px 0; padding: 0 4px; scrollbar-width: none; }
@@ -3042,7 +3045,7 @@ body.is-scrolling .ht-trace, body.is-scrolling .ht-ball { animation-play-state: 
 /* ===== Landing v3: día completo continuo (cielo arriba → campo abajo) + escena viva + narrativa del pájaro ===== */
 /* el gradiente del día va en TODA la página (sin corte): se ve cómo "bajas" al campo al hacer scroll */
 .lp-ph-dawn  { background: linear-gradient(180deg,#ffd9a8 0%,#ffc6b2 16%,#ffd9b4 32%,#dfeccf 52%,#bfe39a 74%,#a9d877 100%) !important; }
-.lp-ph-day   { background: linear-gradient(180deg,#3fa3ec 0%,#5fb8ef 14%,#8fd2f1 28%,#c4e6ee 42%,#e6d8ee 51%,#ffe0c6 60%,#ffccb4 68%,#ffd2c6 74%,#dcecc4 85%,#a9d877 100%) !important; }
+.lp-ph-day   { background: linear-gradient(180deg,#5fbdef 0%,#7cc7ef 20%,#9fd6f1 38%,#c6e6ed 54%,#e8dced 64%,#ffe3ca 74%,#ffd2bf 82%,#d6ebc0 92%,#a9d877 100%) !important; }
 .lp-ph-dusk  { background: linear-gradient(180deg,#ff9e6b 0%,#ff8fa0 18%,#e79bb0 36%,#caa7c2 52%,#bfd79a 76%,#a9d877 100%) !important; }
 .lp-ph-night { background: linear-gradient(180deg,#0a1430 0%,#102145 22%,#16294c 42%,#1b2f3e 60%,#244a30 82%,#a9d877 100%) !important; }
 .lp-ph-night .lp-hero-copy .lp-title, .lp-ph-night .lp-hero-copy .lp-sub, .lp-ph-night .lp-nav .lp-logo, .lp-ph-night .lp-nav .lp-links button:not(.lp-cta-sm) { color: #fff; }
@@ -3072,7 +3075,7 @@ body.is-scrolling .ht-trace, body.is-scrolling .ht-ball { animation-play-state: 
 .lp-fixed .lf3 { bottom: 36vh; animation: lpBallArc 24s ease-in-out infinite; animation-delay: -13s; }
 
 /* campo (suelo) fijo abajo — paraíso de golf */
-.lp-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 45vh; }
+.lp-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 40vh; }
 .lp-ground .lp-hills { position: absolute; inset: 0; width: 100%; height: 100%; }
 .lp-ground .lp-bgc { position: absolute; inset: 0; width: 100%; height: 100%; }
 .lp-ground .lp-lake { position: absolute; right: 6%; bottom: 6%; width: 116px; height: auto; opacity: .92; }

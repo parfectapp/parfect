@@ -29,7 +29,7 @@ function scorecard(holes, offset = 0) {
 function scoreMarker(score, par) {
   if (score == null) return '·';
   const d = score - par;
-  const sh = d <= -2 ? 'mk-circ2 mk-under' : d === -1 ? 'mk-circ mk-under' : d === 1 ? 'mk-sq mk-over' : d >= 2 ? 'mk-sq2 mk-over' : '';
+  const sh = d <= -2 ? 'mk-circ2' : d === -1 ? 'mk-circ' : d === 1 ? 'mk-sq' : d >= 2 ? 'mk-sq2' : '';
   return `<span class="sc-mark ${sh}">${score}</span>`;
 }
 function scTableCell(score, par, cur) {

@@ -85,9 +85,9 @@ function vLanding() {
   const bgcPalm = (x, y, s, flip, d) => `<g class="bgc-palm" transform="translate(${x} ${y}) scale(${flip ? -s : s} ${s})"><ellipse class="bgc-gsh" cx="0" cy="2" rx="9" ry="2.2"/><path class="bgc-ptrunk" d="M-3,0 C-5,-13 3,-25 -2,-39 L2,-39 C6,-25 1,-13 3,0 Z"/><g transform="translate(0 -38)"><g class="bgc-pcrown" style="animation-delay:${d || 0}s"><path class="bgc-pleaf" d="M0,0 Q20,-3 29,9 Q21,0 1,3 Z"/><path class="bgc-pleaf" d="M0,0 Q-20,-3 -29,9 Q-21,0 -1,3 Z"/><path class="bgc-pleaf2" d="M0,-1 Q17,-11 31,-3 Q19,-1 1,3 Z"/><path class="bgc-pleaf2" d="M0,-1 Q-17,-11 -31,-3 Q-19,-1 -1,3 Z"/><path class="bgc-pleaf" d="M0,0 Q11,-15 23,-22 Q15,-9 1,2 Z"/><path class="bgc-pleaf" d="M0,0 Q-11,-15 -23,-22 Q-15,-9 -1,2 Z"/><path class="bgc-pleaf2" d="M-2,1 Q-2,-15 0,-25 Q2,-15 2,1 Z"/><circle class="bgc-pcoco" cx="-2.5" cy="2" r="1.7"/><circle class="bgc-pcoco" cx="2" cy="3" r="1.7"/><circle class="bgc-pcoco" cx="0" cy="0.5" r="1.5"/></g></g></g>`;
   // arbusto con flores tropicales (color en el campo)
   const bgcBush = (x, y, s) => `<g class="bgc-bush" transform="translate(${x} ${y}) scale(${s})"><ellipse class="bgc-bushleaf" cx="0" cy="0" rx="11" ry="6"/><ellipse class="bgc-bushleaf" cx="-6" cy="1" rx="6" ry="4"/><ellipse class="bgc-bushleaf" cx="7" cy="1" rx="6" ry="4"/><circle class="bgc-fl a" cx="-6" cy="-3" r="1.9"/><circle class="bgc-fl b" cx="-1" cy="-5" r="2"/><circle class="bgc-fl c" cx="5" cy="-3.5" r="1.8"/><circle class="bgc-fl b" cx="-3" cy="-1" r="1.5"/><circle class="bgc-fl a" cx="3" cy="-1.5" r="1.6"/><circle class="bgc-fl c" cx="9" cy="-1" r="1.4"/></g>`;
-  // manojo de flores sueltas sobre el pasto
-  const bgcFlowers = (x, y, s) => `<g class="bgc-bush" transform="translate(${x} ${y}) scale(${s})"><circle class="bgc-fl a" cx="-4" cy="-1" r="1.7"/><circle class="bgc-fl b" cx="0" cy="-2.6" r="1.8"/><circle class="bgc-fl c" cx="4" cy="-0.6" r="1.6"/><circle class="bgc-fl b" cx="-1.5" cy="0.6" r="1.4"/><circle class="bgc-fl c" cx="2" cy="-2" r="1.3"/></g>`;
-  const liveG = `${bgcPalm(20, 150, .7, false, -2)}${bgcPalm(34, 234, 1.7, false, 0)}${bgcPalm(378, 238, 2, true, -1.6)}${bgcPalm(210, 226, 1.3, false, -3)}${bgcBush(150, 226, 1.15)}${bgcBush(288, 216, 1)}${bgcBush(96, 210, .9)}${bgcBush(332, 232, .95)}${bgcBush(62, 228, .85)}${bgcBush(248, 232, .9)}${bgcBush(190, 208, .8)}${bgcFlowers(120, 232, 1.1)}${bgcFlowers(308, 204, 1)}${bgcFlowers(168, 198, .9)}${bgcFlowers(360, 226, 1)}`;
+  // jardinera de flores (diseñada, a lo largo del frente del campo)
+  const bgcBed = (x, y, s) => `<g class="bgc-bush" transform="translate(${x} ${y}) scale(${s})"><ellipse class="bgc-bushleaf" cx="0" cy="0" rx="22" ry="5.5"/><ellipse class="bgc-bushleaf" cx="-13" cy="1" rx="9" ry="4"/><ellipse class="bgc-bushleaf" cx="13" cy="1" rx="9" ry="4"/><circle class="bgc-fl a" cx="-18" cy="-2.5" r="1.7"/><circle class="bgc-fl b" cx="-13" cy="-4" r="1.8"/><circle class="bgc-fl c" cx="-9" cy="-2" r="1.6"/><circle class="bgc-fl b" cx="-4" cy="-3.6" r="1.7"/><circle class="bgc-fl a" cx="0" cy="-4.6" r="1.9"/><circle class="bgc-fl c" cx="4" cy="-2.4" r="1.6"/><circle class="bgc-fl b" cx="9" cy="-3.6" r="1.7"/><circle class="bgc-fl a" cx="13" cy="-2" r="1.6"/><circle class="bgc-fl c" cx="18" cy="-3" r="1.7"/></g>`;
+  const liveG = `${bgcPalm(28, 236, 1.6, false, 0)}${bgcPalm(384, 238, 1.9, true, -1.6)}${bgcPalm(160, 232, 1.15, false, -3)}${bgcBed(70, 234, 1.05)}${bgcBed(232, 237, 1.15)}${bgcBed(322, 233, 1)}${bgcBed(120, 224, .8)}${bgcBed(284, 226, .78)}${bgcBush(40, 226, .8)}${bgcBush(356, 224, .85)}${bgcBush(200, 214, .72)}`;
   const lpFlag = (st, col) => `<div class="lp-cflag" style="${st}"><svg viewBox="0 0 22 30" aria-hidden="true"><ellipse cx="9" cy="27" rx="11" ry="3.4" fill="#7fbf52"/><rect x="9" y="3" width="1.7" height="22" fill="#d2d8da"/><path d="M10.7 3 L20 6.2 L10.7 9.4 Z" fill="${col || '#ff5a4d'}"/></svg></div>`;
   // mismo estilo del fondo de la app (clases bgc-*), exagerado: muchísimos árboles + greens + lagos
   const bgcTree = (x, y, s) => `<g class="bgc-tree" transform="translate(${x} ${y}) scale(${s})"><rect class="bgc-trunk" x="-2" y="-2" width="4" height="14"/><circle class="bgc-leaf" cx="0" cy="-11" r="11"/><circle class="bgc-leaf2" cx="-7" cy="-5" r="8"/><circle class="bgc-leaf2" cx="7" cy="-6" r="8"/></g>`;
@@ -113,7 +113,7 @@ function vLanding() {
           ${bgcLake(92, 170, 46, 13)}
           ${bgcGreen(300, 148, 38, 13)}${bgcFlag(300, 148, 30)}
           ${bgcGreen(238, 152, 24, 9)}${bgcFlag(238, 152, 22)}
-          ${tline([[14, 158, 1.05], [54, 164, .85], [100, 156, .7], [150, 150, .68], [262, 150, .66], [352, 160, 1.2], [386, 156, 1.0]])}
+          ${tline([[14, 158, 1.05], [40, 156, .8], [54, 164, .85], [100, 156, .7], [150, 150, .68], [180, 158, .72], [218, 156, .7], [262, 150, .66], [306, 154, .74], [330, 158, .9], [352, 160, 1.2], [386, 156, 1.0]])}
           <ellipse class="bgc-sand" cx="170" cy="190" rx="26" ry="8"/>
           <ellipse class="bgc-sand" cx="64" cy="198" rx="20" ry="7"/>
           <path class="bgc-front" d="M0,202 Q140,172 280,196 T400,192 L400,240 L0,240 Z"/>
@@ -126,7 +126,7 @@ function vLanding() {
           ${bgcGreen(56, 196, 21, 8)}${bgcFlag(56, 196, 22)}
           ${bgcGreen(348, 172, 19, 7)}${bgcFlag(348, 172, 20)}
           ${bgcGreen(196, 178, 18, 6)}${bgcFlag(196, 178, 18)}
-          ${tline([[24, 210, 1.3], [74, 216, 1.05], [120, 220, .95], [300, 220, .95], [360, 210, 1.3], [390, 216, 1.1]])}
+          ${tline([[24, 210, 1.3], [74, 216, 1.05], [120, 220, .95], [140, 224, .9], [210, 216, .7], [252, 224, .95], [300, 220, .95], [338, 222, 1.1], [360, 210, 1.3], [390, 216, 1.1]])}
           ${liveG}
         </svg>
       </div>
