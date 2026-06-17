@@ -2154,20 +2154,21 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .myt-emb { width: 60px; height: 60px; }
 .myt-svg { width: 100%; height: 100%; }
 .myt-star { fill: #fff; fill-opacity: .9; }
-.myt.on .myt-svg { color: #e8b53a; filter: drop-shadow(0 4px 9px rgba(232,181,58,.55)); }
+.myt.on .myt-svg { color: var(--lime); filter: drop-shadow(0 4px 9px rgba(199,238,84,.5)); }
+.myt.on .myt-star { fill: #0a0f06; fill-opacity: .9; }
 .myt.off .myt-svg { color: var(--muted2); filter: grayscale(1) opacity(.5); }
 .myt.off .myt-star { fill-opacity: .35; }
-.myt.on { border-color: rgba(232,181,58,.5); }
-.myt.on::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% -10%, rgba(255,215,106,.18), transparent 62%); pointer-events: none; }
+.myt.on { border-color: var(--lime-dim); }
+.myt.on::after { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% -10%, rgba(199,238,84,.2), transparent 62%); pointer-events: none; }
 .myt-name { font-size: 14px; font-weight: 900; color: var(--text); margin-top: 7px; }
 .myt.off .myt-name { color: var(--muted); }
 .myt-sub { font-size: 11px; color: var(--muted); }
 .myt-bar { width: 100%; height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: 9px; }
-.myt-bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #ffd76a, #e8a93a); }
+.myt-bar i { display: block; height: 100%; border-radius: 99px; background: var(--lime); }
 .myt.off .myt-bar i { background: var(--muted2); opacity: .7; }
 .myt-stat { font-size: 11px; font-weight: 800; color: var(--muted); margin-top: 7px; }
-.myt.on .myt-stat { color: #b88516; }
-[data-theme="dark"] .myt.on .myt-stat { color: #ffd76a; }
+.myt.on .myt-stat { color: var(--lime-ink); }
+[data-theme="dark"] .myt.on .myt-stat { color: var(--lime); }
 .myt-chk { font-style: normal; }
 .myt-lock { position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; color: var(--muted2); }
 .myt-lockic { width: 100%; height: 100%; }
@@ -2346,12 +2347,12 @@ svg.fd-av { object-fit: contain; }
 .bgc-carry i { font-size: 11px; font-style: normal; font-weight: 700; color: var(--muted); }
 
 /* ===== Marca de golf (círculo birdie / cuadro bogey) ===== */
-/* marcas de score estilo Nike: alto contraste, lima sólido para lo bueno */
-.sc-mark { display: inline-grid; place-items: center; min-width: 22px; height: 22px; line-height: 1; font-weight: 800; border-radius: 50%; }
-.sc-mark.mk-circ { background: var(--lime); color: #0a0f06; }
-.sc-mark.mk-circ2 { background: var(--lime); color: #0a0f06; box-shadow: 0 0 0 2px var(--card2), 0 0 0 3.6px var(--lime); }
-.sc-mark.mk-sq { border-radius: 7px; border: 1.6px solid var(--line-strong, var(--line)); color: var(--muted); }
-.sc-mark.mk-sq2 { border-radius: 7px; background: var(--danger); color: #fff; }
+/* marcas de score estilo Nike: solo figuras, sin color (círculo=bajo par, cuadro=sobre par) */
+.sc-mark { display: inline-grid; place-items: center; min-width: 22px; height: 22px; line-height: 1; font-weight: 800; color: var(--text); }
+.sc-mark.mk-circ { border: 1.7px solid var(--text); border-radius: 50%; }
+.sc-mark.mk-circ2 { border: 1.7px solid var(--text); border-radius: 50%; box-shadow: 0 0 0 2px var(--card2), 0 0 0 3.5px var(--text); }
+.sc-mark.mk-sq { border: 1.7px solid var(--text); border-radius: 6px; }
+.sc-mark.mk-sq2 { border: 1.7px solid var(--text); border-radius: 6px; box-shadow: 0 0 0 2px var(--card2), 0 0 0 3.5px var(--text); }
 
 /* ===== Tarjeta de ronda detallada (matriz) ===== */
 .dc-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 8px -4px 0; padding: 0 4px; scrollbar-width: none; }
