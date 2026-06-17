@@ -857,20 +857,8 @@ function partyCard() {
     </div>`;
 }
 
-function vSocial() {
-  const friends = (typeof FRIENDS_FEED !== 'undefined' ? FRIENDS_FEED : []).map(f => `
-    <button class="fr-card" data-act="friend" data-id="${esc(f.id)}">
-      <span class="fr-av"><img class="golfer" src="${AVATARS[f.av] || AVATARS[0]}" alt="" loading="lazy"></span>
-      <div class="fr-info"><b>${esc(f.name)}</b><span>HCP ${fmtHcp(f.hcp)} · ${esc(f.course)}</span></div>
-      <span class="fr-score"><b>${f.score}</b><small>${fmtToPar(f.toPar)}</small></span>
-      <span class="fr-go">›</span>
-    </button>`).join('');
-  return `<button class="auth-back" data-act="nav" data-view="trainer">← Entrenamiento</button>
-    <div class="sec-h"><h2>Tus amigos</h2><span class="small muted">toca para ver su perfil</span></div>
-    <div class="fr-list">${friends}</div>
-    <div class="sec-h" style="margin-top:24px"><h2>Calendario</h2><span class="small muted">toca un día y agrega lo que toca</span></div>
-    ${vCalendar()}`;
-}
+/* La sección Social = el hub con liga de amigos, feed de amigos, torneo (sin calendario) */
+function vSocial() { return (typeof vPerfil === 'function') ? vPerfil() : ''; }
 
 /* ---------- Perfil de un jugador (amigo) ---------- */
 function vFriend() {

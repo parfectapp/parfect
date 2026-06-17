@@ -3,7 +3,7 @@
 function navKeyOf(view) {
   if (['ronda', 'nueva', 'detalle'].includes(view)) return 'ronda';
   if (['trainer', 'clubs'].includes(view)) return 'trainer';
-  if (['perfil', 'clubs', 'friend'].includes(view)) return 'perfil';
+  if (['perfil', 'clubs', 'friend', 'social'].includes(view)) return 'perfil';
   return 'inicio';
 }
 
@@ -762,11 +762,13 @@ function vSocialFeed() {
     const ln = (p.likes || 0) + (liked ? 1 : 0);
     const scoreCls = p.toPar <= 0 ? 'good' : p.toPar <= Math.round(p.holes * 0.33) ? 'par' : 'over';
     const av = p.mine ? avatarImg(u, 'fd-av') : `<img class="fd-av golfer" src="${AVATARS[p.av] || AVATARS[0]}" alt="" loading="lazy">`;
+    const headInner = `<span class="fd-avwrap">${av}</span>
+        <div class="fd-who"><b>${esc(p.name)}${p.mine ? ' <span class="fd-you">tú</span>' : ''}</b><span>${p.mine ? 'Tú · ' + p.when : 'HCP ' + fmtHcp(p.hcp) + ' · ' + p.when}</span></div>`;
+    const head = p.mine
+      ? `<div class="fd-head">${headInner}</div>`
+      : `<button class="fd-head fd-link" data-act="friend" data-id="${esc(p.id)}">${headInner}<span class="fd-go">›</span></button>`;
     return `<div class="fd-card">
-      <div class="fd-head">
-        <span class="fd-avwrap">${av}</span>
-        <div class="fd-who"><b>${esc(p.name)}${p.mine ? ' <span class="fd-you">tú</span>' : ''}</b><span>${p.mine ? 'Tú · ' + p.when : 'HCP ' + fmtHcp(p.hcp) + ' · ' + p.when}</span></div>
-      </div>
+      ${head}
       ${p.cap ? `<p class="fd-cap">${esc(p.cap)}</p>` : ''}
       ${p.media ? `<div class="fd-media">${p.media.type === 'video' ? `<video src="${p.media.src}" controls playsinline preload="metadata"></video>` : `<img src="${p.media.src}" alt="" loading="lazy">`}</div>` : ''}
       <div class="fd-round">
@@ -820,7 +822,7 @@ function vShareComposer(u) {
 /* tabla de tu liga de amigos (mejor ronda de la semana, normalizada a 18) */
 function socialLeaders(u) {
   const mine = myRounds();
-  const e = FRIENDS_FEED.map(f => ({ name: f.name, av: f.av, hcp: f.hcp, toPar18: Math.round(f.toPar / f.holes * 18), score: f.score }));
+  const e = FRIENDS_FEED.map(f => ({ id: f.id, name: f.name, av: f.av, hcp: f.hcp, toPar18: Math.round(f.toPar / f.holes * 18), score: f.score }));
   if (mine.length) {
     const s = Stats.roundStats(mine[0]);
     e.push({ me: true, name: u.name, hcp: u.hcp, toPar18: Math.round(s.toPar / Math.max(1, s.holes) * 18), score: s.score });
@@ -832,9 +834,9 @@ function socialLeaders(u) {
 function vStories(u) {
   const cells = [`<div class="story me">
       <span class="story-ring">${avatarImg(u, 'story-img')}</span><span class="story-nm">Tú</span></div>`]
-    .concat(FRIENDS_FEED.map(f => `<div class="story">
+    .concat(FRIENDS_FEED.map(f => `<button class="story story-link" data-act="friend" data-id="${esc(f.id)}">
       <span class="story-ring"><img class="story-img golfer" src="${AVATARS[f.av] || AVATARS[0]}" alt="" loading="lazy"></span>
-      <span class="story-nm">${esc(f.name.split(' ')[0])}</span></div>`)).join('');
+      <span class="story-nm">${esc(f.name.split(' ')[0])}</span></button>`)).join('');
   // duplicado para scroll infinito (marquee continuo)
   return `<div class="story-row"><div class="story-track">${cells}${cells}</div></div>`;
 }
@@ -846,12 +848,13 @@ function vRanking(u) {
   const rows = lead.map((e, i) => {
     const pos = i + 1;
     const av = e.me ? avatarImg(u, 'rk-img') : `<img class="rk-img golfer" src="${AVATARS[e.av] || AVATARS[0]}" alt="" loading="lazy">`;
-    return `<div class="rk-row ${e.me ? 'me' : ''}">
-      <span class="rk-pos ${pos <= 3 ? 'top' + pos : ''}">${pos}</span>
+    const inner = `<span class="rk-pos ${pos <= 3 ? 'top' + pos : ''}">${pos}</span>
       <span class="rk-av">${av}</span>
       <div class="rk-info"><b>${esc(e.me ? e.name.split(' ')[0] + ' (tú)' : e.name)}</b><span>HCP ${fmtHcp(e.hcp)}</span></div>
-      <span class="rk-score ${e.toPar18 <= 0 ? 'good' : ''}">${e.toPar18 > 0 ? '+' : ''}${e.toPar18}</span>
-    </div>`;
+      <span class="rk-score ${e.toPar18 <= 0 ? 'good' : ''}">${e.toPar18 > 0 ? '+' : ''}${e.toPar18}</span>`;
+    return e.me
+      ? `<div class="rk-row me">${inner}</div>`
+      : `<button class="rk-row rk-link" data-act="friend" data-id="${esc(e.id || '')}">${inner}<span class="rk-go">›</span></button>`;
   }).join('');
   return `<div class="sec-h"><h2>Liga de amigos</h2>${myPos ? `<span class="small muted">vas #${myPos} de ${lead.length}</span>` : ''}</div>
     <div class="rk-card">${rows}<p class="rk-foot">Mejor ronda de la semana · ajustada a 18 hoyos</p></div>`;
