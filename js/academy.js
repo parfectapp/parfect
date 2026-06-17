@@ -336,9 +336,8 @@ function vQuizSheet() {
   if (q.done) {
     const passed = q.score >= 7;
     const hasNext = q.i + 1 < ACADEMY_QUIZ.length;
-    return `<div class="overlay" data-act="quiz-close"><div class="sheet aq-sheet aq-result" data-act="noop" style="--uc:${hole.color}">
-      <div class="grab"></div>
-      <div class="aq-res-ic">${passed ? '🏆' : '🎯'}</div>
+    return `<div class="overlay overlay-top" data-act="quiz-close"><div class="sheet aq-sheet aq-result" data-act="noop" style="--uc:${hole.color}">
+      <div class="aq-res-ring ${passed ? 'pass' : ''}"><div class="aq-res-ic">${passed ? '🏆' : '🎯'}</div></div>
       <h2 class="aq-res-h">${passed ? '¡Hoyo superado!' : '¡Casi lo logras!'}</h2>
       <div class="aq-res-score">${q.score}<span>/${total}</span></div>
       <div class="aq-res-stars">${[0, 1, 2].map(s => `<span class="${q.score >= [5, 7, 9][s] ? 'on' : ''}">★</span>`).join('')}</div>
@@ -350,22 +349,23 @@ function vQuizSheet() {
     </div></div>`;
   }
   const item = hole.qs[q.order[q.qi]];
-  const tags = ['aq-a', 'aq-b', 'aq-c', 'aq-d'];
-  const opts = item.opts.map((o, i) => {
-    let cls = tags[i % 4];
-    if (q.picked != null) { if (i === item.a) cls += ' right'; else if (i === q.picked) cls += ' wrong'; else cls += ' dim'; }
-    return `<button class="aq-opt ${cls}" ${q.picked == null ? `data-act="quiz-pick" data-i="${i}"` : ''}>${esc(o)}</button>`;
-  }).join('');
+  const letters = ['A', 'B', 'C', 'D'];
   const answered = q.picked != null;
   const correct = answered && q.picked === item.a;
-  return `<div class="overlay" data-act="quiz-close"><div class="sheet aq-sheet" data-act="noop" style="--uc:${hole.color}">
-    <div class="grab"></div>
+  const opts = item.opts.map((o, i) => {
+    let cls = '';
+    if (answered) { if (i === item.a) cls = 'right'; else if (i === q.picked) cls = 'wrong'; else cls = 'dim'; }
+    const badge = answered ? (i === item.a ? '✓' : (i === q.picked ? '✕' : letters[i])) : letters[i];
+    return `<button class="aq-opt ${cls}" ${q.picked == null ? `data-act="quiz-pick" data-i="${i}"` : ''}><span class="aq-let">${badge}</span><span class="aq-otx">${esc(o)}</span></button>`;
+  }).join('');
+  const dots = Array.from({ length: total }, (_, k) => `<span class="aq-dot ${k < q.qi ? 'done' : k === q.qi ? 'cur' : ''}"></span>`).join('');
+  return `<div class="overlay overlay-top" data-act="quiz-close"><div class="sheet aq-sheet" data-act="noop" style="--uc:${hole.color}">
     <div class="aq-top">
-      <button class="dd2-x" data-act="quiz-close" aria-label="Cerrar">✕</button>
       <span class="aq-tag">${golfIcon(hole.icon)} Hoyo ${q.i + 1} · ${esc(hole.unit)}</span>
-      <span class="aq-pts">${q.score} ✓</span>
+      <span class="aq-pts">${q.score}<b>✓</b></span>
+      <button class="aq-x" data-act="quiz-close" aria-label="Cerrar">✕</button>
     </div>
-    <div class="aq-prog"><i style="width:${Math.round((q.qi / total) * 100)}%"></i></div>
+    <div class="aq-dots">${dots}</div>
     <span class="aq-count">Pregunta ${q.qi + 1} de ${total}</span>
     <h2 class="aq-q">${esc(item.q)}</h2>
     <div class="aq-opts">${opts}</div>
