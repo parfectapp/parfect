@@ -1415,11 +1415,6 @@ button.row { cursor: pointer; }
 .lp { position: relative; width: 100%; overflow: hidden; color: var(--text); background: linear-gradient(180deg, #a9d877 0%, #c6e6a4 14%, #e3edd4 50%); }
 [data-theme="dark"] .lp { background: linear-gradient(180deg, #16341f 0%, #102a18 26%, var(--bg) 62%); }
 .lp > header, .lp > section, .lp > footer { position: relative; z-index: 2; }
-/* sábana limpia: todo el contenido tras el intro va sobre fondo sólido (sin nubes/pájaros detrás del texto) */
-.lp-sheet { position: relative; z-index: 2; margin-top: -28px; background: #f3f7e9; border-radius: 30px 30px 0 0; box-shadow: 0 -16px 44px rgba(20,40,15,.16); }
-[data-theme="dark"] .lp-sheet { background: #0e1d16; box-shadow: 0 -16px 44px rgba(0,0,0,.4); }
-.lp-sheet > section, .lp-sheet > footer { position: relative; z-index: 2; }
-.lp-sheet .lp-chapter1 { padding-top: 30px; }
 .lp-oldlife { display: none; }   /* escenario fijo viejo (oculto): la vida vuela en .lp-life */
 
 /* intro: PARFECT flotando en el cielo y bajas suave al campo con casa club */
@@ -2230,6 +2225,11 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .spt-min { flex: none; font-size: 11px; font-weight: 800; color: var(--muted); white-space: nowrap; }
 
 /* ===== Análisis IA · hero + barras de severidad ===== */
+.diag-cta { text-align: center; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 32px 22px; margin-top: 6px; box-shadow: 0 10px 26px rgba(20,40,15,.07); }
+.diag-cta-ic { width: 64px; height: 64px; margin: 0 auto 14px; border-radius: 18px; background: var(--lime-faint); color: var(--lime-ink); display: grid; place-items: center; }
+.diag-cta-ic .gi, .diag-cta-ic svg { width: 32px; height: 32px; }
+.diag-cta-h { font-size: 21px; font-weight: 900; color: var(--text); margin: 0 0 6px; }
+.diag-cta-p { font-size: 14px; color: var(--muted); line-height: 1.5; margin: 0 auto 18px; max-width: 32ch; }
 .diag-hero { position: relative; overflow: hidden; border-radius: 22px; padding: 20px; margin-top: 4px; color: #fff; background: linear-gradient(140deg, var(--c), color-mix(in srgb, var(--c) 62%, #0c2412)); box-shadow: 0 14px 30px color-mix(in srgb, var(--c) 34%, transparent); }
 .diag-hero-top { display: flex; align-items: center; gap: 9px; }
 .diag-hero-ic { width: 30px; height: 30px; border-radius: 9px; background: rgba(255,255,255,.18); display: grid; place-items: center; }
@@ -3221,7 +3221,7 @@ body.is-scrolling .ht-trace, body.is-scrolling .ht-ball { animation-play-state: 
 .lp-fixed { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .lp > header, .lp > section, .lp > footer { position: relative; z-index: 2; }
 .lp-hero2 { position: relative; min-height: 100svh; background: transparent; display: flex; flex-direction: column; align-items: center; }
-.lp-hero2-clean { justify-content: center; min-height: 58svh; }
+.lp-hero2-clean { justify-content: center; min-height: 88svh; }
 .lp-sky2 { position: absolute; inset: 0; }
 .lp-sun { position: absolute; border-radius: 50%; }
 .lp-ph-day  .lp-sun { top: 6%; right: 12%; width: 104px; height: 104px; background: radial-gradient(circle at 42% 38%,#fffbe6,#ffe487 70%); box-shadow: 0 0 90px 30px rgba(255,228,135,.5); }

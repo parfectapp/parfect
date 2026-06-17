@@ -143,20 +143,12 @@ function vLanding() {
         </svg>
       </div>
     </div>
-    <header class="lp-nav">
-      <span class="lp-logo">${pLogo()}</span>
-      <div class="lp-links">
-        <button data-act="go" data-view="login">Entrar</button>
-        <button class="lp-cta-sm" data-act="go" data-view="signup">Empezar</button>
-      </div>
-    </header>
     <section class="lp-intro">
       <div class="lp-intro-top">
         <span class="lp-intro-logo">${pLogo()}</span>
         <span class="lp-intro-tag">Golf Analytics · IA</span>
       </div>
     </section>
-    <div class="lp-sheet">
     <section class="lp-sec lp-chapter1">
       <span class="lp-eyebrow reveal">Lo que dicen</span>
       <h2 class="lp-h2 reveal">Miles de golfistas<br/><span class="lime">ya confían.</span></h2>
@@ -171,9 +163,9 @@ function vLanding() {
     </section>
     <section class="lp-hero2 lp-hero2-clean">
       <div class="lp-hero-copy reveal">
-        <span class="lp-pill">${logoMark(13)} Golf analytics con IA</span>
-        <h1 class="lp-title">Guarda tu tarjeta.<br/><span class="lime">Baja tu hándicap.</span></h1>
-        <p class="lp-sub">Registra cada ronda en segundos, deja que la IA la analice y entrena exactamente lo que te hace mejor. Sin adivinar.</p>
+        <span class="lp-pill">${logoMark(13)} Golf juvenil competitivo</span>
+        <h1 class="lp-title">Compite. Destaca.<br/><span class="lime">Llega más lejos.</span></h1>
+        <p class="lp-sub">Juega los torneos que abren puertas: equipos representativos mexicanos, becas en el extranjero, patrocinios y descuentos en green fees. Y la IA te lleva ahí, ronda por ronda.</p>
         <div class="lp-cta-row">
           <button class="lp-order" data-act="go" data-view="signup">Empezar gratis →</button>
           <button class="lp-ghostbtn" data-act="demo-account">Ver demo</button>
@@ -207,19 +199,22 @@ function vLanding() {
     </section>
 
     <section class="lp-sec lp-presence">
-      <span class="lp-eyebrow reveal">Presencia real en el golf</span>
-      <h2 class="lp-h2 reveal">Más que una app,<br/><span class="lime">una comunidad.</span></h2>
-      <div class="lp-statrow reveal">
-        <div class="lp-stat"><b>+10</b><span>campos en México</span></div>
-        <div class="lp-stat"><b>+50</b><span>golfistas activos</span></div>
-        <div class="lp-stat"><b>+1,200</b><span>hoyos registrados</span></div>
-      </div>
+      <span class="lp-eyebrow reveal">Nuestro enfoque</span>
+      <h2 class="lp-h2 reveal">Del torneo local<br/><span class="lime">a una beca afuera.</span></h2>
+      <p class="lp-lead reveal" style="text-align:center;max-width:32ch;margin:0 auto 14px">Parfect es la ruta competitiva del golfista juvenil mexicano: juega torneos que abren puertas reales.</p>
       <div class="lp-presgrid">
-        ${[['trophy', 'Torneos en vivo', 'La Copa Parfect corre con leaderboard en tiempo real, hoyo por hoyo.'],
-           ['round', 'Liga infantil', 'Las futuras estrellas entrenan con datos y suben de rango jugando.'],
-           ['stats', 'La corta con amigos', 'Apuestas amistosas que se liquidan solas. El que pierde, paga.'],
-           ['ai', 'Academias y clubes', 'Los coaches ven las stats de sus alumnos y les agendan clases.']]
-          .map(([, t, d]) => `<div class="lp-prescard reveal"><h3>${t}</h3><p>${d}</p></div>`).join('')}
+        ${[['Torneos que cuentan', 'Cada torneo suma para el ranking juvenil nacional. Tus resultados te posicionan.'],
+           ['Equipos representativos', 'Los mejores forman los equipos juveniles que representan a México.'],
+           ['Becas en el extranjero', 'Exposición ante universidades y academias de golf fuera del país.'],
+           ['Patrocinios', 'Conecta con marcas que apuestan por las promesas del golf mexicano.'],
+           ['Green fees con descuento', 'Tarifas preferentes en campos aliados para que juegues y compitas más.'],
+           ['Tu progreso, medido', 'La IA registra cada ronda y te dice exactamente qué entrenar para subir.']]
+          .map(([t, d]) => `<div class="lp-prescard reveal"><h3>${t}</h3><p>${d}</p></div>`).join('')}
+      </div>
+      <div class="lp-statrow reveal" style="margin-top:18px">
+        <div class="lp-stat"><b>+10</b><span>campos aliados</span></div>
+        <div class="lp-stat"><b>+50</b><span>juveniles activos</span></div>
+        <div class="lp-stat"><b>+1,200</b><span>hoyos registrados</span></div>
       </div>
     </section>
 
@@ -258,7 +253,6 @@ function vLanding() {
       <span class="lp-logo">${pLogo()}</span>
       <span>Tu app para mejorar en el golf y jugar con amigos. Tus datos viven en tu dispositivo.</span>
     </footer>
-    </div>
   </div>`;
 }
 
