@@ -2298,6 +2298,13 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .spt-node:last-child::before { display: none; }
 .spt-scene { position: relative; z-index: 1; width: 56px; height: 40px; border-radius: 11px; overflow: hidden; background: #cdeafb; box-shadow: 0 4px 10px rgba(20,40,15,.12); }
 .spt-scene .rscene, .spt-scene svg { width: 100%; height: 100%; display: block; }
+/* bloque tappable: empieza el runner en ese bloque */
+.spt-node[data-act] { cursor: pointer; border-radius: 14px; transition: transform .15s, box-shadow .15s; }
+.spt-node[data-act]:active { transform: scale(.985); }
+.spt-node[data-act]:hover .spt-card { border-color: rgba(124,194,74,.5); box-shadow: 0 8px 20px rgba(20,40,15,.12); }
+.spt-playic { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; font-size: 14px; color: #fff; background: rgba(12,40,20,.34); opacity: 0; transition: opacity .15s; }
+.spt-node[data-act]:hover .spt-playic { opacity: 1; }
+.spt-drill { position: relative; z-index: 3; }
 .spt-card { background: var(--card); border: 1px solid var(--line); border-radius: 15px; padding: 11px 14px; box-shadow: 0 4px 12px rgba(20,40,15,.05); }
 .spt-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .spt-top b { font-size: 15px; font-weight: 800; color: var(--text); }

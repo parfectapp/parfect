@@ -495,10 +495,10 @@ function vSessionPlanner() {
   const blocks = buildSessionBlocks(u, agg, T, V.planMode, V.planAreas);
   const sceneFor = spSceneFor;
   let clock = 0;
-  const segs = blocks.map(b => {
+  const segs = blocks.map((b, bi) => {
     const from = clock; clock += b.min;
-    return `<div class="spt-node ${b.warm ? 'warm' : ''}">
-      <span class="spt-scene">${drillScene(sceneFor(b.label))}</span>
+    return `<div class="spt-node ${b.warm ? 'warm' : ''}" data-act="session-run-start" data-idx="${bi}" role="button" tabindex="0" aria-label="Empezar ${esc(b.label)}">
+      <span class="spt-scene">${drillScene(sceneFor(b.label))}<span class="spt-playic">▶</span></span>
       <div class="spt-card">
         <div class="spt-top"><b>${esc(b.label)}</b><span class="spt-time">${from}–${clock}'</span></div>
         ${b.drill ? `<button class="spt-drill" data-act="drill-open" data-name="${esc(b.drill)}">${golfIcon('green')} ${esc(b.drill)} →</button>` : `<span class="spt-note">Calienta progresivo: wedge → hierros → driver</span>`}

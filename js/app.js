@@ -647,11 +647,13 @@ const actions = {
   'session-min'(d) { V.sessionMin = Number(d.m) || 60; render(); },
   'plan-time'(d) { V.sessionMin = Number(d.m) || 60; V.planStep = 'mode'; render(); window.scrollTo(0, 0); },
   'plan-mode'(d) { V.planMode = d.m; if (d.m === 'me') V.planStep = 'areas'; else if (d.m === 'free') { V.planStep = 'free'; V.freeTimer = { secs: 0, running: false }; } else V.planStep = 'plan'; render(); window.scrollTo(0, 0); },
-  'session-run-start'() {
+  'session-run-start'(d) {
     const u = cur(); if (!u) return;
     const blocks = buildSessionBlocks(u, Stats.aggregate(myRounds()), V.sessionMin || 60, V.planMode, V.planAreas);
     if (!blocks.length) return;
-    V.sessionRun = { blocks, idx: 0, left: blocks[0].min * 60, running: true };
+    let idx = parseInt(d && d.idx, 10); if (isNaN(idx)) idx = 0;
+    idx = Math.max(0, Math.min(blocks.length - 1, idx));
+    V.sessionRun = { blocks, idx, left: blocks[idx].min * 60, running: true };
     srBeep(1); srStartInterval(); render(); window.scrollTo(0, 0);
   },
   'session-run-pause'() { clearInterval(V._srtid); if (V.sessionRun) V.sessionRun.running = false; render(); },
