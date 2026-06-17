@@ -281,6 +281,7 @@ function vHoleSummary(p, idx) {
     <p class="hs-sub">${p.games.corta ? `${golfIcon('card')} Así quedó La corta este hoyo` : 'Resultado del hoyo'}</p>
     <div class="hs-list">${list}</div>
     ${statusLine ? `<p class="hs-status">${statusLine}</p>` : ''}
+    ${(() => { const pend = p.players.filter(pl => h.scores[pl.pid] == null); return pend.length ? `<p class="hs-status" style="opacity:.8">${esc(pend.map(pl => pl.name.split(' ')[0]).join(', '))} sigue${pend.length > 1 ? 'n' : ''} registrando · avanza a tu ritmo</p>` : ''; })()}
     <button class="btn primary big hs-go" data-act="${last ? 'pa-finish' : 'pa-next'}">${last ? 'Finalizar party →' : 'Continuar al hoyo ' + (idx + 2) + ' →'}</button>
     <button class="hs-edit" data-act="pa-edit-hole">← Corregir mi hoyo</button>
   </div>`;
@@ -303,10 +304,20 @@ function pReadOnlyCard(p, h, pid) {
   </div>`;
 }
 
+/* hoyo actual de ESTE dispositivo: cada quien avanza a su ritmo (no espera a los demás) */
+function pCurIdx(p) {
+  if (V.pIdx == null || V.pIdx < 0 || V.pIdx >= p.holesCount) {
+    V.pIdx = Math.min(Math.max(0, p.idx || 0), p.holesCount - 1);
+  }
+  if (!p.holes[V.pIdx]) p.holes[V.pIdx] = makeHoleForParty(p, V.pIdx);
+  return V.pIdx;
+}
+
 function vPartyLive() {
   const p = activeParty();
   if (!p || p.status === 'cancelled') { S.activeParty = null; V.view = 'social'; return vShell(vSocial()); }
   if (p.status === 'done') { V.partyView = p.id; return vPartyDone(); }
+  p.idx = pCurIdx(p);   // hoyo local de este dispositivo
   if (V.pSeenIdx !== p.idx) { V.pWizStep = null; V.pSeenIdx = p.idx; }
   const h = p.holes[p.idx];
   h.done = h.done || {};
@@ -351,8 +362,8 @@ function vPartyLive() {
       <span>${myAllDone && !allDone ? `Esperando a ${pendingNames.join(', ')}…` : `${doneCount} de ${p.players.length} terminaron${pendingNames.length ? ' · faltan ' + pendingNames.join(', ') : ''}`}</span>
     </div>`;
 
-  /* ---- modo RESUMEN (todos listos) ---- */
-  if (allDone) {
+  /* ---- modo RESUMEN (cuando TÚ terminas tu hoyo; no esperas a los demás) ---- */
+  if (myAllDone) {
     return `${header}
     ${vHoleSummary(p, p.idx)}
     <div class="card" style="margin-top:14px">
@@ -646,7 +657,7 @@ const partyActions = {
         p.players.push(mine);
       }
       S.activeParty = p.id;
-      V.capPid = mine.pid;
+      V.capPid = mine.pid; V.pIdx = null;
       Sync.watch(p.code);
       V.err = null; V.joining = false; V.view = p.status === 'live' ? 'party-live' : 'party-lobby';
       pcommit(p); window.scrollTo(0, 0);
@@ -671,12 +682,13 @@ const partyActions = {
     if (!p || p.players.length < 2) return;
     p.status = 'live';
     if (!p.holes.length) p.holes.push(makeHoleForParty(p, 0));
-    V.capPid = p.players[0].pid;
+    V.capPid = p.players[0].pid; V.pIdx = 0;
     V.view = 'party-live';
     pcommit(p); window.scrollTo(0, 0);
   },
   'party-resume'() {
     const p = activeParty(); if (!p) return;
+    V.pIdx = null;   // re-toma tu hoyo local al volver
     Sync.watch(p.code);
     V.view = p.status === 'live' ? 'party-live' : 'party-lobby';
     render(); window.scrollTo(0, 0);
@@ -690,7 +702,7 @@ const partyActions = {
     S.activeParty = null; V.delArm = null; V.view = 'social';
     commit();
   },
-  'party-exit'() { V.showMoney = false; go('social'); },
+  'party-exit'() { V.showMoney = false; V.pIdx = null; go('social'); },
 
   'pa-player'(d) { V.capPid = d.pid; V.pWizStep = null; render(); window.scrollTo(0, 0); },
   'pa-fast'(d) {
@@ -768,7 +780,7 @@ const partyActions = {
   'pa-3putt'(d) { const p = activeParty(); const h = p.holes[p.idx]; h.threeputt = h.threeputt || []; h.threeputt = h.threeputt.includes(d.pid) ? h.threeputt.filter(x => x !== d.pid) : [...h.threeputt, d.pid]; pcommit(p); },
   'pa-espanol'(d) { const p = activeParty(); const h = p.holes[p.idx]; h.espanol = h.espanol || []; h.espanol = h.espanol.includes(d.pid) ? h.espanol.filter(x => x !== d.pid) : [...h.espanol, d.pid]; pcommit(p); },
   'pa-ready'(d) {
-    const p = activeParty(); const h = p.holes[p.idx]; h.done = h.done || {};
+    const p = activeParty(); const h = p.holes[pCurIdx(p)]; h.done = h.done || {};
     if (!pIsMine(p, d.pid)) return;
     if (h.done[d.pid]) { delete h.done[d.pid]; pcommit(p); return; }   // toca de nuevo = editar
     const c = pcap(h, d.pid, h.par); psync(h, d.pid);                  // fija score sugerido
@@ -779,20 +791,21 @@ const partyActions = {
     pcommit(p); window.scrollTo(0, 0);
   },
   'pa-edit-hole'() {
-    const p = activeParty(); const h = p.holes[p.idx]; h.done = h.done || {};
+    const p = activeParty(); const h = p.holes[pCurIdx(p)]; h.done = h.done || {};
     pMyPlayers(p).forEach(pl => { delete h.done[pl.pid]; });
     V.capPid = (pMyPlayers(p)[0] || p.players[0]).pid; V.pWizStep = null;
     pcommit(p); window.scrollTo(0, 0);
   },
   'pa-next'() {
     const p = activeParty();
-    if (p.idx + 1 >= p.holesCount) return;
-    p.idx++;
-    if (!p.holes[p.idx]) p.holes[p.idx] = makeHoleForParty(p, p.idx);
+    const ci = pCurIdx(p);
+    if (ci + 1 >= p.holesCount) return;
+    V.pIdx = ci + 1;   // avanza SOLO tu hoyo local (los demás siguen a su ritmo)
+    if (!p.holes[V.pIdx]) p.holes[V.pIdx] = makeHoleForParty(p, V.pIdx);
     V.capPid = (pMyPlayers(p)[0] || p.players[0]).pid; V.pWizStep = null;
     pcommit(p); window.scrollTo(0, 0);
   },
-  'pa-prev'() { const p = activeParty(); if (p.idx > 0) { p.idx--; V.capPid = (pMyPlayers(p)[0] || p.players[0]).pid; V.pWizStep = null; pcommit(p); window.scrollTo(0, 0); } },
+  'pa-prev'() { const p = activeParty(); const ci = pCurIdx(p); if (ci > 0) { V.pIdx = ci - 1; V.capPid = (pMyPlayers(p)[0] || p.players[0]).pid; V.pWizStep = null; render(); window.scrollTo(0, 0); } },
   'pa-money'() { V.showMoney = true; render(); },
   'pa-money-close'() { V.showMoney = false; render(); },
   'pa-finish'() {
