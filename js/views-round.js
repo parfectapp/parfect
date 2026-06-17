@@ -156,11 +156,10 @@ function vRoundStatCard(r, hcp) {
       <div class="rc6-id"><b>${esc(course)}${r.partyId ? ` <span class="rc5-party">${golfIcon('flag')}</span>` : ''}</b><span class="rc5-date">${fmtDate(r.date)} · ${s.holes} hoyos · Par ${s.par}</span></div>
       <div class="rc5-score ${scoreCls}">${vibe ? `<i>${vibe.ic}</i>` : ''}<b>${s.score}</b><span>${fmtToPar(s.toPar)}</span></div>
     </div>
-    <div class="grid2 rc6-grid">
-      ${statCard(pctS(s.fw, s.fwTot), 'Fairways', s.fwTot ? (s.fw / s.fwTot) * 100 : 0)}
-      ${statCard(pctS(s.gir, s.girTot), 'GIR', (s.gir / s.girTot) * 100)}
-      ${statCard(pctS(s.scr, s.scrTot), 'Up/Down', s.scrTot ? (s.scr / s.scrTot) * 100 : 0)}
-      ${statCard(String(s.putts), 'Putts', Stats.clamp(((38 - (s.putts * 18) / s.holes) / 11) * 100, 0, 100))}
+    <div class="pst-rings rc6-scenes">
+      ${pstSceneStatic('fw', s.fwTot ? (s.fw / s.fwTot) * 100 : 0, 'Fairways')}
+      ${pstSceneStatic('gir', s.girTot ? (s.gir / s.girTot) * 100 : 0, 'GIR')}
+      ${pstSceneStatic('ud', s.scrTot ? (s.scr / s.scrTot) * 100 : 0, 'Up & down')}
     </div>
     <div class="rc6-card">${scorecardTable(s.holes, parOf, rows, -1, ydsOf)}</div>
   </button>`;
@@ -924,11 +923,10 @@ function vRoundDetail() {
       </div>
       <div class="rd-score ${scoreCls}"><b>${s.score}</b><span>${fmtToPar(s.toPar)}</span></div>
     </div>
-    <div class="grid2">
-      ${statCard(pct(s.fw, s.fwTot), 'Fairways', s.fwTot ? (s.fw / s.fwTot) * 100 : 0)}
-      ${statCard(pct(s.gir, s.girTot), 'GIR', (s.gir / s.girTot) * 100)}
-      ${statCard(pct(s.scr, s.scrTot), 'Up/Down', s.scrTot ? (s.scr / s.scrTot) * 100 : 0)}
-      ${statCard(String(s.putts), 'Putts', Stats.clamp(((38 - (s.putts * 18) / s.holes) / 11) * 100, 0, 100))}
+    <div class="pst-rings rd-scenes">
+      ${pstSceneStatic('fw', s.fwTot ? (s.fw / s.fwTot) * 100 : 0, 'Fairways')}
+      ${pstSceneStatic('gir', s.girTot ? (s.gir / s.girTot) * 100 : 0, 'GIR')}
+      ${pstSceneStatic('ud', s.scrTot ? (s.scr / s.scrTot) * 100 : 0, 'Up & down')}
     </div>
     <div class="card">
       <span class="label">${golfIcon('card')} Tu tarjeta · ${esc(courseName)}</span>

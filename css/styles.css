@@ -2699,6 +2699,9 @@ svg.fd-av { object-fit: contain; }
 .rc6-id { min-width: 0; }
 .rc6-id > b { display: block; font-size: 16px; font-weight: 900; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .rc6-grid { padding: 0 12px 4px; margin-top: 4px; }
+.rc6-scenes { padding: 0 12px 4px; margin-top: 4px; }
+.rd-scenes { margin-top: 12px; }
+.pst-static { cursor: default; }
 .rc6-stats { display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0 16px 10px; }
 .rc6-stats span { font-size: 11.5px; font-weight: 600; color: var(--muted); }
 .rc6-stats b { font-weight: 900; color: var(--text); }

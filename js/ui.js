@@ -306,6 +306,16 @@ function pstScene(kind, pct, label, goalPct) {
     ${goalHtml}
   </button>`;
 }
+/* misma escena pero sin botón (para usar dentro de las tarjetas de ronda) */
+function pstSceneStatic(kind, pct, label) {
+  const p = Math.max(0, Math.min(100, Math.round(pct || 0)));
+  const art = kind === 'fw' ? fwScene(p) : kind === 'gir' ? girScene(p) : udScene(p);
+  return `<div class="pst-scene pst-static" style="--p:${p}">
+    <div class="psc-art">${art}</div>
+    <b class="psc-num">${p}<i>%</i></b>
+    <span class="psc-lab">${esc(label)}</span>
+  </div>`;
+}
 /* Fairway que se ilumina: trapezoide en perspectiva que se rellena de luz según % */
 function fwScene(p) {
   const topY = 16, botY = 78, h = botY - topY;

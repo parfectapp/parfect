@@ -184,11 +184,11 @@ function vTrainer() {
   const u = cur();
   const tab = ['entreno', 'biblioteca', 'logros', 'academia'].includes(V.trainerTab) ? V.trainerTab : 'diag';
   const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
-  const body = tab === 'entreno' ? (vCoachLive('practice') + vWeekStrip() + vSessionPlanner())
+  const body = tab === 'entreno' ? (vWeekStrip() + vSessionPlanner())
     : tab === 'biblioteca' ? vBiblioteca()
       : tab === 'logros' ? (vKeyTargets(u) + `<div style="margin-top:22px"></div>` + vLogros())
         : tab === 'academia' ? vAcademyLaunch()
-          : vDiag();
+          : (vCoachLive('practice') + vDiag());
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>
     <div class="tabs scroll">${T('diag', 'Resumen')}${T('entreno', 'Entrenamiento')}${T('biblioteca', 'Biblioteca')}${T('logros', 'Logros')}${T('academia', 'Academia')}</div>
     ${body}`;
