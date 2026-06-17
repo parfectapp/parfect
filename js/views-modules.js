@@ -305,14 +305,12 @@ function vDrillDetail() {
   const steps = (d.steps || []).map((s, i) => `<li class="dd2-step"><span class="dd2-n">${i + 1}</span><span class="dd2-stext">${esc(short(s))}</span></li>`).join('');
   const doneToday = ((cur() || {}).drillsDone || {})[d.name] === today();
   const tm = V.timer || { left: 300, total: 300, running: false };
-  const presets = [300, 600, 900, 1200];
   const pct = Math.round(100 * (1 - (tm.left / (tm.total || 1))));
   const timerHtml = `
-    <div class="sr-card tmr-card">
+    <div class="sr-card">
       <div class="sr-now"><span class="sr-scene">${drillScene(cm.s)}</span><div class="sr-nowtx"><b>${esc(d.name)}</b><span>${esc(d.dose || catLab)}</span></div></div>
       <div class="sr-clock" id="dd-timer">${fmtClock(tm.left)}</div>
       <div class="sr-bar"><i id="dd-bar" style="width:${pct}%"></i></div>
-      <div class="tmr-presets ${tm.running ? 'tmr-locked' : ''}">${presets.map(s => `<button class="chip sm ${tm.total === s ? 'on' : ''}" data-act="timer-set" data-s="${s}">${s / 60} min</button>`).join('')}</div>
       <div class="ddt2-ctrls">
         ${tm.running ? `<button class="btn" data-act="timer-pause">⏸ Pausar</button>` : `<button class="btn primary" data-act="timer-start" ${tm.left <= 0 ? 'disabled' : ''}>${tm.left < tm.total ? 'Reanudar' : 'Iniciar'} ▶</button>`}
         <button class="btn ghost" data-act="timer-reset">↺</button>
