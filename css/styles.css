@@ -3313,10 +3313,11 @@ body.is-scrolling .ht-trace, body.is-scrolling .ht-ball { animation-play-state: 
 
 /* ===== Landing v3: día completo continuo (cielo arriba → campo abajo) + escena viva + narrativa del pájaro ===== */
 /* el gradiente del día va en TODA la página (sin corte): se ve cómo "bajas" al campo al hacer scroll */
-.lp-ph-dawn  { background: linear-gradient(180deg,#ffd9a8 0%,#ffc6b2 16%,#ffd9b4 32%,#dfeccf 52%,#bfe39a 74%,#a9d877 100%) !important; }
+/* mismo cielo que la app (.app-bg) en cada momento del día */
+.lp-ph-dawn  { background: linear-gradient(180deg, #ffd8a6 0%, #ffe7b4 28%, #d9efbf 60%, #b6dd86 100%) !important; }
 .lp-ph-day   { background: linear-gradient(180deg,#5fbdef 0%,#7cc7ef 20%,#9fd6f1 38%,#c6e6ed 54%,#e8dced 64%,#ffe3ca 74%,#ffd2bf 82%,#d6ebc0 92%,#a9d877 100%) !important; }
-.lp-ph-dusk  { background: linear-gradient(180deg,#ff9e6b 0%,#ff8fa0 18%,#e79bb0 36%,#caa7c2 52%,#bfd79a 76%,#a9d877 100%) !important; }
-.lp-ph-night { background: linear-gradient(180deg,#0a1430 0%,#102145 22%,#16294c 42%,#1b2f3e 60%,#244a30 82%,#a9d877 100%) !important; }
+.lp-ph-dusk  { background: linear-gradient(180deg, #ffbe86 0%, #ff9f93 26%, #d8d49a 58%, #a9cf84 100%) !important; }
+.lp-ph-night { background: linear-gradient(180deg, #14264a 0%, #1c3450 44%, #1b3a26 100%) !important; }
 .lp-ph-night .lp-hero-copy .lp-title, .lp-ph-night .lp-hero-copy .lp-sub, .lp-ph-night .lp-nav .lp-logo, .lp-ph-night .lp-nav .lp-links button:not(.lp-cta-sm) { color: #fff; }
 .lp-ph-night .lp-hero-copy .lp-sub { opacity: .9; }
 .lp-ph-night .lp-icloud { opacity: .16; }
