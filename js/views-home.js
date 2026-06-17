@@ -757,6 +757,26 @@ const FRIENDS_FEED = [
   { id: 'f4', name: 'Sofía Lara', av: 4, hcp: 19, course: 'Tres Marías', holes: 18, score: 95, toPar: 23, fw: 44, gir: 22, putts: 36, when: 'ayer', cmt: 4, likes: 7, cap: 'Salí a jugar aunque no estaba fina. Vale la pena igual.', top: { by: 'Sofía', txt: 'Esa actitud es la que cuenta.' } },
 ];
 
+/* tarjeta (scorecard) plausible y estable para los posts del feed sin datos hoyo-por-hoyo */
+function feedScorecard(p) {
+  if (typeof scorecardTable !== 'function') return '';
+  const n = p.holes || 18;
+  const parTpl = [4, 4, 3, 4, 5, 4, 3, 4, 5, 4, 4, 3, 5, 4, 4, 3, 4, 5];
+  const pars = []; let parSum = 0;
+  for (let i = 0; i < n; i++) { pars.push(parTpl[i % 18]); parSum += parTpl[i % 18]; }
+  const scores = pars.slice();
+  let rem = (p.score || parSum) - parSum;
+  let seed = 0; for (const c of String(p.id || p.name || 'x')) seed += c.charCodeAt(0);
+  const order = pars.map((_, i) => i).sort((a, b) => ((seed * (a + 7)) % 17) - ((seed * (b + 7)) % 17));
+  let k = 0;
+  while (rem !== 0 && k < n * 6) {
+    const idx = order[k % n];
+    if (rem > 0) { scores[idx] += 1; rem -= 1; }
+    else if (scores[idx] > pars[idx] - 1) { scores[idx] -= 1; rem += 1; }
+    k++;
+  }
+  return scorecardTable(n, i => pars[i], [{ name: (p.name || 'Tú').split(' ')[0], scoreOf: i => scores[i] }], -1, null);
+}
 function vSocialFeed() {
   const u = cur();
   const likes = u.likes || {};
@@ -765,7 +785,12 @@ function vSocialFeed() {
   const pct = (n, d) => d ? Math.round((n / d) * 100) : 0;
   const myPosts = myRounds().filter(r => shared.includes(r.id)).map(r => {
     const s = Stats.roundStats(r);
-    return { id: 'me-' + r.id, mine: true, name: u.name, course: r.courseId ? sname(r.courseId) : r.course, holes: s.holes, score: s.score, toPar: s.toPar, fw: pct(s.fw, s.fwTot), gir: pct(s.gir, s.girTot), putts: s.putts, when: fmtDate(r.date), cmt: 0, likes: 0, cap: r.caption || '', media: r.media || null };
+    const off = r.holeOffset || 0;
+    const course = (r.courseId && COURSES[r.courseId]) ? COURSES[r.courseId] : null;
+    const ch = course ? course.holes : null;
+    const parOf = i => (r.holes[i] && r.holes[i].par != null) ? r.holes[i].par : (ch && ch[off + i] ? ch[off + i].par : 4);
+    const card = (typeof scorecardTable === 'function') ? scorecardTable(s.holes, parOf, [{ name: u.name.split(' ')[0], scoreOf: i => (r.holes[i] ? r.holes[i].score : null) }], -1, null) : '';
+    return { id: 'me-' + r.id, mine: true, name: u.name, course: r.courseId ? sname(r.courseId) : r.course, holes: s.holes, score: s.score, toPar: s.toPar, fw: pct(s.fw, s.fwTot), gir: pct(s.gir, s.girTot), putts: s.putts, when: fmtDate(r.date), cmt: 0, likes: 0, cap: r.caption || '', media: r.media || null, card };
   });
   const feed = [...myPosts, ...FRIENDS_FEED];
   const cards = feed.map(p => {
@@ -789,6 +814,7 @@ function vSocialFeed() {
       <div class="fd-stats">
         <span><b>${p.fw}%</b> fairways</span><span><b>${p.gir}%</b> GIR</span><span><b>${p.putts}</b> putts</span>
       </div>
+      <div class="fd-scard"><span class="fd-scard-lab">${golfIcon('card')} Tarjeta</span>${p.mine ? (p.card || '') : feedScorecard(p)}</div>
       <div class="fd-actions">
         <button class="fd-like ${liked ? 'on' : ''}" data-act="feed-like" data-id="${p.id}">${heartIcon()}<span>${ln}</span></button>
         <span class="fd-cmt">${commentIcon()}<span>${p.cmt || 0}</span></span>

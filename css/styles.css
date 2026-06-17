@@ -2434,6 +2434,12 @@ svg.fd-av { object-fit: contain; }
 .fd-stats { display: flex; gap: 16px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-soft); }
 .fd-stats span { font-size: 12px; color: var(--muted); font-weight: 600; }
 .fd-stats b { color: var(--text); font-weight: 900; font-size: 13.5px; margin-right: 2px; }
+/* scorecard dentro de la tarjeta compartida del feed */
+.fd-scard { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line-soft); --sc-grass:#7fcf5a; --sc-grass2:#3f9d44; --sc-lit:#d8f86a; --sc-dim:#d2e4c2; --sc-line:#9fb98c; --sc-flag:#ff5a4d; --sc-ball:#fff; --sc-cup:#1f3a16; }
+[data-theme="dark"] .fd-scard { --sc-grass:#5fb84a; --sc-grass2:#2f7d3a; --sc-lit:#bdf24a; --sc-dim:#2c4030; --sc-line:#4a5e44; }
+.fd-scard-lab { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.fd-scard-lab .gi { width: 16px; height: 16px; }
+.fd-scard .sc-table { font-size: 11px; }
 .fd-actions { display: flex; gap: 18px; align-items: center; margin-top: 12px; }
 .fd-like, .fd-cmt { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; padding: 0; font-size: 13px; font-weight: 800; color: var(--muted); cursor: pointer; }
 .fdi { width: 19px; height: 19px; }
