@@ -83,12 +83,14 @@ function lpFeatArt(kind) {
 }
 
 /* maqueta de teléfono con una pantalla REAL de la app (usa los mismos componentes) */
+/* chrome de iPhone: bocina + cámara + botones + barra de inicio */
+const lpPhoneChrome = `<span class="lp-phone-btn lp-btn-vol"></span><span class="lp-phone-btn lp-btn-pow"></span><span class="lp-phone-cam"></span><span class="lp-phone-spk"></span><span class="lp-phone-home"></span>`;
 function lpPhone(scr, cls) {
-  return `<div class="lp-phone ${cls || ''}"><span class="lp-phone-notch"></span><div class="lp-phone-scr">${scr}</div></div>`;
+  return `<div class="lp-phone ${cls || ''}">${lpPhoneChrome}<div class="lp-phone-scr">${scr}</div></div>`;
 }
 /* teléfono que muestra un screenshot real de assets/ si existe; si no, renderiza el componente */
 function lpPhoneShot(imgFile, comp, cls) {
-  return `<div class="lp-phone ${cls || ''}"><span class="lp-phone-notch"></span><div class="lp-phone-scr">
+  return `<div class="lp-phone ${cls || ''}">${lpPhoneChrome}<div class="lp-phone-scr">
     <img class="lp-shotimg" src="assets/${imgFile}" alt="" onload="if(this.naturalWidth){var c=this.parentElement.querySelector('.lp-shotcomp');if(c)c.style.display='none'}else{this.remove()}" onerror="this.remove()">
     <div class="lp-shotcomp">${comp}</div>
   </div></div>`;
