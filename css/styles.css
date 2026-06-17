@@ -3283,6 +3283,17 @@ body.is-scrolling .ht-trace, body.is-scrolling .ht-ball { animation-play-state: 
 .lps-troph.on .lps-tr-ic { filter: none; }
 .lps-troph b { font-size: 13px; font-weight: 900; color: var(--text); }
 .lps-troph span { font-size: 10.5px; font-weight: 700; color: var(--muted); }
+/* tablero de torneo */
+.lps-board { background: var(--card); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; box-shadow: 0 6px 16px rgba(20,40,15,.06); }
+.lps-board-hd { display: flex; align-items: center; justify-content: space-between; background: linear-gradient(120deg,#e6b13a,#d89a2a); color: #2a1e06; padding: 12px 14px; }
+.lps-board-hd b { font-size: 14px; font-weight: 900; }
+.lps-board-hd span { font-size: 11px; font-weight: 800; opacity: .85; }
+.lps-brow { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-top: 1px solid var(--line-soft); }
+.lps-brow.me { background: var(--lime-faint); }
+.lps-bpos { flex: none; width: 22px; height: 22px; border-radius: 50%; background: var(--card2); display: grid; place-items: center; font-size: 11px; font-weight: 900; color: var(--muted); }
+.lps-bname { flex: 1; font-size: 14px; font-weight: 800; color: var(--text); }
+.lps-bsc { font-size: 16px; font-weight: 900; color: var(--text); }
+.lps-bsc.good { color: #3aa055; }
 .lpsr-hb { background: linear-gradient(120deg, #8fd06a, #4ca055); border-radius: 16px; padding: 13px 16px; color: #fff; margin-bottom: 13px; }
 .lpsr-hb-c { font-size: 12px; font-weight: 700; opacity: .92; }
 .lpsr-hb-r { display: flex; justify-content: space-between; align-items: baseline; margin-top: 3px; }

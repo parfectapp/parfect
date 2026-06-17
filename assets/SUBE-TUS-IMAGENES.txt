@@ -1,0 +1,29 @@
+PARFECT — imágenes para la landing
+====================================
+
+Guarda tus capturas/logos AQUÍ (carpeta assets/) con EXACTAMENTE estos nombres.
+En cuanto el archivo exista, aparece solo en la landing (no hay que tocar código).
+
+PANTALLAS (screenshots de la app) — van dentro de los iPhones de la landing:
+  shot-inicio.png     -> Inicio (hándicap + anillos)        [iPhone del hero]
+  shot-rondas.png     -> Tus rondas                          [showcase]
+  shot-analisis.png   -> Análisis IA                         [showcase]
+  shot-logros.png     -> Logros                              [showcase]
+  shot-social.png     -> Torneo / Social                     [showcase]
+
+  Recomendado: PNG vertical, relación ~9:19.5 (ej. 540 x 1170 px).
+  Si no subes alguno, ese iPhone muestra el componente real (no se rompe).
+
+LOGOS (carrusel "Campos y aliados", scroll infinito):
+  fmg.png         -> Federación Mexicana de Golf
+  campestre.png   -> Club Campestre Morelia
+  tresmarias.png  -> Tres Marías
+  altozano.png    -> Altozano
+  club4.png       -> (opcional) otro club
+  club5.png       -> (opcional) academia / aliado
+
+  Recomendado: PNG con fondo transparente, alto ~80–120 px.
+  Si no subes alguno, ese espacio muestra el nombre en texto.
+
+Cómo: arrastra los archivos a esta carpeta con esos nombres y avísame;
+yo hago el commit + push y quedan en vivo. (O tú: git add assets && git commit && git push)
