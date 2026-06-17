@@ -114,6 +114,16 @@ body.in-app .app-bg .bg-cloud, body.in-app .app-bg .bg-bird, body.in-app .app-bg
 /* paraíso de golf: árboles, lago con chorro, golfistas diminutos */
 .bgc-trunk { fill: #7a5230; } .bgc-leaf { fill: #3f9444; } .bgc-leaf2 { fill: #56af52; }
 [data-theme="dark"] .bgc-trunk { fill: #2a2438; } [data-theme="dark"] .bgc-leaf { fill: #173a26; } [data-theme="dark"] .bgc-leaf2 { fill: #1f4a30; }
+/* palmeras + flores tropicales: paraíso de golf */
+.bgc-ptrunk { fill: #b27c44; } .bgc-pleaf { fill: #2f9047; } .bgc-pleaf2 { fill: #4cae57; } .bgc-pcoco { fill: #6f4624; }
+[data-theme="dark"] .bgc-ptrunk { fill: #2c2640; } [data-theme="dark"] .bgc-pleaf { fill: #143620; } [data-theme="dark"] .bgc-pleaf2 { fill: #1e4a2d; } [data-theme="dark"] .bgc-pcoco { fill: #1a1626; }
+.bgc-pcrown { transform-box: fill-box; transform-origin: center bottom; animation: bgcPalmSway 4.6s ease-in-out infinite alternate; }
+@keyframes bgcPalmSway { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+.bgc-bushleaf { fill: #3f9444; } [data-theme="dark"] .bgc-bushleaf { fill: #1d4a2c; }
+.bgc-fl { transform-box: fill-box; transform-origin: center; animation: bgcBloom 3.2s ease-in-out infinite; }
+.bgc-fl.a { fill: #ff7eb0; } .bgc-fl.b { fill: #ffd24a; animation-delay: -1s; } .bgc-fl.c { fill: #ff8a5a; animation-delay: -2s; }
+[data-theme="dark"] .bgc-fl { opacity: .55; }
+@keyframes bgcBloom { 0%,100% { transform: scale(.82); } 50% { transform: scale(1.16); } }
 .bgc-lake { fill: #74c4e8; opacity: .8; } .bgc-lake-sh { fill: #fff; opacity: .4; animation: bgcShine 5s ease-in-out infinite; }
 [data-theme="dark"] .bgc-lake { fill: #1d4458; }
 @keyframes bgcShine { 0%,100% { transform: translateX(0); opacity: .3; } 50% { transform: translateX(7px); opacity: .5; } }
@@ -155,7 +165,7 @@ body.in-app .app-bg .bg-cloud, body.in-app .app-bg .bg-bird, body.in-app .app-bg
 .bgc-flag circle { r: 3.2px; fill: #0f2d08; }
 @media (prefers-reduced-motion: reduce) { .ud2-ball { animation: none; offset-distance: 100%; } }
 @media (prefers-reduced-motion: reduce) { .lp-bcart, .lp-bcart-in, .lp-sq-in, .lp-sq-tail { animation: none; } .lp-bcart.c1 { transform: translate(150px,150px) scale(1.3); } .lp-bcart.c2 { transform: translate(280px,206px) scale(1.7); } }
-@media (prefers-reduced-motion: reduce) { .bgc-fjet, .bgc-fdrop, .bgc-lake-sh, .bgc-gclub, .bgc-ball, .bgc-flag path { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .bgc-fjet, .bgc-fdrop, .bgc-lake-sh, .bgc-gclub, .bgc-ball, .bgc-flag path, .bgc-pcrown, .bgc-fl { animation: none !important; } }
 body.is-scrolling .bg-cloud, body.is-scrolling .bg-bird, body.is-scrolling .bg-gball { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) { .bg-cloud, .bg-bird, .bg-gball, .bg-stars { animation: none !important; } .bg-bird { display: none; } }
 
