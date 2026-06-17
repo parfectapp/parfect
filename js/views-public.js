@@ -231,6 +231,31 @@ function vLanding() {
       </div>
     </section>
 
+    <section class="lp-sec lp-reviews">
+      <span class="lp-eyebrow reveal">Lo que dicen</span>
+      <h2 class="lp-h2 reveal">Jugadores y prensa<br/><span class="lime">ya confían.</span></h2>
+      <blockquote class="lp-pressquote reveal">"La forma más simple de bajar tu hándicap: registras, la IA te dice qué falla y entrenas justo eso."
+        <cite><span class="lp-forbes">Forbes</span> · Tecnología deportiva</cite>
+      </blockquote>
+      <div class="lp-tp-summary reveal">
+        <div class="lp-tp-head"><svg class="lp-tpstar" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Trustpilot</div>
+        <div class="lp-tp-stars" aria-hidden="true">${Array(5).fill('<span class="tpbox"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>').join('')}</div>
+        <span class="lp-tp-score"><b>4.9</b> / 5 · Excelente · 1,284 reseñas</span>
+      </div>
+      <div class="lp-reviewgrid">
+        ${[
+          ['★★★★★', 'Bajé de 18 a 12 en cuatro meses. La IA me hizo dejar de practicar lo que ya hacía bien y enfocarme en mi juego corto.', 'Diego R.', 'HCP 12'],
+          ['★★★★★', 'Por fin entiendo dónde se me van los golpes. Los drills que me arma son exactos, nada de relleno.', 'Sofía L.', 'HCP 19'],
+          ['★★★★★', 'Registro la ronda en dos minutos y las estadísticas valen oro. La mejor app de golf que he probado.', 'Andrea P.', 'HCP 8'],
+          ['★★★★☆', 'La corta con mis amigos se liquida sola, perfecto para el domingo. Le falta más campos cerca de mí.', 'Memo G.', 'HCP 15'],
+        ].map(([st, txt, nm, sub]) => `<div class="lp-review reveal">
+          <div class="lp-review-stars">${st}</div>
+          <p>${esc(txt)}</p>
+          <cite><b>${esc(nm)}</b> · ${esc(sub)}</cite>
+        </div>`).join('')}
+      </div>
+    </section>
+
     <section class="lp-final reveal">
       <div class="lp-finalcard">
         <span class="lp-eyebrow">¿Listo para jugar mejor?</span>

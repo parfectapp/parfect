@@ -3378,6 +3378,26 @@ body.is-scrolling .ht-trace, body.is-scrolling .ht-ball { animation-play-state: 
 .store-badge .sb-tx { display: flex; flex-direction: column; line-height: 1.04; text-align: left; }
 .store-badge .sb-sm { font-size: 9px; font-weight: 600; letter-spacing: .01em; }
 .store-badge .sb-lg { font-size: 17px; font-weight: 700; letter-spacing: -.01em; margin-top: 1px; }
+/* reseñas: prensa (Forbes) + Trustpilot + opiniones */
+.lp-reviews { text-align: center; }
+.lp-pressquote { margin: 16px auto 24px; max-width: 26ch; font-size: clamp(20px, 4.8vw, 27px); font-weight: 800; font-style: italic; line-height: 1.32; color: var(--text); }
+.lp-pressquote cite { display: block; font-style: normal; font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 14px; }
+.lp-pressquote .lp-forbes { font-size: 17px; color: var(--text); }
+.lp-tp-summary { display: inline-flex; flex-direction: column; align-items: center; gap: 7px; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px 28px; box-shadow: 0 10px 26px rgba(20,40,15,.07); margin-bottom: 18px; }
+.lp-tp-head { display: inline-flex; align-items: center; gap: 6px; font-weight: 900; font-size: 15px; color: var(--text); }
+.lp-tp-head .lp-tpstar { width: 18px; height: 18px; fill: #00b67a; }
+.lp-tp-stars { display: inline-flex; gap: 3px; }
+.lp-tp-stars .tpbox { width: 22px; height: 22px; background: #00b67a; display: grid; place-items: center; border-radius: 4px; }
+.lp-tp-stars .tpbox svg { width: 14px; height: 14px; fill: #fff; }
+.lp-tp-score { font-size: 13.5px; font-weight: 700; color: var(--muted); }
+.lp-tp-score b { color: var(--text); font-weight: 900; font-size: 15px; }
+.lp-reviewgrid { display: grid; grid-template-columns: 1fr; gap: 12px; text-align: left; margin-top: 6px; }
+.lp-review { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px; box-shadow: 0 8px 22px rgba(20,40,15,.06); }
+.lp-review-stars { color: #00b67a; font-size: 14px; letter-spacing: 1.5px; }
+.lp-review p { font-size: 14.5px; font-weight: 700; color: var(--text); margin: 8px 0 10px; line-height: 1.45; }
+.lp-review cite { font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--muted); }
+.lp-review cite b { color: var(--text); font-weight: 800; }
+@media (min-width: 560px) { .lp-reviewgrid { grid-template-columns: 1fr 1fr; } }
 /* presencia real */
 .lp-presence { text-align: center; }
 .lp-statrow { display: flex; justify-content: center; gap: 10px; margin: 18px 0 22px; flex-wrap: wrap; }
