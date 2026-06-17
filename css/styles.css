@@ -3216,6 +3216,7 @@ body.is-scrolling .ht-trace, body.is-scrolling .ht-ball { animation-play-state: 
 .lp-fixed { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .lp > header, .lp > section, .lp > footer { position: relative; z-index: 2; }
 .lp-hero2 { position: relative; min-height: 100svh; background: transparent; display: flex; flex-direction: column; align-items: center; }
+.lp-hero2-clean { justify-content: center; min-height: 88svh; }
 .lp-sky2 { position: absolute; inset: 0; }
 .lp-sun { position: absolute; border-radius: 50%; }
 .lp-ph-day  .lp-sun { top: 6%; right: 12%; width: 104px; height: 104px; background: radial-gradient(circle at 42% 38%,#fffbe6,#ffe487 70%); box-shadow: 0 0 90px 30px rgba(255,228,135,.5); }
