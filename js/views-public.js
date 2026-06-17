@@ -131,13 +131,12 @@ function lpGooglePlay() { return `<button class="store-badge" data-act="go" data
 /* logo oficial: imagen en assets/ con respaldo de texto si falta el archivo */
 function lpOrg(file, label, cls) { return `<span class="lp-org ${cls || ''}"><img src="assets/${file}" alt="${esc(label)}" onload="if(!this.naturalWidth){this.style.display='none';this.nextElementSibling.style.display='inline-flex'}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'"><span class="lp-org-fb">${esc(label)}</span></span>`; }
 function lpMarqueeItems() {
-  return `<span class="lpm lpm-forbes">Forbes</span>
-    <span class="lpm lpm-gd">Golf Digest</span>
-    <span class="lpm lpm-tp">${lpTpStar()}Trustpilot</span>
-    ${lpOrg('fmg.png', 'Federación Mexicana de Golf', 'lpm-org')}
+  return `${lpOrg('fmg.png', 'Federación Mexicana de Golf', 'lpm-org')}
     ${lpOrg('campestre.png', 'Club Campestre Morelia', 'lpm-org')}
     ${lpOrg('tresmarias.png', 'Tres Marías', 'lpm-org')}
-    ${lpOrg('altozano.png', 'Altozano', 'lpm-org')}`;
+    ${lpOrg('altozano.png', 'Altozano', 'lpm-org')}
+    ${lpOrg('club4.png', 'Club de Golf', 'lpm-org')}
+    ${lpOrg('club5.png', 'Academia de Golf', 'lpm-org')}`;
 }
 
 function vLanding() {
@@ -217,8 +216,8 @@ function vLanding() {
     </section>
     <section class="lp-hero2 lp-hero2-clean">
       <div class="lp-hero-copy reveal">
-        <h1 class="lp-title">Tu golf,<br/><span class="lime">medido y mejorado.</span></h1>
-        <p class="lp-sub">PARFECT es la app que registra cada ronda en segundos, la analiza con IA y te arma el entrenamiento exacto para bajar tu hándicap. Todo tu juego, claro.</p>
+        <h1 class="lp-title">Baja tu hándicap<br/><span class="lime">con datos, no con suerte.</span></h1>
+        <p class="lp-sub">Registra cada ronda en segundos. La IA encuentra dónde pierdes golpes y te arma el entrenamiento exacto. Tus números, tu progreso y tu plan — en una sola app.</p>
         <div class="lp-cta-row">
           <button class="lp-order" data-act="go" data-view="signup">Empezar gratis →</button>
           <button class="lp-ghostbtn" data-act="demo-account">Ver demo</button>
@@ -250,18 +249,9 @@ function vLanding() {
       </div>
     </section>
 
-    <section class="lp-sec lp-cred">
-      <span class="lp-eyebrow reveal">Respaldo</span>
-      <h2 class="lp-h2 reveal">Pensado para el<br/><span class="lime">golf federado.</span></h2>
-      <div class="lp-fedrow reveal">${lpOrg('fmg.png', 'Federación Mexicana de Golf', 'lp-fed-big')}</div>
-      <div class="lp-creds reveal">
-        ${[['#2f6d34', 'Clubes aliados', 'en México'], ['#3a8fe0', 'Ranking juvenil', 'nacional'], ['#e0a13a', 'Coaches', 'certificados']].map(([c, a, b]) => `
-          <div class="lp-cred-item">
-            <svg viewBox="0 0 48 56" class="lp-crest" aria-hidden="true"><path d="M24 2 L44 9 V28 C44 42 34 50 24 54 C14 50 4 42 4 28 V9 Z" fill="${c}" stroke="#16241a" stroke-width="1.6"/><line x1="20" y1="15" x2="20" y2="39" stroke="#fff" stroke-width="2.2"/><path d="M20 15 L33 19 L20 23 Z" fill="#fff"/><circle cx="20" cy="41" r="2.4" fill="#fff"/></svg>
-            <span><b>${a}</b>${b}</span>
-          </div>`).join('')}
-      </div>
-      <p class="lp-cred-note reveal">Rumbo a torneos avalados y al circuito juvenil mexicano.</p>
+    <section class="lp-sec lp-mqsec">
+      <span class="lp-eyebrow reveal" style="display:block;text-align:center">Campos y aliados</span>
+      <div class="lp-marquee reveal"><div class="lp-mq-track">${lpMarqueeItems()}${lpMarqueeItems()}</div></div>
     </section>
 
     <section class="lp-sec lp-presence">
@@ -284,21 +274,6 @@ function vLanding() {
       </div>
     </section>
 
-    <section class="lp-sec lp-tpsec">
-      <span class="lp-eyebrow reveal">Lo que dicen</span>
-      <h2 class="lp-h2 reveal">Excelente en<br/><span class="lime">Trustpilot.</span></h2>
-      <div class="lp-tp-summary reveal">
-        <div class="lp-tp-head">${lpTpStar()}Trustpilot</div>
-        <div class="lp-tp-stars" aria-hidden="true">${Array(5).fill('<span class="tpbox"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>').join('')}</div>
-        <span class="lp-tp-score"><b>4.9</b> / 5 · Excelente · 1,284 reseñas</span>
-      </div>
-      <div class="lp-reviewgrid reveal">
-        ${[['★★★★★', 'Bajé de 18 a 12 en cuatro meses. La IA me hizo enfocarme justo en mi juego corto.', 'Diego R.', 'HCP 12'],
-           ['★★★★★', 'Registro la ronda en dos minutos y las estadísticas valen oro.', 'Andrea P.', 'HCP 8'],
-           ['★★★★★', 'Por fin entiendo dónde se me van los golpes. Drills exactos, nada de relleno.', 'Sofía L.', 'HCP 19']]
-          .map(([st, txt, nm, sub]) => `<div class="lp-review reveal"><div class="lp-review-stars">${st}</div><p>${esc(txt)}</p><cite><b>${esc(nm)}</b> · ${esc(sub)}</cite></div>`).join('')}
-      </div>
-    </section>
 
     <section class="lp-final reveal">
       <div class="lp-finalcard">
