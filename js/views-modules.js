@@ -624,8 +624,9 @@ function vBiblioteca() {
       : (cat === 'ud') ? lbUdScene()
         : (cat === 'putt') ? lbPuttScene()
           : (typeof chkScene === 'function') ? chkScene(cat, true) : '';
+  const doneCount = drills.filter(d => done[d.name]).length;
   const items = drills.map((d, i) => {
-    const isDone = done[d.name] === td;
+    const isDone = !!done[d.name];   // queda palomeado de forma permanente (registrado)
     const lvl = LV[Math.min(2, Math.floor(i / band))];
     return `<button class="lbd ${isDone ? 'done' : ''}" data-act="drill-open" data-name="${esc(d.name)}">
       <span class="lbd-scene">${scene}</span>
@@ -636,7 +637,7 @@ function vBiblioteca() {
       </div>
       <span class="lbd-go">›</span></button>`;
   }).join('');
-  return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Biblioteca de drills</h2><span class="small muted">${DRILL_LIBRARY.length} ejercicios</span></div>
+  return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Biblioteca de drills</h2><span class="small muted">${doneCount ? `<span class="lib-done-n">✓ ${doneCount}</span> · ` : ''}${drills.length} ejercicios</span></div>
     <div class="lib-tabs">${tabs}</div>
     <div class="lbd-list">${items}</div>`;
 }
