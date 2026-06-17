@@ -307,13 +307,15 @@ function vDrillDetail() {
   const tm = V.timer || { left: 300, total: 300, running: false };
   const pct = Math.round(100 * (1 - (tm.left / (tm.total || 1))));
   const timerHtml = `
-    <div class="sr-card">
+    <div class="card sp-card sr-card">
+      <div class="sp-phase">Ejercicio · ${esc(catLab)}</div>
       <div class="sr-now"><span class="sr-scene">${drillScene(cm.s)}</span><div class="sr-nowtx"><b>${esc(d.name)}</b><span>${esc(d.dose || catLab)}</span></div></div>
       <div class="sr-clock" id="dd-timer">${fmtClock(tm.left)}</div>
       <div class="sr-bar"><i id="dd-bar" style="width:${pct}%"></i></div>
+      ${d.metric ? `<p class="sr-next">Meta: ${esc(d.metric)}</p>` : ''}
       <div class="ddt2-ctrls">
         ${tm.running ? `<button class="btn" data-act="timer-pause">⏸ Pausar</button>` : `<button class="btn primary" data-act="timer-start" ${tm.left <= 0 ? 'disabled' : ''}>${tm.left < tm.total ? 'Reanudar' : 'Iniciar'} ▶</button>`}
-        <button class="btn ghost" data-act="timer-reset">↺</button>
+        <button class="btn ghost" data-act="timer-reset" aria-label="Reiniciar">↺</button>
       </div>
     </div>`;
   return `<div class="overlay" data-act="drill-close-detail">
@@ -324,10 +326,6 @@ function vDrillDetail() {
         <button class="dd2-x" data-act="drill-close-detail" aria-label="Cerrar">✕</button>
       </div>
       ${timerHtml}
-      <div class="dd2-goals">
-        <div class="dd2-goal"><span>Dosis</span><b>${esc(d.dose)}</b></div>
-        <div class="dd2-goal"><span>Meta</span><b>${esc(d.metric)}</b></div>
-      </div>
       <h3 class="dd2-h3">Cómo hacerlo</h3>
       <ol class="dd2-steps">${steps}</ol>
       <button class="btn primary big" data-act="drill-done">${doneToday ? 'Entrenado hoy ✓ · marcar otra vez' : 'Listo, lo entrené ✓'}</button>
