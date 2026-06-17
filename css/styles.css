@@ -399,7 +399,8 @@ body.is-scrolling .fly { animation-play-state: paused !important; }
   transition: transform 0.06s ease, opacity 0.15s;
 }
 .btn:active { transform: scale(0.98); }
-.btn.primary { background: #C7EE54; border-color: #C7EE54; color: #16241A; box-shadow: 0 6px 18px rgba(199, 247, 84, 0.3); }
+.btn.primary { background: linear-gradient(155deg, #b6e673, #74b352); border-color: #74b352; color: #16241A; box-shadow: 0 8px 20px rgba(40, 80, 20, 0.28); position: relative; overflow: hidden; }
+.btn.primary::after { content: ''; position: absolute; top: 0; left: -65%; width: 45%; height: 100%; background: linear-gradient(110deg, transparent, rgba(255,255,255,.4), transparent); transform: skewX(-18deg); animation: heroShine 6s ease-in-out infinite; pointer-events: none; }
 .btn.ghost { background: var(--lime-faint); }
 .btn.danger { color: var(--danger); border-color: rgba(255, 122, 107, 0.3); }
 .btn.sm { width: auto; padding: 9px 16px; font-size: 13px; margin-top: 0; border-radius: 12px; }
@@ -1614,7 +1615,7 @@ body.is-scrolling .lp-bird, body.is-scrolling .lp-fly { animation-play-state: pa
 @keyframes confFall { 0% { transform: translateY(-12px) rotate(0); opacity: 1; } 100% { transform: translateY(104vh) rotate(720deg); opacity: 1; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .pl-hero::after, .pl-hero-av, .cre-hero, .nav-p, .nav-item.on svg, .confetti { animation: none !important; }
+  .pl-hero::after, .btn.primary::after, .pl-hero-av, .cre-hero, .nav-p, .nav-item.on svg, .confetti { animation: none !important; }
 }
 
 /* ============ Reel de stats animadas (Inicio) ============ */
