@@ -3363,9 +3363,15 @@ body.is-scrolling .ht-trace, body.is-scrolling .ht-ball { animation-play-state: 
 .lp-gd { font-family: Georgia, 'Times New Roman', serif; font-weight: 800; }
 .lp-tp .lp-tpstar { fill: #00b67a; height: 19px; }
 .lp-tp { gap: 5px; }
-.lp-as svg { fill: currentColor; height: 19px; }
-.lp-press2-fed .lp-brand { font-size: 13.5px; font-weight: 800; opacity: .7; gap: 6px; }
-.lp-press2-fed .lp-brand .gi, .lp-press2-fed .lp-brand svg { width: 15px; height: 15px; }
+/* badges oficiales de descarga (App Store / Google Play) */
+.lp-stores { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+.store-badge { display: inline-flex; align-items: center; gap: 9px; background: #000; color: #fff; border: 1px solid rgba(255,255,255,.28); border-radius: 11px; padding: 8px 15px; cursor: pointer; transition: transform .14s; }
+.store-badge:active { transform: scale(.96); }
+.store-badge .sb-ico { width: 23px; height: 23px; flex: none; }
+.store-badge .sb-apple { fill: #fff; }
+.store-badge .sb-tx { display: flex; flex-direction: column; line-height: 1.04; text-align: left; }
+.store-badge .sb-sm { font-size: 9px; font-weight: 600; letter-spacing: .01em; }
+.store-badge .sb-lg { font-size: 17px; font-weight: 700; letter-spacing: -.01em; margin-top: 1px; }
 /* presencia real */
 .lp-presence { text-align: center; }
 .lp-statrow { display: flex; justify-content: center; gap: 10px; margin: 18px 0 22px; flex-wrap: wrap; }
