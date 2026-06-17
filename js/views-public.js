@@ -113,6 +113,12 @@ function vLanding() {
           ${bgcLake(330, 206, 40, 11)}
           ${bgcGreen(120, 214, 34, 11)}${bgcFlag(120, 214, 28)}
           <path class="bgc-fair" d="M150,240 Q175,206 230,197 Q300,185 360,150" fill="none" stroke-width="20" stroke-linecap="round"/>
+          <path class="bgc-fair" d="M36,240 Q66,206 118,197 Q176,186 214,168" fill="none" stroke-width="16" stroke-linecap="round"/>
+          <path class="bgc-fair" d="M250,240 Q262,212 292,202 Q330,190 366,206" fill="none" stroke-width="14" stroke-linecap="round"/>
+          <path class="bgc-fair" d="M0,224 Q60,210 120,214 Q190,219 250,210" fill="none" stroke-width="12" stroke-linecap="round"/>
+          ${bgcGreen(56, 196, 21, 8)}${bgcFlag(56, 196, 22)}
+          ${bgcGreen(348, 172, 19, 7)}${bgcFlag(348, 172, 20)}
+          ${bgcGreen(196, 178, 18, 6)}${bgcFlag(196, 178, 18)}
           ${tline([[24, 210, 1.3], [74, 216, 1.05], [360, 210, 1.3], [390, 216, 1.1]])}
         </svg>
       </div>

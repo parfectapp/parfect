@@ -150,13 +150,17 @@ function vRoundStatCard(r, hcp) {
   const parOf = i => (r.holes[i] && r.holes[i].par != null) ? r.holes[i].par : (ch && ch[off + i] ? ch[off + i].par : 4);
   const ydsOf = (ch && ch.some(h => h.yds)) ? (i => (ch[off + i] ? ch[off + i].yds : null)) : null;
   const rows = [{ name: 'Tú', scoreOf: i => (r.holes[i] ? r.holes[i].score : null) }];
+  const pctS = (x, t) => (t ? Math.round((x / t) * 100) + '%' : '—');
   return `<button class="rc6" data-act="round-detail" data-id="${r.id}">
     <div class="rc6-head">
-      <div class="rc6-id"><b>${esc(course)}${r.partyId ? ` <span class="rc5-party">${golfIcon('flag')}</span>` : ''}</b><span class="rc5-date">${fmtDate(r.date)} · ${s.holes} hoyos</span></div>
+      <div class="rc6-id"><b>${esc(course)}${r.partyId ? ` <span class="rc5-party">${golfIcon('flag')}</span>` : ''}</b><span class="rc5-date">${fmtDate(r.date)} · ${s.holes} hoyos · Par ${s.par}</span></div>
       <div class="rc5-score ${scoreCls}">${vibe ? `<i>${vibe.ic}</i>` : ''}<b>${s.score}</b><span>${fmtToPar(s.toPar)}</span></div>
     </div>
-    <div class="rc6-stats">
-      <span><b>${pct(s.fw, s.fwTot)}%</b> calles</span><span><b>${pct(s.gir, s.girTot)}%</b> GIR</span><span><b>${s.putts}</b> putts</span><span><b>${birdies}</b> birdies</span>
+    <div class="grid2 rc6-grid">
+      ${statCard(pctS(s.fw, s.fwTot), 'Fairways', s.fwTot ? (s.fw / s.fwTot) * 100 : 0)}
+      ${statCard(pctS(s.gir, s.girTot), 'GIR', (s.gir / s.girTot) * 100)}
+      ${statCard(pctS(s.scr, s.scrTot), 'Up/Down', s.scrTot ? (s.scr / s.scrTot) * 100 : 0)}
+      ${statCard(String(s.putts), 'Putts', Stats.clamp(((38 - (s.putts * 18) / s.holes) / 11) * 100, 0, 100))}
     </div>
     <div class="rc6-card">${scorecardTable(s.holes, parOf, rows, -1, ydsOf)}</div>
   </button>`;
