@@ -69,13 +69,10 @@ function positionOrb() {
   const orb = document.querySelector('.bg-orb');
   const bg = document.querySelector('.app-bg');
   if (!orb) return;
-  const now = new Date();
-  const h = now.getHours() + now.getMinutes() / 60;
-  const f = Math.min(1, Math.max(0, (h - 6) / 14));      // 0 a las 6:00, 1 a las 20:00
-  const elev = Math.sin(f * Math.PI);                     // 0 en extremos, 1 al mediodía
-  orb.style.left = (6 + f * 84).toFixed(1) + '%';
+  // sol fijo arriba a la izquierda, junto al logo PARFECT
+  orb.style.left = '5%';
   orb.style.right = 'auto';
-  orb.style.top = (30 - elev * 25).toFixed(1) + '%';
+  orb.style.top = '2.5%';
   if (bg) {
     bg.classList.remove('dawn', 'dusk', 'night');   // cielo siempre azul (día), igual que la landing
   }

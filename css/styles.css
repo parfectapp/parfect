@@ -60,7 +60,7 @@ input, select, textarea { font-size: 16px; }
 #root { display: contents; }
 
 /* ============ Fondo inmersivo de toda la app (día/noche) ============ */
-.app-bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: linear-gradient(180deg,#5fbdef 0%,#7cc7ef 18%,#a9dbf2 36%,#cfe9ee 54%,#d9edc8 72%,#a9d877 100%); }
+.app-bg { position: fixed; inset: 0; z-index: -2; overflow: hidden; background: linear-gradient(180deg,#3fa3ec 0%,#5fb8ef 14%,#8fd2f1 28%,#c4e6ee 42%,#e6d8ee 51%,#ffe0c6 60%,#ffccb4 68%,#ffd2c6 74%,#dcecc4 85%,#a9d877 100%); }
 /* dentro de la app, el fondo es un ambiente sutil para que la app sea lo principal */
 body.in-app .app-bg::after { content: ''; position: absolute; inset: 0; background: var(--bg); opacity: 0.3; }
 body.in-app .app-bg .bg-cloud, body.in-app .app-bg .bg-bird, body.in-app .app-bg .bg-gball { opacity: 0.72; }
@@ -3042,7 +3042,7 @@ body.is-scrolling .ht-trace, body.is-scrolling .ht-ball { animation-play-state: 
 /* ===== Landing v3: día completo continuo (cielo arriba → campo abajo) + escena viva + narrativa del pájaro ===== */
 /* el gradiente del día va en TODA la página (sin corte): se ve cómo "bajas" al campo al hacer scroll */
 .lp-ph-dawn  { background: linear-gradient(180deg,#ffd9a8 0%,#ffc6b2 16%,#ffd9b4 32%,#dfeccf 52%,#bfe39a 74%,#a9d877 100%) !important; }
-.lp-ph-day   { background: linear-gradient(180deg,#5fbdef 0%,#7cc7ef 18%,#a9dbf2 36%,#cfe9ee 54%,#d9edc8 72%,#a9d877 100%) !important; }
+.lp-ph-day   { background: linear-gradient(180deg,#3fa3ec 0%,#5fb8ef 14%,#8fd2f1 28%,#c4e6ee 42%,#e6d8ee 51%,#ffe0c6 60%,#ffccb4 68%,#ffd2c6 74%,#dcecc4 85%,#a9d877 100%) !important; }
 .lp-ph-dusk  { background: linear-gradient(180deg,#ff9e6b 0%,#ff8fa0 18%,#e79bb0 36%,#caa7c2 52%,#bfd79a 76%,#a9d877 100%) !important; }
 .lp-ph-night { background: linear-gradient(180deg,#0a1430 0%,#102145 22%,#16294c 42%,#1b2f3e 60%,#244a30 82%,#a9d877 100%) !important; }
 .lp-ph-night .lp-hero-copy .lp-title, .lp-ph-night .lp-hero-copy .lp-sub, .lp-ph-night .lp-nav .lp-logo, .lp-ph-night .lp-nav .lp-links button:not(.lp-cta-sm) { color: #fff; }

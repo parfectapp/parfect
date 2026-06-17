@@ -317,6 +317,22 @@ function vSetup() {
   const body = `<div class="su-block"><span class="su-lab">Campo</span><div class="su-courses">${courseCards}</div></div>
       ${holesNineBlock}
       <button class="btn primary big su-go" data-act="start-round">${golfIcon('flag')} Comenzar ronda</button>`;
+  const u = cur();
+  const act = (typeof activeParty === 'function') ? activeParty() : null;
+  const myActive = act && (act.hostUserId === u.id || act.players.some(x => x.userId === u.id));
+  const lobbyCard = `<div class="su-block su-lobby">
+      <span class="su-lab">${golfIcon('flag')} Jugar con amigos · lobby</span>
+      <div class="card lobby-card">
+        <p class="small muted" style="margin-top:0">Entra a la lobby de un amigo con su código, o crea la tuya y compártelo. Cada quien anota desde su celular.</p>
+        ${myActive ? `<button class="btn primary" data-act="party-resume">${golfIcon('flag')} Volver a tu lobby ${esc(act.code)}${act.status === 'live' ? ` · hoyo ${act.idx + 1}` : ''}</button>`
+          : `<button class="btn primary" data-act="party-new">${golfIcon('flag')} Crear una lobby</button>`}
+        <div class="join-row" style="margin-top:12px">
+          <input id="join-code" placeholder="Código (ej. K7M2)" maxlength="4" style="text-transform:uppercase">
+          <button class="btn sm ghost" data-act="party-join" ${V.joining ? 'disabled' : ''}>${V.joining ? 'Entrando…' : 'Entrar'}</button>
+        </div>
+        ${V.err ? `<p class="form-err">${esc(V.err)}</p>` : ''}
+      </div>
+    </div>`;
   return `<div class="su-hero2 su-hero-course">
       <div class="su-hero2-txt">
         <span class="su-hero-tag">${golfIcon('flag')} Nueva ronda</span>
@@ -327,6 +343,7 @@ function vSetup() {
     </div>
     ${whenToggle}
     ${body}
+    ${lobbyCard}
     <button class="btn su-cancel" data-act="nav" data-view="ronda">Cancelar</button>
     ${typeof vEventComposer === 'function' && V.eventDraft ? vEventComposer(cur()) : ''}
     ${teeSheet}`;
