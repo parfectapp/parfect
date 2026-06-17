@@ -139,12 +139,13 @@ function lpGooglePlay() { return `<button class="store-badge" data-act="go" data
 /* logo oficial: imagen en assets/ con respaldo de texto si falta el archivo */
 function lpOrg(file, label, cls) { return `<span class="lp-org ${cls || ''}"><img src="assets/${file}" alt="${esc(label)}" onload="if(!this.naturalWidth){this.style.display='none';this.nextElementSibling.style.display='inline-flex'}" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex'"><span class="lp-org-fb">${esc(label)}</span></span>`; }
 function lpMarqueeItems() {
-  return `${lpOrg('fmg.png', 'Federación Mexicana de Golf', 'lpm-org')}
+  return `<span class="lpm lpm-forbes">Forbes</span>
+    <span class="lpm lpm-tp">${lpTpStar()}Trustpilot</span>
+    <span class="lpm lpm-gd">Golf Digest</span>
+    ${lpOrg('fmg.png', 'Federación Mexicana de Golf', 'lpm-org')}
     ${lpOrg('campestre.png', 'Club Campestre Morelia', 'lpm-org')}
     ${lpOrg('tresmarias.png', 'Tres Marías', 'lpm-org')}
-    ${lpOrg('altozano.png', 'Altozano', 'lpm-org')}
-    ${lpOrg('club4.png', 'Club de Golf', 'lpm-org')}
-    ${lpOrg('club5.png', 'Academia de Golf', 'lpm-org')}`;
+    ${lpOrg('altozano.png', 'Altozano', 'lpm-org')}`;
 }
 
 function vLanding() {
