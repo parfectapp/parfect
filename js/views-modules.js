@@ -318,9 +318,8 @@ function vDrillDetail() {
         <button class="btn ghost" data-act="timer-reset" aria-label="Reiniciar">↺</button>
       </div>
     </div>`;
-  return `<div class="overlay" data-act="drill-close-detail">
+  return `<div class="overlay overlay-top" data-act="drill-close-detail">
     <div class="sheet dd2" data-act="noop">
-      <div class="grab"></div>
       <div class="dd2-top">
         <span class="dd2-cat">${esc(catLab)}</span>
         <button class="dd2-x" data-act="drill-close-detail" aria-label="Cerrar">✕</button>

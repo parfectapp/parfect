@@ -1037,6 +1037,11 @@ button.row { cursor: pointer; }
   padding: 10px 20px calc(26px + env(safe-area-inset-bottom));
 }
 .sheet .grab { width: 44px; height: 5px; border-radius: 99px; background: var(--line); margin: 8px auto 14px; }
+/* variante: tarjeta pegada arriba (no emerge desde abajo) */
+.overlay-top { align-items: flex-start; background: rgba(0,0,0,.2); padding: clamp(58px, 11vh, 92px) 12px 24px; overflow-y: auto; }
+.overlay-top .sheet { border-radius: 24px; border: 1px solid var(--line); max-height: none; padding: 16px 20px 22px; box-shadow: 0 22px 50px rgba(20,40,15,.28); animation: dd2Drop .3s cubic-bezier(.2,.8,.2,1) both; }
+.overlay-top .grab { display: none; }
+@keyframes dd2Drop { from { opacity: 0; transform: translateY(-20px) scale(.98); } to { opacity: 1; transform: none; } }
 .sheet h2 { font-size: 21px; font-weight: 900; }
 
 /* panel de ajustes de perfil (pantalla completa, desde arriba a la derecha) */
