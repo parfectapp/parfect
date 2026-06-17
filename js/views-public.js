@@ -162,6 +162,17 @@ function lpScrLoading() {
     <div class="lp-load-foot">Cargando tu juego…</div>
   </div>`;
 }
+/* primer iPhone: cuenta regresiva 3·2·1 → PARFECT, luego revela la pantalla de inicio */
+function lpIntroPhone() {
+  const scr = `<img class="lp-shotimg" src="assets/shot-inicio.png" alt="" onload="if(this.naturalWidth){var c=this.parentElement.querySelector('.lp-shotcomp');if(c)c.style.display='none'}else{this.remove()}" onerror="this.remove()">
+    <div class="lp-shotcomp">${lpScrStats()}</div>
+    <div class="lp-countdown" aria-hidden="true">
+      <span class="cd-flag">${golfFlagSvg()}</span>
+      <span class="cd-n cd3">3</span><span class="cd-n cd2">2</span><span class="cd-n cd1">1</span>
+      <span class="cd-go">PARFECT</span>
+    </div>`;
+  return lpPhone(scr);
+}
 function lpScrStats() {
   const rings = [['fw', 61, 'Fairways'], ['gir', 53, 'GIR'], ['ud', 51, 'Up & down']]
     .map(([k, p, l]) => (typeof pstSceneStatic === 'function') ? pstSceneStatic(k, p, l) : '').join('');
@@ -412,7 +423,7 @@ function vLanding() {
     </section>
 
     <section class="lp-hero2 lp-appstage-sec">
-      <div class="lp-loadphone reveal">${lpPhoneShot('shot-inicio.png', lpScrStats())}</div>
+      <div class="lp-loadphone reveal">${lpIntroPhone()}</div>
       <div class="lp-hero-copy reveal">
         <h1 class="lp-title lp-title-stage">Baja tu hándicap,<br/><span class="lp-title-grad">fácil.</span></h1>
         <p class="lp-sub">Sigue tu hándicap, tu progreso y tu juego completo en una sola app.</p>
