@@ -162,10 +162,22 @@ function lpScrLoading() {
     <div class="lp-load-foot">Cargando tu juego…</div>
   </div>`;
 }
-/* primer iPhone: cuenta regresiva 3·2·1 → PARFECT, luego revela la pantalla de inicio */
+/* primer iPhone: saludo "Buenos días, <nombre>" con nombres que rotan en loop + sol animado */
 function lpIntroPhone() {
-  const scr = `<img class="lp-shotimg" src="assets/shot-inicio.png" alt="" onload="if(this.naturalWidth){var c=this.parentElement.querySelector('.lp-shotcomp');if(c)c.style.display='none'}else{this.remove()}" onerror="this.remove()">
-    <div class="lp-shotcomp">${lpScrStats()}</div>`;
+  const names = ['Andrés', 'Valeria', 'Diego', 'Sofía', 'Mateo', 'Camila', 'Renata'];
+  const nameSpans = names.map((n, i) => `<span class="greet-name" style="--i:${i}">${esc(n)}</span>`).join('');
+  const rings = [['fw', 61, 'Fairways'], ['gir', 53, 'GIR'], ['ud', 51, 'Up & down']]
+    .map(([k, p, l]) => (typeof pstSceneStatic === 'function') ? pstSceneStatic(k, p, l) : '').join('');
+  const tiles = [['Putts / ronda', '30', 'putter'], ['Birdie o mejor', '8%', 'flag'], ['Bogey o peor', '31%', 'green'], ['Pares', '60%', 'flag']]
+    .map((t, i) => `<div class="pst-tile" style="--i:${i}"><span class="pst-th"><span class="pst-ic">${golfIcon(t[2])}</span></span><b class="pst-val">${t[1]}</b><span class="pst-lab">${t[0]}</span></div>`).join('');
+  const scr = lpReal(`<div class="lp-greet">
+      <span class="lp-greet-sun"></span>
+      <span class="lp-greet-cloud gc1"></span><span class="lp-greet-cloud gc2"></span>
+      <span class="lp-greet-hi">Buenos días,</span>
+      <span class="greet-names">${nameSpans}</span>
+    </div>
+    <div class="pst-rings">${rings}</div>
+    <div class="pst-grid">${tiles}</div>`);
   return lpPhone(scr);
 }
 function lpScrStats() {

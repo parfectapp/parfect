@@ -2362,6 +2362,19 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .chat-input input:focus { outline: none; border-color: var(--lime); }
 .chat-send-btn { flex: none; width: 42px; height: 42px; border: none; border-radius: 12px; background: var(--lime); color: #0c2913; font-size: 16px; cursor: pointer; }
 .chat-send-btn:active { transform: scale(.92); }
+/* Landing · saludo animado del primer iPhone (Buenos días + nombres en loop) */
+.lp-greet { position: relative; overflow: hidden; border-radius: 14px; min-height: 118px; padding: 14px 16px 16px; background: linear-gradient(160deg, #5fb8ef 0%, #9ed6f2 58%, #dff0e0 100%); }
+.lp-greet-sun { position: absolute; top: 12px; right: 16px; width: 32px; height: 32px; border-radius: 50%; background: radial-gradient(circle at 38% 34%, #fff6c0, #ffce3a); box-shadow: 0 0 20px rgba(255,206,58,.65); animation: greetSun 4s ease-in-out infinite; }
+@keyframes greetSun { 0%,100% { transform: translateY(0) scale(1); box-shadow: 0 0 18px rgba(255,206,58,.55); } 50% { transform: translateY(-3px) scale(1.07); box-shadow: 0 0 30px rgba(255,206,58,.85); } }
+.lp-greet-cloud { position: absolute; height: 7px; border-radius: 7px; background: rgba(255,255,255,.9); }
+.lp-greet-cloud.gc1 { width: 30px; top: 22px; left: -34px; animation: greetCloud 9s linear infinite; }
+.lp-greet-cloud.gc2 { width: 20px; top: 40px; left: -34px; animation: greetCloud 13s linear infinite 2s; }
+@keyframes greetCloud { from { transform: translateX(0); } to { transform: translateX(230px); } }
+.lp-greet-hi { display: block; margin-top: 50px; font-size: 13px; font-weight: 800; color: #0c3a5e; opacity: .9; }
+.greet-names { position: relative; display: block; height: 30px; margin-top: 2px; }
+.greet-name { position: absolute; left: 0; top: 0; font-size: 24px; font-weight: 900; letter-spacing: -.02em; color: #0a2e4a; opacity: 0; white-space: nowrap; animation: greetCycle 10.5s ease-in-out infinite; animation-delay: calc(var(--i) * -1.5s); }
+@keyframes greetCycle { 0% { opacity: 0; transform: translateY(11px); } 2% { opacity: 1; transform: translateY(0); } 12% { opacity: 1; transform: translateY(0); } 14.3% { opacity: 0; transform: translateY(-11px); } 100% { opacity: 0; transform: translateY(-11px); } }
+@media (prefers-reduced-motion: reduce) { .lp-greet-sun, .lp-greet-cloud { animation: none; } .greet-name { animation-duration: 0s; } .greet-name[style*="--i:0"] { opacity: 1; } }
 /* Landing · galería de fotos del club */
 .lp-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .lp-gal-item { position: relative; margin: 0; border-radius: 18px; overflow: hidden; aspect-ratio: 1 / 1; box-shadow: 0 12px 30px rgba(20,40,15,.12); }
