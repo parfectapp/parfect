@@ -206,9 +206,32 @@ function vDiag() {
       <p>Correlacionando ${agg.holesPlayed} hoyos, ${agg.rounds} rondas y 12+ métricas.</p></div>`;
   }
   if (!V.diag) {
-    return `<div class="card empty"><div class="e-ico">${golfIcon('green')}</div><h3>Diagnóstico IA</h3>
-      <p>La IA cruza tus ${agg.rounds} rondas (${agg.holesPlayed} hoyos) para detectar dónde se van los golpes de más — y qué practicar.</p>
-      <button class="btn primary" data-act="diagnose">Generar diagnóstico IA</button></div>`;
+    const AREA = {
+      'Salidas': { c: '#3f9d44', t: 'rgba(63,157,68,.10)', ic: 'flag', stat: Math.round(agg.fwPct || 0) + '% de calles' },
+      'Approach': { c: '#2fa36b', t: 'rgba(47,163,107,.10)', ic: 'green', stat: Math.round(agg.girPct || 0) + '% greens' },
+      'Juego corto': { c: '#e0873a', t: 'rgba(224,135,58,.10)', ic: 'bucket', stat: Math.round(agg.scrPct || 0) + '% up & down' },
+      'Putt': { c: '#3a8fe0', t: 'rgba(58,143,224,.10)', ic: 'putter', stat: (agg.putts18 || 0).toFixed(0) + ' putts/ronda' },
+      'Penales': { c: '#d8533a', t: 'rgba(216,83,58,.10)', ic: 'flag', stat: (agg.penals18 || 0).toFixed(1) + ' penales/ronda' },
+    };
+    const issues = [
+      { lab: 'Salidas', sev: 55 - (agg.fwPct || 0), tip: 'Tus salidas son tu mayor fuga: 20 tiros buscando centrar la calle, no distancia.' },
+      { lab: 'Approach', sev: 52 - (agg.girPct || 0), tip: 'Pierdes greens. Practica wedges a 50 / 75 / 100 m hasta dejarla a 3 m.' },
+      { lab: 'Juego corto', sev: 48 - (agg.scrPct || 0), tip: 'Tu up & down está bajo: 15 min de chips a un solo objetivo.' },
+      { lab: 'Putt', sev: ((agg.putts18 || 30) - 31) * 4, tip: 'Putts de más. Trabaja lag-putt: 10 bolas a 8, 10 y 12 m.' },
+      { lab: 'Penales', sev: ((agg.penals18 || 0) - 1.5) * 7, tip: 'Los penales cuestan golpes. Practica salida segura con híbrido.' },
+    ].sort((a, b) => b.sev - a.sev);
+    const cards = issues.map((it, i) => {
+      const a = AREA[it.lab];
+      return `<div class="lib-card" style="--lib:${a.c};background:${a.t}">
+        <div class="lib-head"><span class="lib-ic">${golfIcon(a.ic)}</span><b>${it.lab}</b><span class="lib-n">${i === 0 ? 'Prioridad 1' : 'Prioridad ' + (i + 1)}</span></div>
+        <div class="diag-body"><p class="diag-area-stat" style="color:${a.c}">${a.stat}</p><p class="diag-lead">${esc(it.tip)}</p>
+          <button class="btn sm ghost" data-act="trainer-tab" data-t="biblioteca">${golfIcon('green')} Practicar →</button></div>
+      </div>`;
+    }).join('');
+    return `<div class="sec-h" style="margin-top:6px"><h2 style="font-size:18px">Tu diagnóstico IA</h2><span class="small muted">${agg.rounds} rondas · por área</span></div>
+      ${cards}
+      <button class="btn primary" data-act="diagnose" style="margin-top:16px">${golfIcon('flag')} Generar diagnóstico IA profundo</button>
+      <p class="note">La IA cruza tus ${agg.holesPlayed} hoyos para priorizar dónde se van los golpes. Practica de arriba hacia abajo.</p>`;
   }
   const d = V.diag;
   const warn = d.readiness === 'low'
