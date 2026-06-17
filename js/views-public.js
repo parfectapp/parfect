@@ -167,9 +167,10 @@ function lpIntroPhone() {
   const scr = `<img class="lp-shotimg" src="assets/shot-inicio.png" alt="" onload="if(this.naturalWidth){var c=this.parentElement.querySelector('.lp-shotcomp');if(c)c.style.display='none'}else{this.remove()}" onerror="this.remove()">
     <div class="lp-shotcomp">${lpScrStats()}</div>
     <div class="lp-countdown" aria-hidden="true">
+      <span class="cd-ring"></span>
       <span class="cd-flag">${golfFlagSvg()}</span>
       <span class="cd-n cd3">3</span><span class="cd-n cd2">2</span><span class="cd-n cd1">1</span>
-      <span class="cd-go">PARFECT</span>
+      <span class="cd-go"><b>PARFECT</b><i>tu juego, en orden</i></span>
     </div>`;
   return lpPhone(scr);
 }

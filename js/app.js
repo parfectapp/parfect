@@ -612,8 +612,15 @@ const actions = {
   },
   'trk-tab'(d) { V.trkTab = d.t; V.err = null; render(); },
   'drill-cat'(d) { V.drillCat = d.c; render(); },
+  'drill-go-entreno'() {
+    V.drillDetail = null; V.drillFrom = null;
+    V.view = 'trainer'; V.trainerTab = 'entreno';
+    V.planStep = undefined; V.sessionRun = null;
+    render(); window.scrollTo(0, 0);
+  },
   'drill-open'(d) {
     stopDrillTimer();
+    V.drillFrom = d.from || null;
     V.timer = { left: 300, total: 300, running: false };
     const drill = (typeof DRILL_LIBRARY !== 'undefined') ? DRILL_LIBRARY.find(x => x.name === d.name) : null;
     if (drill) { V.drillDetail = drill; render(); return; }
@@ -789,7 +796,7 @@ const actions = {
     V.drillDetail = null;
     render();
   },
-  'drill-close-detail'() { stopDrillTimer(); V.drillDetail = null; render(); },
+  'drill-close-detail'() { stopDrillTimer(); V.drillDetail = null; V.drillFrom = null; render(); },
   'drill-done'() {
     stopDrillTimer();
     const d = V.drillDetail; V.drillDetail = null;

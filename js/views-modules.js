@@ -230,10 +230,10 @@ function vDiag() {
     const doneN = drills.filter(dr => done[dr.name] === td).length;
     const rows = drills.map(dr => {
       const isDone = done[dr.name] === td;
-      return `<div class="splib-item ${isDone ? 'done' : ''}" data-act="drill-open" data-name="${esc(dr.name)}" role="button" tabindex="0">
+      return `<div class="splib-item ${isDone ? 'done' : ''}" data-act="drill-open" data-name="${esc(dr.name)}" data-from="diag" role="button" tabindex="0">
         <span class="splib-chk dg-chk">${isDone ? '✓' : golfIcon(ic)}</span>
         <span class="splib-tx"><b>${esc(dr.name)}</b><span>${esc(dr.dose)} · ${esc(dr.metric)}</span></span>
-        <span class="splib-go">${isDone ? 'Hecho ✓' : 'Ver →'}</span>
+        <span class="splib-go">${isDone ? 'Hecho ✓' : 'Entrenar →'}</span>
       </div>`;
     }).join('');
     return `<div class="dg-sec" style="--pc:${pc}">
@@ -313,6 +313,10 @@ function vDrillDetail() {
   const short = s => { let t = String(s).split('. ')[0].trim(); if (t.length > 46) t = t.split(/[,;]/)[0].trim(); return t.replace(/\.$/, ''); };
   const steps = (d.steps || []).map((s, i) => `<li class="dd2-step"><span class="dd2-n">${i + 1}</span><span class="dd2-stext">${esc(short(s))}</span></li>`).join('');
   const doneToday = ((cur() || {}).drillsDone || {})[d.name] === today();
+  const fromDiag = V.drillFrom === 'diag';
+  const cta = fromDiag
+    ? `<button class="btn primary big" data-act="drill-go-entreno">${golfIcon('flag')} Entrenar este ejercicio →</button>`
+    : `<button class="btn primary big" data-act="drill-done">${doneToday ? 'Entrenado hoy ✓ · marcar otra vez' : 'Listo, lo entrené ✓'}</button>`;
   return `<div class="overlay overlay-top" data-act="drill-close-detail">
     <div class="sheet dd2" data-act="noop">
       <div class="dd2-top">
@@ -328,7 +332,7 @@ function vDrillDetail() {
       </div>
       <h3 class="dd2-h3">Cómo hacerlo</h3>
       <ol class="dd2-steps">${steps}</ol>
-      <button class="btn primary big" data-act="drill-done">${doneToday ? 'Entrenado hoy ✓ · marcar otra vez' : 'Listo, lo entrené ✓'}</button>
+      ${cta}
     </div>
   </div>`;
 }
