@@ -3429,6 +3429,24 @@ body.is-scrolling .ht-trace, body.is-scrolling .ht-ball { animation-play-state: 
 .lp-fixed .lp-moon { top: 8%; right: 14%; }
 .lp-bsil { position: absolute; width: 30px; height: auto; will-change: transform; filter: drop-shadow(0 4px 5px rgba(20,40,15,.16)); }
 .lp-bwing { transform-origin: 60% 80%; animation: lpFlap .4s ease-in-out infinite alternate; }
+/* bola de golf voladora (SVG, sin fondo CSS) */
+.lp-fixed .lp-flyb { position: absolute; bottom: 44vh; left: 0; width: 22px; height: 22px; will-change: transform; filter: drop-shadow(0 4px 6px rgba(20,40,15,.2)); }
+.lp-fixed .lp-flyb svg { width: 100%; height: 100%; display: block; }
+/* mariposa que aletea */
+.lp-fixed .lp-bug { position: absolute; bottom: 46vh; left: 0; width: 26px; height: 22px; will-change: transform; filter: drop-shadow(0 4px 5px rgba(20,40,15,.16)); }
+.lp-fixed .lp-bug svg { width: 100%; height: 100%; display: block; }
+.lp-bug .lp-bugw { transform-origin: 50% 50%; animation: lpBugFlap .22s ease-in-out infinite alternate; }
+.lp-bug .lp-bugw.r { animation-name: lpBugFlapR; }
+@keyframes lpBugFlap { from { transform: scaleX(1); } to { transform: scaleX(.45); } }
+@keyframes lpBugFlapR { from { transform: scaleX(1); } to { transform: scaleX(.45); } }
+[data-theme="dark"] .lp-bug, [data-theme="dark"] .lp-flyb { opacity: .85; }
+body.is-scrolling .lp-flyb, body.is-scrolling .lp-bug { animation-play-state: paused; }
+/* bandera de golf genérica sobre el wordmark */
+.lp-introflag { display: block; width: clamp(86px, 24vw, 124px); margin: 0 auto -4px; }
+.lp-introflag .gflag { width: 100%; height: auto; display: block; filter: drop-shadow(0 12px 16px rgba(20,40,15,.2)); }
+.gflag .gflag-pen, .lp-appicon-svg .ai-pen { transform-box: fill-box; transform-origin: 0% 45%; animation: gflagWave 2.6s ease-in-out infinite; }
+@keyframes gflagWave { 0%,100% { transform: skewY(-1.5deg) scaleX(1); } 50% { transform: skewY(2deg) scaleX(.95); } }
+@media (prefers-reduced-motion: reduce) { .gflag-pen, .ai-pen, .lp-flyb, .lp-bug, .lp-bug .lp-bugw { animation: none !important; } }
 .lp-fixed .lp-icloud { position: absolute; height: 20px; background: #fff; border-radius: 99px; box-shadow: 26px 5px 0 -3px #fff, -24px 6px 0 -4px #fff; opacity: .8; }
 .lp-fixed .lp-icloud.i1 { top: 9%; left: 8%; width: 60px; animation: lpDrift 70s linear infinite; }
 .lp-fixed .lp-icloud.i2 { top: 15%; left: 70%; width: 46px; animation: lpDrift 92s linear infinite; animation-delay: -30s; }

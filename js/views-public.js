@@ -84,30 +84,56 @@ function lpFeatArt(kind) {
 
 /* logo/icono de la app (nuevo) para el hero en 3D */
 function appIcon3D() {
-  // monograma "P" itálico (mismo estilo del wordmark PARFECT) + bola de golf en el contador
-  const pMark = `<rect x="64" y="46" width="26" height="110" rx="12"/><path d="M77 46 A34 34 0 0 1 77 118" fill="none" stroke-width="26" stroke-linecap="round"/>`;
+  // icono de bandera de golf (mismo motivo del wordmark/landing), en la marca dark+lima
   return `<svg viewBox="0 0 200 200" class="lp-appicon-svg" aria-hidden="true">
     <defs>
       <linearGradient id="aiBg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d5a2a"/><stop offset="52%" stop-color="#123f1d"/><stop offset="100%" stop-color="#0a2913"/></linearGradient>
-      <linearGradient id="aiP" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="#caff63"/><stop offset="100%" stop-color="#7cc24a"/></linearGradient>
+      <linearGradient id="aiPen" x1="0" y1="0" x2="1" y2=".4"><stop offset="0" stop-color="#d2ff6e"/><stop offset="100%" stop-color="#4fae35"/></linearGradient>
+      <radialGradient id="aiGrn" cx="44%" cy="34%" r="64%"><stop offset="0" stop-color="#8ad75a"/><stop offset="100%" stop-color="#3f8f30"/></radialGradient>
       <radialGradient id="aiBall" cx="38%" cy="32%" r="72%"><stop offset="0" stop-color="#ffffff"/><stop offset="100%" stop-color="#dfe7df"/></radialGradient>
-      <radialGradient id="aiGloss" cx="30%" cy="12%" r="82%"><stop offset="0" stop-color="rgba(255,255,255,.34)"/><stop offset="46%" stop-color="rgba(255,255,255,.05)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient>
+      <radialGradient id="aiGloss" cx="30%" cy="12%" r="82%"><stop offset="0" stop-color="rgba(255,255,255,.32)"/><stop offset="46%" stop-color="rgba(255,255,255,.05)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient>
     </defs>
     <rect x="6" y="6" width="188" height="188" rx="46" fill="url(#aiBg)"/>
-    <ellipse cx="100" cy="170" rx="62" ry="40" fill="#caff63" opacity=".08"/>
-    <!-- P itálica (skew como el wordmark) -->
-    <g transform="translate(100,100) skewX(-10) translate(-100,-100)">
-      <g transform="translate(3,4)" fill="#000" stroke="#000" opacity=".22">${pMark}</g>
-      <g fill="url(#aiP)" stroke="url(#aiP)">${pMark}</g>
+    <ellipse cx="100" cy="150" rx="66" ry="34" fill="#caff63" opacity=".08"/>
+    <!-- putting green + hoyo -->
+    <ellipse cx="100" cy="156" rx="70" ry="20" fill="#10381a" opacity=".5"/>
+    <ellipse cx="100" cy="150" rx="68" ry="20" fill="url(#aiGrn)"/>
+    <ellipse cx="86" cy="146" rx="11" ry="3.6" fill="#0c2e15"/>
+    <!-- asta -->
+    <rect x="84" y="40" width="5.4" height="108" rx="2.7" fill="#eef2f2"/>
+    <rect x="84" y="40" width="2.4" height="108" fill="#ffffff" opacity=".8"/>
+    <circle cx="86.7" cy="38" r="6" fill="#d7dee0"/><circle cx="84.8" cy="36.2" r="2.1" fill="#fff" opacity=".7"/>
+    <!-- bandera (pennant) ondeante -->
+    <g class="ai-pen">
+      <path d="M89 42 Q128 32 162 47 Q133 60 162 73 Q128 66 89 72 Z" fill="url(#aiPen)"/>
+      <path d="M89 42 Q128 32 162 47" fill="none" stroke="#eaffc2" stroke-width="1.6" opacity=".45"/>
     </g>
-    <!-- bola de golf en el contador de la P -->
-    <circle cx="92" cy="82" r="11" fill="url(#aiBall)" stroke="#b9c6bd" stroke-width="1.1"/>
-    <g fill="#a9b7ac" opacity=".7">
-      <circle cx="88" cy="79" r="1.1"/><circle cx="93" cy="78" r="1.1"/><circle cx="96" cy="82" r="1.1"/>
-      <circle cx="90" cy="84" r="1.1"/><circle cx="94" cy="85" r="1.1"/>
-    </g>
+    <!-- bola de golf -->
+    <circle cx="120" cy="146" r="11" fill="url(#aiBall)" stroke="#b9c6bd" stroke-width="1.1"/>
+    <g fill="#aab8ad" opacity=".7"><circle cx="116" cy="143" r="1.1"/><circle cx="121" cy="142" r="1.1"/><circle cx="124" cy="146" r="1.1"/><circle cx="118" cy="148" r="1.1"/><circle cx="123" cy="149" r="1.1"/></g>
     <rect x="6" y="6" width="188" height="188" rx="46" fill="url(#aiGloss)"/>
     <rect x="7.5" y="7.5" width="185" height="185" rx="44.5" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1.5"/>
+  </svg>`;
+}
+/* bandera de golf genérica reutilizable (ondea) — para la landing */
+function golfFlagSvg(cls) {
+  return `<svg class="gflag ${cls || ''}" viewBox="0 0 150 180" aria-hidden="true">
+    <defs>
+      <linearGradient id="gfPen" x1="0" y1="0" x2="1" y2=".4"><stop offset="0" stop-color="#d2ff6e"/><stop offset="100%" stop-color="#3f9e2f"/></linearGradient>
+      <radialGradient id="gfGrn" cx="44%" cy="34%" r="64%"><stop offset="0" stop-color="#8ad75a"/><stop offset="100%" stop-color="#4c9a33"/></radialGradient>
+    </defs>
+    <ellipse cx="70" cy="164" rx="50" ry="11" fill="#1f5a26" opacity=".16"/>
+    <ellipse cx="70" cy="159" rx="48" ry="13" fill="url(#gfGrn)"/>
+    <ellipse cx="60" cy="154" rx="9.5" ry="3.2" fill="#0f351a"/>
+    <rect x="58" y="26" width="5.2" height="130" rx="2.6" fill="#e7eded"/>
+    <rect x="58" y="26" width="2.3" height="130" fill="#fff" opacity=".8"/>
+    <circle cx="60.6" cy="24" r="6" fill="#cfd7d9"/><circle cx="58.8" cy="22.2" r="2.1" fill="#fff" opacity=".7"/>
+    <g class="gflag-pen">
+      <path d="M63 28 Q100 18 134 33 Q106 46 134 60 Q100 52 63 58 Z" fill="url(#gfPen)"/>
+      <path d="M63 28 Q100 18 134 33" fill="none" stroke="#eaffc2" stroke-width="1.6" opacity=".45"/>
+    </g>
+    <circle cx="96" cy="153" r="8" fill="#fff" stroke="#bfc8c0" stroke-width="1"/>
+    <g fill="#cfd6cf"><circle cx="93" cy="150" r="1"/><circle cx="98" cy="150" r="1"/><circle cx="96" cy="155" r="1"/></g>
   </svg>`;
 }
 /* maqueta de teléfono con una pantalla REAL de la app (usa los mismos componentes) */
@@ -245,6 +271,10 @@ function vLanding() {
   const stars = isNight ? Array.from({ length: 18 }, (_, i) => `<span class="lp-star" style="left:${(i * 37 % 96) + 2}%;top:${(i * 23 % 44) + 3}%;animation-delay:${(i % 5) * 0.5}s"></span>`).join('') : '';
   const celest = isNight ? `<div class="lp-moon"></div>${stars}` : `<div class="lp-sun"></div>`;
   const bsil = (st) => `<svg class="lp-bsil" style="${st}" viewBox="0 0 30 22" aria-hidden="true"><ellipse cx="14" cy="13" rx="9" ry="7" fill="#ff5e9a"/><circle cx="22" cy="8" r="5" fill="#ff5e9a"/><path d="M26 7 l6 -1 l-5 4 Z" fill="#ffb13b"/><circle cx="23" cy="7" r="1.3" fill="#fff"/><circle cx="23.3" cy="7.2" r=".65" fill="#241018"/><path class="lp-bwing" d="M12 11 q-7 -8 -1 -12 q3 6 8 11 Z" fill="#ec4d88"/><path d="M7 17 l-4 3 M10 18 l-3 4" stroke="#ff9a3b" stroke-width="1.3" stroke-linecap="round"/></svg>`;
+  // bola de golf voladora (detalle en movimiento)
+  const fball = (st) => `<span class="lp-flyb" style="${st}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#fff" stroke="#c7d0cd" stroke-width="1"/><g fill="#d8dedc"><circle cx="9" cy="9" r="1"/><circle cx="14.5" cy="8.5" r="1"/><circle cx="16" cy="13.5" r="1"/><circle cx="10" cy="14.5" r="1"/><circle cx="14" cy="15" r="1"/></g></svg></span>`;
+  // mariposa que aletea (detalle en movimiento)
+  const flybug = (st) => `<span class="lp-bug" style="${st}"><svg viewBox="0 0 28 24" aria-hidden="true"><g class="lp-bugw"><path d="M14 12 C6 2 0 6 3 12 C0 18 8 20 14 12 Z" fill="#ffcf5a"/><path d="M14 12 C5 8 2 12 5 16 C3 21 11 20 14 12 Z" fill="#ff9a3b"/></g><g class="lp-bugw r"><path d="M14 12 C22 2 28 6 25 12 C28 18 20 20 14 12 Z" fill="#ffcf5a"/><path d="M14 12 C23 8 26 12 23 16 C25 21 17 20 14 12 Z" fill="#ff9a3b"/></g><rect x="13.1" y="5" width="1.8" height="15" rx="0.9" fill="#3a2a12"/></svg></span>`;
   const cartSvg = `<svg viewBox="0 0 64 44" aria-hidden="true"><path d="M9 16 L14 6 L39 6 L45 16 Z" fill="#ffffff"/><rect x="12" y="7" width="24" height="9" rx="1" fill="#bfe6f7"/><rect x="6" y="16" width="42" height="13" rx="3" fill="#eef6df"/><rect x="44" y="19" width="15" height="9" rx="2" fill="#a7d36a"/><circle cx="16" cy="32" r="6" fill="#33382f"/><circle cx="38" cy="32" r="6" fill="#33382f"/><circle cx="16" cy="32" r="2.4" fill="#d6dccb"/><circle cx="38" cy="32" r="2.4" fill="#d6dccb"/></svg>`;
   const lpPine = (st) => `<div class="lp-pine" style="${st}"><svg viewBox="0 0 40 64" aria-hidden="true"><rect x="17" y="48" width="6" height="15" rx="2" fill="#6b4a2a"/><polygon points="20,3 33,27 7,27" fill="#3f8f46"/><polygon points="20,15 36,42 4,42" fill="#357d3d"/><polygon points="20,27 38,56 2,56" fill="#2e7036"/></svg></div>`;
   // (carritos, casa club y ardillas retirados — ahora es un paraíso de palmeras)
@@ -268,6 +298,12 @@ function vLanding() {
       ${bsil('left:0;top:12%;animation:lpFlyR 46s linear infinite')}
       ${bsil('left:0;top:20%;transform:scale(.62);animation:lpFlyL 58s linear infinite;animation-delay:-24s')}
       ${bsil('left:0;top:7%;transform:scale(.8);animation:lpFlyR 66s linear infinite;animation-delay:-42s')}
+      ${bsil('left:0;top:15%;transform:scale(.5);animation:lpFlyL 74s linear infinite;animation-delay:-10s')}
+      ${fball('left:0;top:30%;animation:lpBallArc 15s ease-in-out infinite')}
+      ${fball('left:0;top:46%;transform:scale(.7);animation:lpBallArcR 21s ease-in-out infinite;animation-delay:-7s')}
+      ${fball('left:0;top:22%;transform:scale(.85);animation:lpBallArc 26s ease-in-out infinite;animation-delay:-14s')}
+      ${flybug('left:0;top:38%;animation:lpFlyR 40s linear infinite;animation-delay:-6s')}
+      ${flybug('left:0;top:55%;transform:scale(.8);animation:lpFlyL 52s linear infinite;animation-delay:-30s')}
       <div class="lp-ground">
         <svg class="lp-bgc" viewBox="0 0 400 240" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
           <path class="bgc-far" d="M0,108 Q100,74 200,96 T400,88 L400,240 L0,240 Z"/>
@@ -297,6 +333,7 @@ function vLanding() {
     </div>
     <section class="lp-intro">
       <div class="lp-intro-top">
+        <span class="lp-introflag">${golfFlagSvg()}</span>
         <span class="lp-intro-logo">${pLogo()}</span>
         <span class="lp-intro-tag">Golf Analytics · IA</span>
         <div class="lp-press2">
