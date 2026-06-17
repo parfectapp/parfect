@@ -599,7 +599,7 @@ const actions = {
   },
 
   /* ---- trainer / tracker ---- */
-  'trainer-tab'(d) { V.trainerTab = d.t; V.err = null; if (d.t === 'cal') ensureWeekPlan(cur()); render(); },
+  'trainer-tab'(d) { V.trainerTab = d.t; V.err = null; V.planSkipMode = false; if (d.t === 'cal') ensureWeekPlan(cur()); render(); },
   diagnose() {
     V.diagBusy = true; V.diag = null;
     render();
@@ -616,6 +616,12 @@ const actions = {
     V.drillDetail = null; V.drillFrom = null;
     V.view = 'trainer'; V.trainerTab = 'entreno';
     V.planStep = undefined; V.sessionRun = null;
+    render(); window.scrollTo(0, 0);
+  },
+  'diag-aicoach'() {
+    V.view = 'trainer'; V.trainerTab = 'entreno';
+    V.planMode = 'ai'; V.planStep = 'time'; V.planSkipMode = true;
+    V.drillDetail = null; V.drillFrom = null; V.sessionRun = null;
     render(); window.scrollTo(0, 0);
   },
   'drill-open'(d) {
@@ -652,7 +658,7 @@ const actions = {
   'timer-set'(d) { if (!V.timer) V.timer = {}; stopDrillTimer(); const s = Number(d.s) || 300; V.timer = { left: s, total: s, running: false }; render(); },
   'timer-adjust'(d) { stopDrillTimer(); const cur = (V.timer && V.timer.total) || 300; const total = Math.max(60, Math.min(3600, cur + Number(d.d) * 60)); V.timer = { left: total, total, running: false }; render(); },
   'session-min'(d) { V.sessionMin = Number(d.m) || 60; render(); },
-  'plan-time'(d) { V.sessionMin = Number(d.m) || 60; V.planStep = 'mode'; render(); window.scrollTo(0, 0); },
+  'plan-time'(d) { V.sessionMin = Number(d.m) || 60; if (V.planSkipMode && V.planMode === 'ai') { V.planStep = 'plan'; V.planSkipMode = false; } else { V.planStep = 'mode'; } render(); window.scrollTo(0, 0); },
   'plan-mode'(d) { V.planMode = d.m; if (d.m === 'me') V.planStep = 'areas'; else if (d.m === 'lib') { V.planStep = 'lib'; V.libPick = V.libPick || []; } else if (d.m === 'free') { V.planStep = 'free'; V.freeTimer = { secs: 0, running: false }; } else V.planStep = 'plan'; render(); window.scrollTo(0, 0); },
   'plan-lib-cat'(d) { V.libCat = d.c; render(); },
   'plan-lib-toggle'(d) { V.libPick = V.libPick || []; const i = V.libPick.indexOf(d.name); if (i >= 0) V.libPick.splice(i, 1); else V.libPick.push(d.name); render(); },
@@ -705,7 +711,7 @@ const actions = {
   'plan-mode-back'() { V.planStep = 'mode'; render(); },
   'plan-area'(d) { V.planAreas = (V.planAreas && V.planAreas.length) ? V.planAreas : ['driving', 'approach', 'short', 'putting']; const i = V.planAreas.indexOf(d.k); if (i >= 0) V.planAreas.splice(i, 1); else V.planAreas.push(d.k); render(); },
   'plan-build'() { V.planStep = 'plan'; render(); window.scrollTo(0, 0); },
-  'plan-reset'() { V.planStep = 'time'; render(); window.scrollTo(0, 0); },
+  'plan-reset'() { V.planStep = 'time'; V.planSkipMode = false; render(); window.scrollTo(0, 0); },
   'lesson-open'(d) { const u = cur(); if (!u || !academyUnlocked(u, d.id)) return; V.lesson = d.id; V.lessonQ = false; V.lessonPick = null; render(); },
   'lesson-quiz'() { V.lessonQ = true; V.lessonPick = null; render(); },
   'lesson-answer'(d) { V.lessonPick = Number(d.i); render(); },

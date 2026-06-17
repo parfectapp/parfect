@@ -2297,6 +2297,8 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .dg-t { margin: 8px 0 2px; font-size: 16px; font-weight: 900; color: var(--text); }
 .dg-sec .diag-lead { margin: 0 0 9px; font-size: 12.5px; color: var(--muted); line-height: 1.4; }
 .dg-list { max-height: none; overflow: visible; margin: 0; }
+.splib-item.dg-static { cursor: default; }
+.splib-item.dg-static:active { transform: none; }
 .dg-chk { background: color-mix(in srgb, var(--pc) 14%, var(--card)); border-color: color-mix(in srgb, var(--pc) 35%, var(--line)); color: var(--pc); }
 .dg-chk .gi { width: 17px; height: 17px; }
 .splib-item.done .dg-chk { background: var(--lime); border-color: var(--lime); color: #0c2913; }

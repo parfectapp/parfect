@@ -230,10 +230,10 @@ function vDiag() {
     const doneN = drills.filter(dr => done[dr.name] === td).length;
     const rows = drills.map(dr => {
       const isDone = done[dr.name] === td;
-      return `<div class="splib-item ${isDone ? 'done' : ''}" data-act="drill-open" data-name="${esc(dr.name)}" data-from="diag" role="button" tabindex="0">
+      return `<div class="splib-item dg-static ${isDone ? 'done' : ''}">
         <span class="splib-chk dg-chk">${isDone ? '✓' : golfIcon(ic)}</span>
         <span class="splib-tx"><b>${esc(dr.name)}</b><span>${esc(dr.dose)} · ${esc(dr.metric)}</span></span>
-        <span class="splib-go">${isDone ? 'Hecho ✓' : 'Entrenar →'}</span>
+        ${isDone ? '<span class="splib-go">Hecho ✓</span>' : ''}
       </div>`;
     }).join('');
     return `<div class="dg-sec" style="--pc:${pc}">
@@ -251,9 +251,10 @@ function vDiag() {
      <div class="card sp-card dg-card">
        <div class="dg-head"><span class="dg-htag">${golfIcon('flag')} Tu plan según la IA</span><span class="dg-hsub">${d.focus.length} prioridades</span></div>
        ${sections}
+       <button class="btn primary big" data-act="diag-aicoach" style="margin-top:14px">${golfIcon('flag')} Entrenar este plan con AI Coach →</button>
+       <p class="note" style="text-align:center;margin-top:8px">El AI Coach arma tu sesión según tu tiempo y estas prioridades.</p>
      </div>
-     <button class="btn ghost" data-act="diagnose" style="margin-top:4px">↺ Recalcular diagnóstico</button>
-     <p class="note">Registra los drills en Parfect Tracker para medir tu progreso real.</p>`;
+     <button class="btn ghost" data-act="diagnose" style="margin-top:4px">↺ Recalcular diagnóstico</button>`;
 }
 
 /* ---------- Sesión recomendada (por tu punto débil) ---------- */
