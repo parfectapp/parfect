@@ -757,9 +757,19 @@ const FRIENDS_FEED = [
   { id: 'f4', name: 'Sofía Lara', av: 4, hcp: 19, course: 'Tres Marías', holes: 18, score: 95, toPar: 23, fw: 44, gir: 22, putts: 36, when: 'ayer', cmt: 4, likes: 7, cap: 'Salí a jugar aunque no estaba fina. Vale la pena igual.', top: { by: 'Sofía', txt: 'Esa actitud es la que cuenta.' } },
 ];
 
-/* tarjeta (scorecard) plausible y estable para los posts del feed sin datos hoyo-por-hoyo */
+/* tira de tarjeta compacta con scroll horizontal (no ocupa alto) */
+function scoreStrip(n, parOf, scoreOf) {
+  let cells = '';
+  for (let i = 0; i < n; i++) {
+    const par = parOf(i), sc = scoreOf(i);
+    const d = (sc != null && par != null) ? sc - par : null;
+    const cls = d == null ? '' : d <= -2 ? 'eagle' : d === -1 ? 'birdie' : d === 0 ? 'par' : d === 1 ? 'bogey' : 'over';
+    cells += `<div class="ss-cell ${cls}"><span class="ss-h">${i + 1}</span><span class="ss-s">${sc != null ? sc : '–'}</span><span class="ss-p">${par != null ? par : ''}</span></div>`;
+  }
+  return `<div class="ss-strip">${cells}</div>`;
+}
+/* tarjeta plausible y estable para los posts del feed sin datos hoyo-por-hoyo */
 function feedScorecard(p) {
-  if (typeof scorecardTable !== 'function') return '';
   const n = p.holes || 18;
   const parTpl = [4, 4, 3, 4, 5, 4, 3, 4, 5, 4, 4, 3, 5, 4, 4, 3, 4, 5];
   const pars = []; let parSum = 0;
@@ -775,7 +785,7 @@ function feedScorecard(p) {
     else if (scores[idx] > pars[idx] - 1) { scores[idx] -= 1; rem += 1; }
     k++;
   }
-  return scorecardTable(n, i => pars[i], [{ name: (p.name || 'Tú').split(' ')[0], scoreOf: i => scores[i] }], -1, null);
+  return scoreStrip(n, i => pars[i], i => scores[i]);
 }
 function vSocialFeed() {
   const u = cur();
@@ -789,7 +799,7 @@ function vSocialFeed() {
     const course = (r.courseId && COURSES[r.courseId]) ? COURSES[r.courseId] : null;
     const ch = course ? course.holes : null;
     const parOf = i => (r.holes[i] && r.holes[i].par != null) ? r.holes[i].par : (ch && ch[off + i] ? ch[off + i].par : 4);
-    const card = (typeof scorecardTable === 'function') ? scorecardTable(s.holes, parOf, [{ name: u.name.split(' ')[0], scoreOf: i => (r.holes[i] ? r.holes[i].score : null) }], -1, null) : '';
+    const card = scoreStrip(s.holes, parOf, i => (r.holes[i] ? r.holes[i].score : null));
     return { id: 'me-' + r.id, mine: true, name: u.name, course: r.courseId ? sname(r.courseId) : r.course, holes: s.holes, score: s.score, toPar: s.toPar, fw: pct(s.fw, s.fwTot), gir: pct(s.gir, s.girTot), putts: s.putts, when: fmtDate(r.date), cmt: 0, likes: 0, cap: r.caption || '', media: r.media || null, card };
   });
   const feed = [...myPosts, ...FRIENDS_FEED];

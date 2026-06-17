@@ -2439,7 +2439,19 @@ svg.fd-av { object-fit: contain; }
 [data-theme="dark"] .fd-scard { --sc-grass:#5fb84a; --sc-grass2:#2f7d3a; --sc-lit:#bdf24a; --sc-dim:#2c4030; --sc-line:#4a5e44; }
 .fd-scard-lab { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
 .fd-scard-lab .gi { width: 16px; height: 16px; }
-.fd-scard .sc-table { font-size: 11px; }
+/* tira de scorecard con scroll horizontal (compacta) */
+.ss-strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+.ss-strip::-webkit-scrollbar { display: none; }
+.ss-cell { flex: 0 0 auto; width: 34px; display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 6px 0 5px; border-radius: 11px; background: var(--card2); border: 1px solid var(--line-soft); scroll-snap-align: start; }
+.ss-cell .ss-h { font-size: 9px; font-weight: 800; color: var(--muted); }
+.ss-cell .ss-s { font-size: 15px; font-weight: 900; color: var(--text); line-height: 1; }
+.ss-cell .ss-p { font-size: 9px; font-weight: 700; color: var(--muted); opacity: .8; }
+.ss-cell.birdie { background: var(--lime-faint); border-color: rgba(124,194,74,.4); }
+.ss-cell.birdie .ss-s { color: var(--lime-ink); }
+.ss-cell.eagle { background: rgba(124,194,74,.32); border-color: rgba(124,194,74,.6); }
+.ss-cell.eagle .ss-s { color: var(--lime-ink); }
+.ss-cell.bogey .ss-s { color: #d98a2b; }
+.ss-cell.over .ss-s { color: #c43d28; }
 .fd-actions { display: flex; gap: 18px; align-items: center; margin-top: 12px; }
 .fd-like, .fd-cmt { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; padding: 0; font-size: 13px; font-weight: 800; color: var(--muted); cursor: pointer; }
 .fdi { width: 19px; height: 19px; }
