@@ -188,7 +188,7 @@ function vTrainer() {
     : tab === 'biblioteca' ? vBiblioteca()
       : tab === 'logros' ? (vKeyTargets(u) + `<div style="margin-top:22px"></div>` + vLogros())
         : tab === 'academia' ? vAcademyLaunch()
-          : (vCoachLive('practice') + vDiag());
+          : vDiag();
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>
     <div class="tabs scroll">${T('diag', 'Análisis IA')}${T('entreno', 'Entrenamiento')}${T('biblioteca', 'Biblioteca')}${T('logros', 'Logros')}${T('academia', 'Academia')}</div>
     ${body}`;

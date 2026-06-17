@@ -721,11 +721,18 @@ function vHoleCoach(a, h, holeNo, yds) {
     ['Putt', 'Lee la caída; el primer putt, a dejarla a un palo.'],
   ];
   const open = V.holeCoachOpen;
-  return `<div class="hc">
-    <div class="hc-head"><span class="hc-ava">IA</span><div class="hc-htx"><span class="hc-tag">Coach · hoyo ${holeNo}</span><p class="hc-over">${overall}</p></div></div>
+  if (!open) {
+    return `<button class="hc-fab" data-act="hole-coach-toggle">
+      <span class="hc-ava">IA</span>
+      <span class="hc-fab-tx"><b>Coach IA</b><span>¿Qué tiro me conviene? Pídele consejo</span></span>
+      <span class="hc-fab-ar">▾</span>
+    </button>`;
+  }
+  return `<div class="hc hc-open">
+    <div class="hc-head"><span class="hc-ava">IA</span><div class="hc-htx"><span class="hc-tag">Coach · hoyo ${holeNo}</span><p class="hc-over">${overall}</p></div>
+      <button class="hc-close" data-act="hole-coach-toggle" aria-label="Cerrar">✕</button></div>
     ${weak ? `<p class="hc-weak">Tu prioridad hoy: ${weak}.</p>` : ''}
-    <button class="hc-toggle" data-act="hole-coach-toggle">${open ? 'Ocultar tiro por tiro ▴' : 'Ver consejo tiro por tiro ▾'}</button>
-    ${open ? `<div class="hc-shots">${shots.map(([t, d]) => `<div class="hc-shot"><b>${t}</b><span>${d}</span></div>`).join('')}</div>` : ''}
+    <div class="hc-shots">${shots.map(([t, d]) => `<div class="hc-shot"><b>${t}</b><span>${d}</span></div>`).join('')}</div>
   </div>`;
 }
 

@@ -1905,6 +1905,15 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .hc-shot { display: flex; flex-direction: column; gap: 1px; background: var(--card); border: 1px solid var(--line-soft); border-radius: 11px; padding: 9px 12px; }
 .hc-shot b { font-size: 12.5px; font-weight: 900; color: var(--lime-ink); }
 .hc-shot span { font-size: 12.5px; font-weight: 600; color: var(--muted); line-height: 1.4; }
+/* coach IA como botón (no siempre visible) */
+.hc-fab { display: flex; align-items: center; gap: 11px; width: 100%; text-align: left; margin-top: 12px; background: linear-gradient(120deg, var(--lime-faint), var(--card)); border: 1px solid var(--lime-dim); border-radius: 14px; padding: 11px 14px; cursor: pointer; box-shadow: 0 6px 16px rgba(20,40,15,.06); }
+.hc-fab:active { transform: scale(.99); }
+.hc-fab-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.hc-fab-tx b { font-size: 14px; font-weight: 900; color: var(--text); }
+.hc-fab-tx span { font-size: 12px; color: var(--muted); }
+.hc-fab-ar { flex: none; font-size: 14px; color: var(--lime-ink); font-weight: 900; }
+.hc-head { position: relative; }
+.hc-close { position: absolute; top: -2px; right: -2px; width: 26px; height: 26px; border-radius: 50%; border: none; background: var(--card); color: var(--muted); font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 2px 6px rgba(20,40,15,.12); }
 
 /* símbolo distinto por campo en el registro */
 .chk-ic.ic-fw { color: #4a9e3a; } .chk-ic.ic-gir { color: #2fa36b; }

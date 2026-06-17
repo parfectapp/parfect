@@ -149,21 +149,8 @@ function vLanding() {
         <span class="lp-intro-tag">Golf Analytics · IA</span>
       </div>
     </section>
-    <section class="lp-sec lp-chapter1">
-      <span class="lp-eyebrow reveal">Lo que dicen</span>
-      <h2 class="lp-h2 reveal">Miles de golfistas<br/><span class="lime">ya confían.</span></h2>
-      <div class="lp-tp-summary reveal">
-        <div class="lp-tp-head"><svg class="lp-tpstar" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Trustpilot</div>
-        <div class="lp-tp-stars" aria-hidden="true">${Array(5).fill('<span class="tpbox"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>').join('')}</div>
-        <span class="lp-tp-score"><b>4.9</b> / 5 · Excelente · 1,284 reseñas</span>
-      </div>
-      <div class="lp-stores reveal">
-        <button class="store-badge" data-act="go" data-view="signup" aria-label="Descárgala en App Store"><svg class="sb-ico sb-apple" viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg><span class="sb-tx"><span class="sb-sm">Descárgala en</span><span class="sb-lg">App Store</span></span></button>
-      </div>
-    </section>
     <section class="lp-hero2 lp-hero2-clean">
       <div class="lp-hero-copy reveal">
-        <span class="lp-pill">${logoMark(13)} Golf juvenil competitivo</span>
         <h1 class="lp-title">Compite. Destaca.<br/><span class="lime">Llega más lejos.</span></h1>
         <p class="lp-sub">Juega los torneos que abren puertas: equipos representativos mexicanos, becas en el extranjero, patrocinios y descuentos en green fees. Y la IA te lleva ahí, ronda por ronda.</p>
         <div class="lp-cta-row">
@@ -174,34 +161,10 @@ function vLanding() {
       </div>
     </section>
 
-    <section class="lp-sec">
-      <span class="lp-eyebrow reveal">Cómo funciona</span>
-      <h2 class="lp-h2 reveal">De tu tarjeta<br/><span class="lime">a tu mejor golf.</span></h2>
-      <div class="lp-flow">
-        ${[['01', 'Guarda tu tarjeta', 'Apunta cada hoyo en segundos: salida, green, juego corto y putts. Tu ronda, completa.', 'round'],
-           ['02', 'Analízala con IA', 'La inteligencia lee tus rondas y encuentra exactamente dónde se te van los golpes.', 'ai'],
-           ['03', 'Entrena inteligente', 'Recibes la sesión que toca: el drill exacto, las reps y el tiempo. Practicas lo justo.', 'stats'],
-           ['04', 'Sé mejor', 'Bajas tu hándicap, subes de rango y lo ves en cada número. Tu progreso, claro.', 'trophy']]
-          .map(([n, t, d]) => `<div class="lp-flowc reveal"><div class="lp-flowc-top"><span class="lp-flown">${n}</span></div><h3>${t}</h3><p>${d}</p></div>`).join('')}
-      </div>
-    </section>
-
-    <section class="lp-sec">
-      <span class="lp-eyebrow reveal">La app</span>
-      <h2 class="lp-h2 reveal">Todo para jugar<br/><span class="lime">más inteligente.</span></h2>
-      <div class="lp-feats">
-        ${[['round', 'Apunta tus rondas', 'Cada hoyo con unos toques. Listo en segundos, sin lápiz ni papel.'],
-           ['stats', 'Mira tus números', 'Calles, greens, salvadas y putts, claros. Sabes cómo juegas de verdad.'],
-           ['ai', 'Tu entrenador IA', 'Revisa tus rondas, te dice por qué pierdes golpes y arma tus drills.'],
-           ['social', 'Juega con amigos', 'Arma una partida con código y lleva La corta en vivo.']]
-          .map(([k, t, d]) => feat(k, t, d)).join('')}
-      </div>
-    </section>
-
     <section class="lp-sec lp-presence">
-      <span class="lp-eyebrow reveal">Nuestro enfoque</span>
+      <span class="lp-eyebrow reveal">Tu camino</span>
       <h2 class="lp-h2 reveal">Del torneo local<br/><span class="lime">a una beca afuera.</span></h2>
-      <p class="lp-lead reveal" style="text-align:center;max-width:32ch;margin:0 auto 14px">Parfect es la ruta competitiva del golfista juvenil mexicano: juega torneos que abren puertas reales.</p>
+      <p class="lp-lead reveal" style="text-align:center;max-width:32ch;margin:0 auto 14px">Cada torneo que juegas abre puertas reales para el golfista juvenil mexicano.</p>
       <div class="lp-presgrid">
         ${[['Torneos que cuentan', 'Cada torneo suma para el ranking juvenil nacional. Tus resultados te posicionan.'],
            ['Equipos representativos', 'Los mejores forman los equipos juveniles que representan a México.'],
@@ -218,20 +181,27 @@ function vLanding() {
       </div>
     </section>
 
-    <section class="lp-sec lp-reviews">
-      <span class="lp-eyebrow reveal">Reseñas</span>
-      <h2 class="lp-h2 reveal">Golfistas que ya<br/><span class="lime">bajaron su hándicap.</span></h2>
-      <div class="lp-reviewgrid">
-        ${[
-          ['★★★★★', 'Bajé de 18 a 12 en cuatro meses. La IA me hizo dejar de practicar lo que ya hacía bien y enfocarme en mi juego corto.', 'Diego R.', 'HCP 12'],
-          ['★★★★★', 'Por fin entiendo dónde se me van los golpes. Los drills que me arma son exactos, nada de relleno.', 'Sofía L.', 'HCP 19'],
-          ['★★★★★', 'Registro la ronda en dos minutos y las estadísticas valen oro. La mejor app de golf que he probado.', 'Andrea P.', 'HCP 8'],
-          ['★★★★☆', 'La corta con mis amigos se liquida sola, perfecto para el domingo. Le falta más campos cerca de mí.', 'Memo G.', 'HCP 15'],
-        ].map(([st, txt, nm, sub]) => `<div class="lp-review reveal">
-          <div class="lp-review-stars">${st}</div>
-          <p>${esc(txt)}</p>
-          <cite><b>${esc(nm)}</b> · ${esc(sub)}</cite>
-        </div>`).join('')}
+    <section class="lp-sec">
+      <span class="lp-eyebrow reveal">Cómo funciona</span>
+      <h2 class="lp-h2 reveal">De tu tarjeta<br/><span class="lime">a tu mejor golf.</span></h2>
+      <div class="lp-flow">
+        ${[['01', 'Guarda tu tarjeta', 'Apunta cada hoyo en segundos: salida, green, juego corto y putts. Tu ronda, completa.', 'round'],
+           ['02', 'Analízala con IA', 'La inteligencia lee tus rondas y encuentra exactamente dónde se te van los golpes.', 'ai'],
+           ['03', 'Entrena inteligente', 'Recibes la sesión que toca: el drill exacto, las reps y el tiempo. Practicas lo justo.', 'stats'],
+           ['04', 'Compite y sube', 'Bajas tu hándicap, subes en el ranking y llegas más lejos.', 'trophy']]
+          .map(([n, t, d]) => `<div class="lp-flowc reveal"><div class="lp-flowc-top"><span class="lp-flown">${n}</span></div><h3>${t}</h3><p>${d}</p></div>`).join('')}
+      </div>
+    </section>
+
+    <section class="lp-sec">
+      <span class="lp-eyebrow reveal">La app</span>
+      <h2 class="lp-h2 reveal">Todo para jugar<br/><span class="lime">más inteligente.</span></h2>
+      <div class="lp-feats">
+        ${[['round', 'Apunta tus rondas', 'Cada hoyo con unos toques. Listo en segundos, sin lápiz ni papel.'],
+           ['stats', 'Mira tus números', 'Calles, greens, salvadas y putts, claros. Sabes cómo juegas de verdad.'],
+           ['ai', 'Tu entrenador IA', 'Revisa tus rondas, te dice por qué pierdes golpes y arma tus drills.'],
+           ['social', 'Juega con amigos', 'Arma una partida con código y lleva La corta en vivo.']]
+          .map(([k, t, d]) => feat(k, t, d)).join('')}
       </div>
     </section>
 
@@ -263,6 +233,30 @@ function setupScrollFlag() {
   let t;
   addEventListener('scroll', () => { document.body.classList.add('is-scrolling'); clearTimeout(t); t = setTimeout(() => document.body.classList.remove('is-scrolling'), 140); }, { passive: true });
 }
+
+/* deslizar con el dedo para cambiar de pestaña principal (Inicio · Ronda · Trainer · Social) */
+function setupSwipeNav() {
+  if (window.__swipeNav) return;
+  window.__swipeNav = true;
+  const ORDER = ['inicio', 'ronda', 'trainer', 'perfil'];
+  const posView = () => ORDER.includes(V.view) ? V.view : (V.view === 'social' ? 'perfil' : null);
+  const blocked = el => !!(el && el.closest && el.closest('.scroll, .tabs, .story-row, .reel, .reel-swipe, .cal-grid, .lib-tabs, input, textarea, select, .overlay, .sheet, .hs-tiles, [data-noswipe]'));
+  let x0 = 0, y0 = 0, t0 = 0, ok = false;
+  addEventListener('touchstart', e => {
+    if (e.touches.length !== 1 || !posView() || blocked(e.target)) { ok = false; return; }
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now(); ok = true;
+  }, { passive: true });
+  addEventListener('touchend', e => {
+    if (!ok) return; ok = false;
+    const t = e.changedTouches && e.changedTouches[0]; if (!t) return;
+    const dx = t.clientX - x0, dy = t.clientY - y0;
+    if (Date.now() - t0 > 600 || Math.abs(dx) < 75 || Math.abs(dx) < Math.abs(dy) * 1.7) return;
+    const cur = posView(); if (!cur) return;
+    const i = ORDER.indexOf(cur), ni = dx < 0 ? i + 1 : i - 1;
+    if (ni < 0 || ni >= ORDER.length || ni === i) return;
+    if (typeof go === 'function') go(ORDER[ni]);
+  }, { passive: true });
+}
 /* pausa las animaciones SVG fuera de pantalla (clave en móvil): solo lo visible anima */
 function pauseOffscreenSvgs() {
   if (window.__svgIO) window.__svgIO.disconnect();
@@ -280,6 +274,7 @@ function afterRender() {
   if (lp) { document.body.classList.remove('in-app'); initLanding(lp); window.__lastView = 'landing'; return; }
   document.body.classList.add('in-app');
   setupScrollFlag();
+  setupSwipeNav();
   requestAnimationFrame(pauseOffscreenSvgs);
   // transición de entrada SOLO al cambiar de vista (no en cada re-render por tap)
   const changed = window.__lastView !== V.view;
