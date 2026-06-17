@@ -214,35 +214,45 @@ function vDiag() {
       </div>`;
   }
   const d = V.diag;
+  const done = (cur() || {}).drillsDone || {};
+  const td = today();
   const warn = d.readiness === 'low'
     ? `<p class="note">Con menos de 3 rondas el diagnóstico es preliminar. Cada ronda nueva lo afina.</p>` : '';
-  return warn + d.focus.map((f, i) => {
+  const FOCUS_IC = { driving: 'flag', approach: 'green', short: 'bucket', putting: 'putter' };
+  const FOCUS_PC = { driving: '#3a8fe0', approach: '#57a83e', short: '#e0873a', putting: '#3a7fd4' };
+  const sections = d.focus.map((f, i) => {
     const parts = String(f.diag).split('. ').map(s => s.trim()).filter(Boolean);
     const lead = parts[0] ? parts[0].replace(/\.$/, '') + '.' : '';
-    return `
-    <div class="card">
-      <span class="prio ${i > 0 ? 'p2' : ''}">${i === 0 ? 'Prioridad 1 · enfoque' : `Prioridad ${i + 1}`}</span>
-      <h3 style="margin-top:12px;font-size:17px;font-weight:900">${esc(f.titulo)}</h3>
+    const ic = FOCUS_IC[f.key] || 'green';
+    const pc = FOCUS_PC[f.key] || '#57a83e';
+    const drills = (f.drills || []).slice(0, i === 0 ? 3 : 2);
+    const total = drills.length;
+    const doneN = drills.filter(dr => done[dr.name] === td).length;
+    const rows = drills.map(dr => {
+      const isDone = done[dr.name] === td;
+      return `<div class="splib-item ${isDone ? 'done' : ''}" data-act="drill-open" data-name="${esc(dr.name)}" role="button" tabindex="0">
+        <span class="splib-chk dg-chk">${isDone ? '✓' : golfIcon(ic)}</span>
+        <span class="splib-tx"><b>${esc(dr.name)}</b><span>${esc(dr.dose)} · ${esc(dr.metric)}</span></span>
+        <span class="splib-go">${isDone ? 'Hecho ✓' : 'Ver →'}</span>
+      </div>`;
+    }).join('');
+    return `<div class="dg-sec" style="--pc:${pc}">
+      <div class="dg-sech">
+        <span class="dg-prio">Prioridad ${i + 1}${i === 0 ? ' · enfoque' : ''}</span>
+        ${total ? `<span class="dg-count">${doneN}/${total} hoy</span>` : ''}
+      </div>
+      <h3 class="dg-t">${esc(f.titulo)}</h3>
       <p class="diag-lead">${esc(lead)}</p>
-      ${i < 2 ? (() => {
-      const done = (cur() || {}).drillsDone || {};
-      const td = today();
-      const total = f.drills.length;
-      const doneN = f.drills.filter(dr => done[dr.name] === td).length;
-      return `
-        <p class="label" style="margin-top:14px">Tu ejercicio <span class="dlc-count">${doneN}/${total} hoy</span></p>
-        ${f.drills.map(dr => {
-        const isDone = done[dr.name] === td;
-        return `<button class="dlc ${isDone ? 'done' : ''}" data-act="drill-open" data-name="${esc(dr.name)}" style="margin-top:8px">
-          <span class="dlc-check">${isDone ? '✓' : ''}</span>
-          <div class="dlc-info"><b>${esc(dr.name)}</b>
-          <div class="dlc-meta"><span>${golfIcon('bucket')} ${esc(dr.dose)}</span><span>${golfIcon('green')} ${esc(dr.metric)}</span></div></div>
-          <span class="dlc-go">${isDone ? 'Hecho' : 'Ver →'}</span></button>`;
-      }).join('')}`;
-    })() : ''}
+      <div class="splib-list dg-list">${rows}</div>
     </div>`;
-  }).join('') +
-    `<button class="btn ghost" data-act="diagnose">Recalcular diagnóstico</button>
+  }).join('');
+  return warn +
+    `<div class="sec-h" style="margin-top:6px"><h2 style="font-size:18px">Análisis IA</h2><span class="small muted">${agg.rounds} ronda${agg.rounds === 1 ? '' : 's'}</span></div>
+     <div class="card sp-card dg-card">
+       <div class="dg-head"><span class="dg-htag">${golfIcon('flag')} Tu plan según la IA</span><span class="dg-hsub">${d.focus.length} prioridades</span></div>
+       ${sections}
+     </div>
+     <button class="btn ghost" data-act="diagnose" style="margin-top:4px">↺ Recalcular diagnóstico</button>
      <p class="note">Registra los drills en Parfect Tracker para medir tu progreso real.</p>`;
 }
 
