@@ -170,7 +170,7 @@ function lpIntroPhone() {
       <span class="cd-ring"></span>
       <span class="cd-flag">${golfFlagSvg()}</span>
       <span class="cd-n cd3">3</span><span class="cd-n cd2">2</span><span class="cd-n cd1">1</span>
-      <span class="cd-go"><b>PARFECT</b><i>tu juego, en orden</i></span>
+      <span class="cd-go"><b>PARFECT</b></span>
     </div>`;
   return lpPhone(scr);
 }
@@ -475,7 +475,8 @@ function vLanding() {
            ['🇲🇽', 'Equipos representativos', 'Los mejores forman los equipos juveniles que representan a México.'],
            ['🎓', 'Becas en el extranjero', 'Exposición ante universidades y academias de golf fuera del país.'],
            ['🤝', 'Patrocinios', 'Conecta con marcas que apuestan por las promesas del golf mexicano.'],
-           ['⛳', 'Green fees con descuento', 'Tarifas preferentes en campos aliados para que juegues y compitas más.']]
+           ['⛳', 'Green fees con descuento', 'Tarifas preferentes en campos aliados para que juegues y compitas más.'],
+           ['🌱', 'Impulso al talento joven', 'PARFECT existe para que el golfista juvenil mexicano crezca, compita y llegue más lejos.']]
           .map(([ic, t, d]) => `<div class="lp-prescard reveal"><span class="lp-presic">${ic}</span><h3>${t}</h3><p>${d}</p></div>`).join('')}
       </div>
       <div class="lp-flagstrip reveal"><span class="lp-flagstrip-lab">Destinos</span><span class="lp-flags">🇺🇸 🇪🇸 🇬🇧 🇨🇦 🇦🇺</span></div>
