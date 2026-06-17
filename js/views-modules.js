@@ -447,7 +447,7 @@ function spSceneFor(lab) { return ({ 'Salida': 'fw', 'Driving': 'fw', 'Hierros':
 function vSessionPlanner() {
   const u = cur();
   const agg = Stats.aggregate(myRounds());
-  const step = ['mode', 'areas', 'plan', 'free', 'lib', 'aisum'].includes(V.planStep) ? V.planStep : 'time';
+  const step = ['mode', 'areas', 'plan', 'free', 'freelib', 'lib', 'aisum'].includes(V.planStep) ? V.planStep : 'time';
   const T = V.sessionMin || 60;
 
   if (step === 'time') {
@@ -462,8 +462,7 @@ function vSessionPlanner() {
       <div class="sp-phase">Paso 2 de 2 · ${spFmtMin(T)}</div>
       <h2 class="sp-q">¿Cómo armamos tu sesión?</h2>
       <button class="sp-modecard" data-act="plan-mode" data-m="ai"><span class="sp-modeic">${golfIcon('flag')}</span><div><b>AI Coach</b><span>La IA reparte el tiempo priorizando tus puntos débiles.</span></div></button>
-      <button class="sp-modecard" data-act="plan-mode" data-m="free"><span class="sp-modeic">${golfIcon('putter')}</span><div><b>Entrenamiento libre</b><span>Sin plan: cronometra el bastón que quieras a tu ritmo.</span></div></button>
-      <button class="sp-modecard" data-act="plan-mode" data-m="lib"><span class="sp-modeic">${golfIcon('card')}</span><div><b>Elegir de la biblioteca</b><span>Arma tu sesión con drills específicos según tu tiempo.</span></div></button>
+      <button class="sp-modecard" data-act="plan-mode" data-m="free"><span class="sp-modeic">${golfIcon('putter')}</span><div><b>Entrenamiento libre</b><span>Cronometra un bastón o un ejercicio de la biblioteca a tu ritmo.</span></div></button>
       <button class="sp-back" data-act="plan-reset">← Cambiar tiempo</button>
     </div>`;
   }
@@ -515,20 +514,48 @@ function vSessionPlanner() {
   }
   if (step === 'free') {
     const t = V.freeTimer || { secs: 0, running: false };
+    const fd = V.freeDrill;
     const clubs = ['Driver', 'Maderas', 'Híbridos', 'Hierros', 'Wedges', 'Putter', 'Juego corto'];
-    const chips = clubs.map(c => `<button class="chip sm ${V.freeClub === c ? 'on' : ''}" data-act="free-club" data-c="${esc(c)}">${c}</button>`).join('');
+    const chips = clubs.map(c => `<button class="chip sm ${(!fd && V.freeClub === c) ? 'on' : ''}" data-act="free-club" data-c="${esc(c)}">${c}</button>`).join('');
+    const sceneKey = fd ? (({ fw: 'fw', gir: 'gir', ud: 'ud', putt: 'putt' })[fd.cat] || 'ud')
+      : (({ 'Driver': 'fw', 'Maderas': 'fw', 'Híbridos': 'fw', 'Hierros': 'gir', 'Wedges': 'ud', 'Juego corto': 'ud', 'Putter': 'putt' })[V.freeClub] || 'fw');
+    const targetName = fd ? fd.name : (V.freeClub || '');
+    const sub = fd ? (fd.dose || 'ejercicio de la biblioteca') : (V.freeClub ? 'cronometrando' : 'elige qué entrenar');
+    const canStart = !!(fd || V.freeClub);
     return `<div class="card sp-card">
       <div class="sp-phase">Entrenamiento libre</div>
-      <h2 class="sp-q">${golfIcon('putter')} ¿Qué bastón entrenas?</h2>
-      <div class="chips" style="flex-wrap:wrap;margin-bottom:16px">${chips}</div>
-      <div class="sr-now"><span class="sr-scene">${drillScene(({ 'Driver': 'fw', 'Maderas': 'fw', 'Híbridos': 'fw', 'Hierros': 'gir', 'Wedges': 'ud', 'Juego corto': 'ud', 'Putter': 'putt' })[V.freeClub] || 'fw')}</span><div class="sr-nowtx"><b>${V.freeClub ? esc(V.freeClub) : 'Entrenamiento libre'}</b><span>${V.freeClub ? 'cronometrando' : 'elige un bastón'}</span></div></div>
+      <h2 class="sp-q">${golfIcon('putter')} ¿Qué entrenas?</h2>
+      <div class="chips" style="flex-wrap:wrap;margin-bottom:10px">${chips}</div>
+      <button class="sp-libpick ${fd ? 'on' : ''}" data-act="free-lib-open">${golfIcon('card')} <span class="sp-libpick-tx">${fd ? esc(fd.name) : 'Elegir un ejercicio de la biblioteca'}</span><span class="sp-libpick-go">${fd ? 'cambiar' : '→'}</span></button>
+      <div class="sr-now" style="margin-top:14px"><span class="sr-scene">${drillScene(sceneKey)}</span><div class="sr-nowtx"><b>${targetName ? esc(targetName) : 'Entrenamiento libre'}</b><span>${esc(sub)}</span></div></div>
       <div class="sr-clock" id="free-clock">${fmtClock(t.secs)}</div>
       <div class="ddt2-ctrls" style="margin-top:14px">
-        ${t.running ? `<button class="btn" data-act="free-pause">⏸ Pausar</button>` : `<button class="btn primary" data-act="free-start" ${V.freeClub ? '' : 'disabled'}>${t.secs > 0 ? 'Reanudar' : 'Iniciar'} ▶</button>`}
+        ${t.running ? `<button class="btn" data-act="free-pause">⏸ Pausar</button>` : `<button class="btn primary" data-act="free-start" ${canStart ? '' : 'disabled'}>${t.secs > 0 ? 'Reanudar' : 'Iniciar'} ▶</button>`}
         <button class="btn ghost" data-act="free-reset">↺</button>
       </div>
-      <button class="btn primary" data-act="free-finish" ${t.secs > 0 && V.freeClub ? '' : 'disabled'} style="margin-top:10px">Terminar y guardar</button>
+      <button class="btn primary" data-act="free-finish" ${t.secs > 0 && canStart ? '' : 'disabled'} style="margin-top:10px">Terminar y guardar</button>
       <button class="sp-back" data-act="plan-reset">← Salir</button>
+    </div>`;
+  }
+  if (step === 'freelib') {
+    const cat = (V.libCat && DRILL_CATS.some(c => c.id === V.libCat)) ? V.libCat : DRILL_CATS[0].id;
+    const tabs = DRILL_CATS.map(c => `<button class="lib-tab ${c.id === cat ? 'on' : ''}" data-act="free-lib-cat" data-c="${c.id}">${esc(c.label)}</button>`).join('');
+    const drills = DRILL_LIBRARY.filter(d => d.cat === cat);
+    const list = drills.map(d => {
+      const on = V.freeDrill && V.freeDrill.name === d.name;
+      return `<div class="splib-item ${on ? 'on' : ''}" data-act="free-lib-pick" data-name="${esc(d.name)}" role="button" tabindex="0">
+        <span class="splib-chk">${on ? '✓' : '+'}</span>
+        <span class="splib-tx"><b>${esc(d.name)}</b><span>${esc(d.desc)}</span></span>
+        <button class="splib-eye" data-act="drill-open" data-name="${esc(d.name)}" aria-label="Ver ejercicio">👁</button>
+      </div>`;
+    }).join('');
+    return `<div class="card sp-card">
+      <div class="sp-phase">Entrenamiento libre · biblioteca</div>
+      <h2 class="sp-q">Elige un ejercicio</h2>
+      <p class="sp-libhint">Toca el ejercicio que quieras entrenar a tu ritmo.</p>
+      <div class="lib-tabs">${tabs}</div>
+      <div class="splib-list">${list}</div>
+      <button class="sp-back" data-act="free-lib-back">← Atrás</button>
     </div>`;
   }
   if (step === 'areas') {

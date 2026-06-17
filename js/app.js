@@ -660,7 +660,7 @@ const actions = {
   'session-min'(d) { V.sessionMin = Number(d.m) || 60; render(); },
   'plan-time'(d) { V.sessionMin = Number(d.m) || 60; if (V.planSkipMode && V.planMode === 'ai') { V.planStep = 'aisum'; V.planSkipMode = false; } else { V.planStep = 'mode'; } render(); window.scrollTo(0, 0); },
   'plan-aisum-go'() { V.planStep = 'plan'; render(); window.scrollTo(0, 0); },
-  'plan-mode'(d) { V.planMode = d.m; if (d.m === 'me') V.planStep = 'areas'; else if (d.m === 'lib') { V.planStep = 'lib'; V.libPick = V.libPick || []; } else if (d.m === 'free') { V.planStep = 'free'; V.freeTimer = { secs: 0, running: false }; } else V.planStep = 'aisum'; render(); window.scrollTo(0, 0); },
+  'plan-mode'(d) { V.planMode = d.m; if (d.m === 'me') V.planStep = 'areas'; else if (d.m === 'lib') { V.planStep = 'lib'; V.libPick = V.libPick || []; } else if (d.m === 'free') { V.planStep = 'free'; V.freeTimer = { secs: 0, running: false }; V.freeDrill = null; } else V.planStep = 'aisum'; render(); window.scrollTo(0, 0); },
   'plan-lib-cat'(d) { V.libCat = d.c; render(); },
   'plan-lib-toggle'(d) { V.libPick = V.libPick || []; const i = V.libPick.indexOf(d.name); if (i >= 0) V.libPick.splice(i, 1); else V.libPick.push(d.name); render(); },
   'session-run-start'(d) {
@@ -681,9 +681,13 @@ const actions = {
     r.left = r.blocks[r.idx].min * 60; render();
   },
   'session-run-stop'() { clearInterval(V._srtid); V.sessionRun = null; render(); },
-  'free-club'(d) { V.freeClub = d.c; render(); },
+  'free-club'(d) { V.freeClub = d.c; V.freeDrill = null; render(); },
+  'free-lib-open'() { V.libCat = V.libCat || DRILL_CATS[0].id; V.planStep = 'freelib'; render(); window.scrollTo(0, 0); },
+  'free-lib-cat'(d) { V.libCat = d.c; render(); },
+  'free-lib-pick'(d) { const dr = (typeof DRILL_LIBRARY !== 'undefined') ? DRILL_LIBRARY.find(x => x.name === d.name) : null; if (dr) { V.freeDrill = dr; V.freeClub = null; } V.planStep = 'free'; render(); window.scrollTo(0, 0); },
+  'free-lib-back'() { V.planStep = 'free'; render(); window.scrollTo(0, 0); },
   'free-start'() {
-    if (!V.freeClub) return;
+    if (!V.freeClub && !V.freeDrill) return;
     if (!V.freeTimer) V.freeTimer = { secs: 0, running: false };
     if (V.freeTimer.running) return;
     V.freeTimer.running = true; render();
@@ -702,11 +706,15 @@ const actions = {
     clearInterval(V._ftid);
     const t = V.freeTimer || { secs: 0 }; const u = cur();
     if (!u || t.secs < 1) { V.freeTimer = { secs: 0, running: false }; render(); return; }
-    const mins = Math.max(1, Math.round(t.secs / 60)); const club = V.freeClub || 'Práctica libre';
+    const mins = Math.max(1, Math.round(t.secs / 60));
+    const fd = V.freeDrill;
+    const label = fd ? fd.name : (V.freeClub || 'Práctica libre');
+    const area = fd ? ((DRILL_CATS.find(c => c.id === fd.cat) || {}).label || 'Práctica') : (V.freeClub || 'Libre');
+    if (fd) { u.drillsDone = u.drillsDone || {}; u.drillsDone[fd.name] = today(); }
     S.practices = S.practices || [];
-    S.practices.push({ id: Store.uid(), userId: S.session, date: today(), drill: 'Entrenamiento libre · ' + club, area: club, minutes: mins, notes: 'libre' });
-    V.freeTimer = { secs: 0, running: false }; V.planStep = 'time';
-    if (typeof celebrate === 'function') celebrate(false, mins + ' min de ' + club + ' ✓');
+    S.practices.push({ id: Store.uid(), userId: S.session, date: today(), drill: 'Entrenamiento libre · ' + label, area, minutes: mins, notes: 'libre' });
+    V.freeTimer = { secs: 0, running: false }; V.freeDrill = null; V.planStep = 'time';
+    if (typeof celebrate === 'function') celebrate(false, mins + ' min de ' + label + ' ✓');
     commit();
   },
   'plan-mode-back'() { V.planStep = 'mode'; render(); },

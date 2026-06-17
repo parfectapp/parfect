@@ -2299,6 +2299,13 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .dg-list { max-height: none; overflow: visible; margin: 0; }
 .splib-item.dg-static { cursor: default; }
 .splib-item.dg-static:active { transform: none; }
+/* Entrenamiento libre · elegir de la biblioteca */
+.sp-libpick { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 14px; border-radius: 13px; border: 2px dashed var(--line); background: var(--card2); color: var(--text); font-weight: 800; font-size: 13.5px; text-align: left; cursor: pointer; }
+.sp-libpick.on { border-style: solid; border-color: var(--lime); background: var(--lime-faint); }
+.sp-libpick .gi { width: 20px; height: 20px; flex: none; }
+.sp-libpick-tx { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sp-libpick-go { flex: none; color: var(--muted); font-size: 12px; font-weight: 800; }
+.sp-libpick:active { transform: scale(.99); }
 /* AI Coach · resumen del diagnóstico antes de armar la sesión */
 .aisum-list { display: flex; flex-direction: column; gap: 11px; margin: 8px 0 2px; }
 .aisum-row { display: grid; grid-template-columns: 28px 1fr; gap: 12px; align-items: start; }
