@@ -114,10 +114,7 @@ function vLanding() {
           ${bgcGreen(120, 214, 34, 11)}${bgcFlag(120, 214, 28)}
           <path class="bgc-fair" d="M150,240 Q175,206 230,197 Q300,185 360,150" fill="none" stroke-width="20" stroke-linecap="round"/>
           ${tline([[24, 210, 1.3], [74, 216, 1.05], [360, 210, 1.3], [390, 216, 1.1]])}
-          ${bgcGolfer(70, 214, 'gA')}${bgcGolfer(238, 222, 'gB')}${bgcGolfer(338, 214, 'gA')}
         </svg>
-        <div class="lp-cart c1">${cartSvg}</div>
-        <div class="lp-cart c2">${cartSvg}</div>
       </div>
     </div>
     <header class="lp-nav">
