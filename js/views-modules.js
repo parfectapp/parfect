@@ -184,7 +184,7 @@ function vTrainer() {
   const u = cur();
   const tab = ['diag', 'biblioteca', 'logros', 'academia'].includes(V.trainerTab) ? V.trainerTab : 'entreno';
   const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
-  const body = tab === 'entreno' ? (vWeekStrip() + vSessionPlanner() + vTrackerPlan())
+  const body = tab === 'entreno' ? (vWeekStrip() + vSessionPlanner())
     : tab === 'biblioteca' ? vBiblioteca()
       : tab === 'logros' ? (vKeyTargets(u) + `<div style="margin-top:22px"></div>` + vLogros())
         : tab === 'academia' ? vAcademyLaunch()
@@ -559,7 +559,54 @@ function vSessionRunner() {
 }
 
 function vBiblioteca() {
-  return vDrillsLibrary() + vTrackerPlan();
+  const done = (cur() || {}).drillsDone || {};
+  const td = today();
+  const AREA = {
+    fw: { c: '#3f9d44', t: 'rgba(63,157,68,.10)', ic: 'flag' },
+    gir: { c: '#2fa36b', t: 'rgba(47,163,107,.10)', ic: 'green' },
+    ud: { c: '#e0873a', t: 'rgba(224,135,58,.10)', ic: 'bucket' },
+    putt: { c: '#3a8fe0', t: 'rgba(58,143,224,.10)', ic: 'putter' },
+  };
+  const card = (col, tint, icon, title, count, rows) => `<div class="lib-card" style="--lib:${col};background:${tint}">
+      <div class="lib-head"><span class="lib-ic">${golfIcon(icon)}</span><b>${esc(title)}</b><span class="lib-n">${count}</span></div>
+      <div class="dlc-list">${rows}</div>
+    </div>`;
+  // 1) Biblioteca de drills — una tarjeta de color por área
+  const libCards = DRILL_CATS.map(cat => {
+    const a = AREA[cat.id] || AREA.fw;
+    const drills = DRILL_LIBRARY.filter(d => d.cat === cat.id);
+    const rows = drills.map(d => {
+      const isDone = done[d.name] === td;
+      return `<button class="dlc ${isDone ? 'done' : ''}" data-act="drill-open" data-name="${esc(d.name)}">
+        <span class="dlc-check">${isDone ? '✓' : ''}</span>
+        <div class="dlc-info"><b>${esc(d.name)}</b><p class="dlc-desc">${esc(d.desc)}</p>
+          <div class="dlc-meta"><span>${golfIcon('bucket')} ${esc(d.dose)}</span><span>${golfIcon('green')} ${esc(d.metric)}</span></div></div>
+        <span class="dlc-go">${isDone ? 'Hecho' : 'Ver →'}</span></button>`;
+    }).join('');
+    return card(a.c, a.t, a.ic, cat.label, drills.length, rows);
+  }).join('');
+  // 2) Entrenamientos Parfect (por club/área) — mismas tarjetas de color
+  const plan = trackerPlan(cur());
+  const list = myPractices();
+  const bestOf = name => list.filter(p => p.drill === name).reduce((m, p) => Math.max(m, p.hits || 0), 0);
+  const PCOL = ['#3f9d44', '#2fa36b', '#e0873a', '#7cc24a', '#3a8fe0'];
+  const PTINT = ['rgba(63,157,68,.10)', 'rgba(47,163,107,.10)', 'rgba(224,135,58,.10)', 'rgba(124,194,74,.10)', 'rgba(58,143,224,.10)'];
+  const trackCards = plan.groups.map((g, i) => {
+    const rows = g.drills.map(d => {
+      const best = bestOf(d.name);
+      const hit = best >= d.target || done[d.name] === td;
+      return `<button class="dlc ${hit ? 'done' : ''}" data-act="drill-open" data-name="${esc(d.name)}" data-target="${d.target}" data-area="${esc(d.area || g.cat)}" data-goal="${esc(d.goal || '')}" data-timer="${d.timer}">
+        <span class="dlc-check">${hit ? '✓' : ''}</span>
+        <div class="dlc-info"><b>${esc(d.name)}</b><p class="dlc-desc">${esc(d.goal || ('Práctica de ' + g.cat.toLowerCase()))}</p>
+          <div class="dlc-meta"><span>${golfIcon('bucket')} meta ${d.target} seguidas</span><span>${golfIcon('green')} ${best ? 'mejor ' + best + '/' + d.target : esc(g.cat)}</span></div></div>
+        <span class="dlc-go">${hit ? 'Hecho' : 'Ver →'}</span></button>`;
+    }).join('');
+    return card(PCOL[i % PCOL.length], PTINT[i % PTINT.length], g.icon, g.cat, g.drills.length, rows);
+  }).join('');
+  return `<div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Biblioteca de drills</h2><span class="small muted">${DRILL_LIBRARY.length} ejercicios</span></div>
+    ${libCards}
+    <div class="sec-h" style="margin-top:24px"><h2 style="font-size:18px">${golfIcon('flag')} Entrenamientos Parfect</h2><span class="small muted">por área</span></div>
+    ${trackCards}`;
 }
 /* pestaña Academia: tarjeta de lanzamiento a la ruta inmersiva */
 function vAcademyLaunch() {
