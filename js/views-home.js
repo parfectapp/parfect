@@ -1239,13 +1239,91 @@ function vClub() {
     <div class="card cl-hub">
       <div class="cl-hubtop"><span class="cl-role">${CLUB_ROLE_LABEL[role] || role}</span>${isStaff ? `<span class="cl-code">Código <b>${esc(c.code)}</b></span>` : ''}</div>
       <div class="cl-actions">
-        <button class="cl-tile soon" disabled>${golfIcon('trophy')}<span>Torneos</span><i>pronto</i></button>
+        <button class="cl-tile" data-act="club-tourns-open">${golfIcon('trophy')}<span>Torneos</span><i>${(c.tournaments || []).length || 'crear'} ${(c.tournaments || []).length === 1 ? 'torneo' : 'torneos'}</i></button>
         <button class="cl-tile soon" disabled>${golfIcon('flag')}<span>Academia juvenil</span><i>${juniors} juveniles</i></button>
       </div>
     </div>
     <div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Miembros</h2>${isStaff ? `<span class="small muted">${juniors} juveniles</span>` : ''}</div>
     <div class="card cl-roster">${roster}</div>
     <button class="btn ghost" data-act="club-leave" style="margin-top:12px">Salir del club</button>`;
+}
+
+/* ============ Torneos del club + leaderboard en vivo ============ */
+const TRN_STATUS = { open: 'Inscripción', live: 'En juego', done: 'Finalizado' };
+function clubIsStaff(c, u) { const r = clubRole(c, u); return r === 'admin' || r === 'coach'; }
+function tournLeaderboard(t, net) {
+  const rows = (t.players || []).map(p => {
+    const has = p.gross != null;
+    const ph = Math.round((p.hcp || 0) * t.holes / 18);
+    return { ...p, has, net: has ? p.gross - ph : null, toPar: has ? p.gross - t.par : null };
+  });
+  rows.sort((a, b) => { if (a.has !== b.has) return a.has ? -1 : 1; if (!a.has) return 0; return (net ? (a.net - b.net) : (a.gross - b.gross)) || (a.gross - b.gross); });
+  return rows;
+}
+function vClubTourn() {
+  const u = cur(); const c = myClub(); if (!c) return vClub();
+  if (V.tournCreating) return vTournCreate(c);
+  if (V.tournId) { const t = (c.tournaments || []).find(x => x.id === V.tournId); if (t) return vTournDetail(c, t, u); V.tournId = null; }
+  const staff = clubIsStaff(c, u);
+  const ts = (c.tournaments || []).slice().reverse();
+  const cards = ts.length ? ts.map(t => {
+    const lb = tournLeaderboard(t, true); const top = lb[0]; const played = lb.filter(r => r.has).length;
+    return `<button class="trn-card" data-act="tourn-open" data-id="${t.id}">
+      <div class="trn-card-top"><b>${esc(t.name)}</b><span class="trn-status ${t.status}">${TRN_STATUS[t.status] || t.status}</span></div>
+      <span class="trn-meta">${golfIcon('flag')} ${t.holes} hoyos · ${esc(t.date || 's/f')} · ${played}/${(t.players || []).length} con score</span>
+      ${top && top.has ? `<span class="trn-leader">${golfIcon('trophy')} Lidera ${esc((top.name || '').split(' ')[0])} · neto ${top.net}</span>` : ''}
+    </button>`;
+  }).join('') : `<p class="note" style="margin:8px 2px">Aún no hay torneos. ${staff ? 'Crea el primero para tu club.' : 'Tu club aún no crea torneos.'}</p>`;
+  return `<div class="sec-h"><button class="sec-link" data-act="club-back">← ${esc(c.name)}</button></div>
+    <div class="sec-h" style="margin-top:2px"><h2>Torneos</h2>${staff ? `<button class="sec-link" data-act="tourn-new">+ Crear</button>` : ''}</div>
+    <div class="trn-list">${cards}</div>`;
+}
+function vTournCreate(c) {
+  const d = V.tournDraft || { holes: 18 };
+  return `<div class="sec-h"><h2>Crear torneo</h2><button class="sec-link" data-act="tourn-create-cancel">Cancelar</button></div>
+    <div class="card">
+      <div class="field"><label>Nombre</label><input id="trn-name" placeholder="Ej. Copa Campestre · Junio" value="${esc(d.name || '')}"></div>
+      <div class="field"><label>Fecha</label><input id="trn-date" type="date" value="${esc(d.date || '')}"></div>
+      <div class="field"><label>Hoyos</label><div class="chips">${[9, 18].map(h => `<button class="chip sm ${(d.holes || 18) === h ? 'on' : ''}" data-act="tourn-holes" data-h="${h}">${h} hoyos</button>`).join('')}</div></div>
+      <p class="note">Formato: <b>Stroke play</b> (gross y neto). Se inscriben los miembros del club; tú capturas sus scores y el leaderboard se ordena solo.</p>
+      <button class="btn primary big" data-act="tourn-create">Crear torneo ${golfIcon('trophy')}</button>
+      ${V.tournErr ? `<p class="note err">${esc(V.tournErr)}</p>` : ''}
+    </div>`;
+}
+function vTournDetail(c, t, u) {
+  const staff = clubIsStaff(c, u);
+  const net = V.tournNet !== false;
+  const lb = tournLeaderboard(t, net);
+  const rows = lb.map((r, i) => {
+    const pos = r.has ? (i + 1) : '–';
+    const main = r.has ? (net ? r.net : r.gross) : '–';
+    const sub = r.has ? (net ? `gross ${r.gross} · ${fmtToPar(r.toPar)}` : `neto ${r.net}`) : 'sin score';
+    return `<div class="trn-row ${r.userId === u.id ? 'me' : ''}">
+      <span class="trn-pos ${r.has && i < 3 ? 'top' + (i + 1) : ''}">${pos}</span>
+      <span class="trn-av" style="--ci:${(r.name || '').length % 6}">${clubInitials(r.name)}</span>
+      <div class="trn-info"><b>${esc(r.name)}${r.role === 'junior' ? ' <span class="cl-badge jr">JR</span>' : ''}</b><span>${sub}</span></div>
+      <span class="trn-score ${r.has && r.toPar <= 0 ? 'good' : ''}">${main}</span>
+    </div>`;
+  }).join('');
+  return `<div class="sec-h"><button class="sec-link" data-act="tourn-back">← Torneos</button></div>
+    <div class="card trn-head2">
+      <div class="trn-h2top"><b>${esc(t.name)}</b><span class="trn-status ${t.status}">${TRN_STATUS[t.status]}</span></div>
+      <span class="trn-meta">${t.holes} hoyos · Par ${t.par} · ${esc(t.date || 's/f')}</span>
+      <div class="trn-toggle"><button class="chip sm ${net ? 'on' : ''}" data-act="tourn-metric" data-m="net">Neto</button><button class="chip sm ${!net ? 'on' : ''}" data-act="tourn-metric" data-m="gross">Gross</button></div>
+    </div>
+    <div class="card trn-board">${rows || '<p class="note">Sin jugadores inscritos.</p>'}</div>
+    ${staff ? `<button class="btn primary" data-act="tourn-capture" style="margin-top:12px">${golfIcon('card')} Capturar scores</button>` : ''}
+    ${V.tournCapture ? vTournCapture(t) : ''}`;
+}
+function vTournCapture(t) {
+  const rows = (t.players || []).map(p => `<div class="cap-row"><span class="cap-nm">${esc(p.name)}</span><input class="cap-in" id="cap-${esc(p.userId)}" type="number" inputmode="numeric" placeholder="–" value="${p.gross != null ? p.gross : ''}"></div>`).join('');
+  return `<div class="overlay" data-act="tourn-capture-close"><div class="sheet" data-act="noop">
+    <div class="grab"></div>
+    <h2>Capturar scores</h2>
+    <p class="auth-sub">Score total (gross) de cada jugador. El neto se calcula con su hándicap.</p>
+    <div class="cap-list">${rows}</div>
+    <button class="btn primary big" data-act="tourn-save">Guardar leaderboard</button>
+  </div></div>`;
 }
 
 /* ============ Bienvenida / onboarding (primer ingreso) ============ */

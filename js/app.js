@@ -175,6 +175,7 @@ function App() {
     perfil: vPerfil,
     social: vSocial,
     club: vClub,
+    'club-tourn': vClubTourn,
   }[V.view] || vDashboard;
   return vShell(content());
 }
@@ -282,6 +283,40 @@ const actions = {
     const u = cur(); const c = myClub();
     if (c) { c.members = (c.members || []).filter(m => m.userId !== u.id); if (!c.members.length) S.clubs = (S.clubs || []).filter(x => x.id !== c.id); }
     commit();
+  },
+  'club-back'() { V.view = 'club'; V.tournId = null; V.tournCreating = false; V.tournCapture = false; render(); window.scrollTo(0, 0); },
+
+  /* ---- Torneos del club ---- */
+  'club-tourns-open'() { V.tournId = null; V.tournCreating = false; V.tournCapture = false; V.view = 'club-tourn'; render(); window.scrollTo(0, 0); },
+  'tourn-new'() { V.tournCreating = true; V.tournDraft = { holes: 18 }; V.tournErr = null; render(); window.scrollTo(0, 0); },
+  'tourn-create-cancel'() { V.tournCreating = false; V.tournErr = null; render(); },
+  'tourn-holes'(d) { V.tournDraft = V.tournDraft || {}; V.tournDraft.holes = Number(d.h) || 18; render(); },
+  'tourn-create'() {
+    const c = myClub(); if (!c) return;
+    const name = ((document.getElementById('trn-name') || {}).value || '').trim();
+    const date = (document.getElementById('trn-date') || {}).value || '';
+    const holes = (V.tournDraft && V.tournDraft.holes) || 18;
+    if (!name) { V.tournErr = 'Ponle nombre al torneo.'; render(); return; }
+    const par = holes === 9 ? 36 : 72;
+    const players = (c.members || []).map(m => {
+      const ph = Math.round((m.hcp != null ? m.hcp : 12) * holes / 18);
+      const gross = par + ph + Math.round(Math.random() * 6 - 2);
+      return { userId: m.userId, name: m.name, hcp: m.hcp, role: m.role, category: m.category, gross };
+    });
+    c.tournaments = c.tournaments || [];
+    const id = Store.uid();
+    c.tournaments.push({ id, name, date, holes, par, format: 'stroke', status: 'live', players, createdAt: Date.now() });
+    V.tournCreating = false; V.tournErr = null; V.tournId = id; commit();
+  },
+  'tourn-open'(d) { V.tournId = d.id; V.tournCapture = false; render(); window.scrollTo(0, 0); },
+  'tourn-back'() { V.tournId = null; V.tournCapture = false; render(); window.scrollTo(0, 0); },
+  'tourn-metric'(d) { V.tournNet = d.m === 'net'; render(); },
+  'tourn-capture'() { V.tournCapture = true; render(); },
+  'tourn-capture-close'() { V.tournCapture = false; render(); },
+  'tourn-save'() {
+    const c = myClub(); const t = c && (c.tournaments || []).find(x => x.id === V.tournId); if (!t) return;
+    (t.players || []).forEach(p => { const el = document.getElementById('cap-' + p.userId); if (el) { const v = (el.value || '').trim(); p.gross = v === '' ? null : Number(v); } });
+    V.tournCapture = false; commit();
   },
 
   /* ---- auth ---- */

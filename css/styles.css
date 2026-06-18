@@ -2432,8 +2432,42 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .cl-mem-tx { flex: 1; min-width: 0; }
 .cl-mem-tx b { display: block; font-size: 14px; font-weight: 800; color: var(--text); }
 .cl-mem-tx span { display: block; font-size: 11.5px; color: var(--muted); }
-.cl-badge.jr { flex: none; font-size: 10px; font-weight: 900; color: #1d7a3a; background: var(--lime-faint); border: 1px solid var(--lime); border-radius: 6px; padding: 2px 6px; }
+.cl-badge.jr { display: inline-block; vertical-align: middle; flex: none; font-size: 10px; font-weight: 900; color: #1d7a3a; background: var(--lime-faint); border: 1px solid var(--lime); border-radius: 6px; padding: 1px 6px; margin-left: 4px; }
 .cl-mem-tx b .cl-you { display: inline-block; font-size: 10px; font-weight: 800; color: #1d7a3a; background: var(--lime-faint); border-radius: 6px; padding: 1px 6px; margin-left: 5px; vertical-align: middle; }
+/* ===== Torneos del club + leaderboard ===== */
+.trn-list { display: flex; flex-direction: column; gap: 10px; }
+.trn-card { display: block; width: 100%; text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 13px 14px; cursor: pointer; box-shadow: 0 8px 20px rgba(20,40,15,.06); }
+.trn-card:active { transform: scale(.99); }
+.trn-card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.trn-card-top b { font-size: 15px; font-weight: 900; color: var(--text); }
+.trn-meta { display: block; font-size: 12px; color: var(--muted); margin-top: 4px; }
+.trn-meta .gi { width: 13px; height: 13px; vertical-align: -2px; }
+.trn-leader { display: block; font-size: 12px; font-weight: 800; color: #1d7a3a; margin-top: 6px; }
+.trn-leader .gi { width: 14px; height: 14px; vertical-align: -2px; }
+.trn-status { font-size: 10px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 99px; white-space: nowrap; }
+.trn-status.live { color: #fff; background: #e8392b; }
+.trn-status.open { color: #1d7a3a; background: var(--lime-faint); border: 1px solid var(--lime); }
+.trn-status.done { color: var(--muted); background: var(--card2); border: 1px solid var(--line); }
+.trn-head2 { padding: 14px; }
+.trn-h2top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.trn-h2top b { font-size: 17px; font-weight: 900; color: var(--text); }
+.trn-toggle { display: flex; gap: 6px; margin-top: 12px; }
+.trn-board { padding: 6px 12px; }
+.trn-row { display: grid; grid-template-columns: 30px 34px 1fr auto; gap: 10px; align-items: center; padding: 9px 2px; }
+.trn-row + .trn-row { border-top: 1px solid var(--line); }
+.trn-row.me { background: var(--lime-faint); border-radius: 10px; margin: 0 -6px; padding: 9px 8px; }
+.trn-pos { font-size: 14px; font-weight: 900; color: var(--muted); text-align: center; }
+.trn-pos.top1 { color: #d6a52f; } .trn-pos.top2 { color: #9aa7ad; } .trn-pos.top3 { color: #cd7f4a; }
+.trn-av { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 900; color: #fff; background: hsl(calc(var(--ci,0) * 60), 45%, 52%); }
+.trn-info { min-width: 0; }
+.trn-info b { display: block; font-size: 14px; font-weight: 800; color: var(--text); }
+.trn-info span { display: block; font-size: 11px; color: var(--muted); }
+.trn-score { font-size: 20px; font-weight: 900; color: var(--text); }
+.trn-score.good { color: #1d7a3a; }
+.cap-list { display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; margin: 6px 0 12px; }
+.cap-row { display: flex; align-items: center; gap: 10px; }
+.cap-nm { flex: 1; font-size: 14px; font-weight: 700; color: var(--text); }
+.cap-in { width: 84px; border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 11px; font-size: 16px; font-weight: 800; text-align: center; background: var(--bg); color: var(--text); }
 /* Historial de entrenamientos */
 .th-card { padding: 14px; }
 .th-sum { display: flex; gap: 10px; margin-bottom: 12px; }
