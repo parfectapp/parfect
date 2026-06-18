@@ -1016,6 +1016,23 @@ function roundSceneCard(r, rail) {
   </button>`;
 }
 
+/* comentario de coach IA (Birdie) sobre la ronda; si la nube/función no está,
+   muestra un botón para pedirlo (y si falla, ofrece reintentar). */
+function rdBirdie(r) {
+  const aiOn = (typeof AI !== 'undefined' && AI.on());
+  const rai = (V.roundAI && V.roundAI.id === r.id) ? V.roundAI : null;
+  if (rai) {
+    const body = rai.loading
+      ? `<p class="aiq-birdie-load">Analizando tu ronda<span class="chat-typing"><i></i><i></i><i></i></span></p>`
+      : (rai.text
+        ? `<p>${esc(rai.text).replace(/\n/g, '<br>')}</p>`
+        : `<p class="note" style="margin:0">No pude generar el comentario. <button class="sec-link" data-act="round-ai" data-id="${esc(r.id)}">Reintentar</button></p>`);
+    return `<div class="aiq-birdie rd-birdie"><span class="aiq-birdie-ava">${chatBotIcon()}</span><div class="aiq-birdie-tx"><span class="aiq-birdie-lab">Birdie · tu coach IA</span>${body}</div></div>`;
+  }
+  if (!aiOn) return '';
+  return `<button class="btn ghost sm rd-birdie-btn" data-act="round-ai" data-id="${esc(r.id)}">✨ Pídele a Birdie su comentario de esta ronda</button>`;
+}
+
 function vRoundDetail() {
   const r = S.rounds.find(x => x.id === V.detail);
   if (!r) return vRondaTab();
@@ -1045,6 +1062,7 @@ function vRoundDetail() {
       ${pstSceneStatic('gir', s.girTot ? (s.gir / s.girTot) * 100 : 0, 'GIR')}
       ${pstSceneStatic('ud', s.scrTot ? (s.scr / s.scrTot) * 100 : 0, 'Up & down')}
     </div>
+    ${rdBirdie(r)}
     <div class="card">
       <span class="label">${golfIcon('card')} Tu tarjeta · ${esc(courseName)}</span>
       ${scorecardTable(s.holes, parOf, [{ name: 'Tú', scoreOf: i => (r.holes[i] ? r.holes[i].score : null) }], -1, null)}

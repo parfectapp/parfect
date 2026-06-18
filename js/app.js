@@ -410,6 +410,37 @@ const actions = {
       else if (typeof celebrate === 'function') celebrate(false, 'Reporte listo');
     } catch (e) { if (typeof celebrate === 'function') celebrate(false, 'Reporte listo'); }
   },
+  'jr-report-ai'(d) {
+    const c = myClub(); const m = c && (c.members || []).find(x => x.userId === d.id); if (!m) return;
+    if (!m.consent) { if (typeof celebrate === 'function') celebrate(false, 'Falta el consentimiento de los padres'); return; }
+    if (typeof AI === 'undefined' || !AI.on()) { actions['jr-report'](d); return; }
+    V.jrReportOpen = true; V.jrReport = { name: m.name, loading: true }; render();
+    const dd = jrData(c, m.userId); const N = (dd.plan || []).length; const done = (dd.plan || []).filter(x => dd.done && dd.done[x]).length;
+    const hd = [N > 0, N > 0 && done >= N, (m.hcp != null && m.hcp < 12), !!dd.podium].filter(Boolean).length;
+    const stats = [
+      `Jugador: ${m.name} (${m.category || 'Juvenil'})`,
+      `Club: ${c.name}`,
+      `Hándicap: ${fmtHcp(m.hcp)}`,
+      `Plan de entrenamiento: ${done}/${N} ejercicios completados`,
+      `Hitos camino a la beca: ${hd}/4`,
+      (dd.plan && dd.plan.length) ? `Ejercicios del plan: ${dd.plan.join(', ')}` : '',
+    ].filter(Boolean).join('\n');
+    const nm = (m.name || '').split(' ')[0];
+    const prompt = `Eres el coach de la academia juvenil del club. Escribe un reporte breve (un solo párrafo de 4 a 6 frases) para los papás de ${nm} sobre su progreso. Tono cálido, claro y profesional, hablándoles de usted. Menciona su avance en el plan, una fortaleza, qué va a trabajar, y cierra con una frase de aliento sobre su desarrollo rumbo a una beca. No inventes números que no estén en los datos. Solo el párrafo.`;
+    AI.chat([{ from: 'me', text: prompt }], { stats }).then(res => {
+      if (res && res.ok && res.text) { V.jrReport = { name: m.name, text: res.text }; render(); }
+      else { V.jrReportOpen = false; V.jrReport = null; render(); actions['jr-report'](d); }
+    });
+  },
+  'jr-report-close'() { V.jrReportOpen = false; render(); },
+  'jr-report-share'() {
+    const t = V.jrReport && V.jrReport.text; if (!t) return;
+    try {
+      if (navigator.share) { navigator.share({ title: 'Reporte PARFECT', text: t }).catch(() => {}); }
+      else if (navigator.clipboard) { navigator.clipboard.writeText(t).then(() => { if (typeof celebrate === 'function') celebrate(false, 'Reporte copiado ✓'); }); }
+      else if (typeof celebrate === 'function') celebrate(false, 'Reporte listo');
+    } catch (e) { if (typeof celebrate === 'function') celebrate(false, 'Reporte listo'); }
+  },
 
   /* ---- auth ---- */
   async login() {
@@ -864,9 +895,27 @@ const actions = {
     S.rounds.push(round);
     S.active = null;
     V.diag = null; V.detail = round.id; V.view = 'detalle'; V.justFinished = round.id;
+    V.roundAI = null;
+    if (typeof AI !== 'undefined' && AI.on()) {
+      V.roundAI = { id: round.id, loading: true };
+      const cName = (round.courseId && COURSES[round.courseId]) ? COURSES[round.courseId].name : (round.course || '');
+      AI.roundComment(Stats.roundStats(round), cName).then(res => {
+        V.roundAI = (res && res.ok && res.text) ? { id: round.id, text: res.text } : null;
+        render();
+      });
+    }
     commit(); window.scrollTo(0, 0);
   },
-  'round-detail'(d) { V.detail = d.id; V.delArm = null; V.justFinished = null; go('detalle'); },
+  'round-detail'(d) { V.detail = d.id; V.delArm = null; V.justFinished = null; V.roundAI = null; go('detalle'); },
+  'round-ai'(d) {
+    const r = S.rounds.find(x => x.id === d.id); if (!r || typeof AI === 'undefined' || !AI.on()) return;
+    V.roundAI = { id: r.id, loading: true }; render();
+    const cName = (r.courseId && COURSES[r.courseId]) ? COURSES[r.courseId].name : (r.course || '');
+    AI.roundComment(Stats.roundStats(r), cName).then(res => {
+      V.roundAI = (res && res.ok && res.text) ? { id: r.id, text: res.text } : { id: r.id, fail: true };
+      render();
+    });
+  },
   'round-delete'(d) {
     if (V.delArm !== d.id) { V.delArm = d.id; render(); return; }
     S.rounds = S.rounds.filter(r => r.id !== d.id);

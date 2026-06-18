@@ -1541,6 +1541,13 @@ body.is-scrolling .lp-bird, body.is-scrolling .lp-fly { animation-play-state: pa
 .lp-h2 { font-size: clamp(30px, 5.4vw, 52px); font-weight: 900; letter-spacing: -.03em; line-height: 1; margin: 10px 0 0; }
 .lp-h2 .lime { color: var(--lime-ink); }
 .lp-lead { color: var(--muted); font-size: 16px; margin-top: 14px; max-width: 60ch; }
+/* ¿Cómo funciona? — explicación de 3 pasos (para dummies) */
+.lp-how { text-align: center; }
+.lp-how-grid { display: flex; flex-direction: column; gap: 12px; max-width: 540px; margin: 0 auto; text-align: left; }
+.lp-how-step { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; box-shadow: 0 8px 22px rgba(20,40,15,.06); }
+.lp-how-n { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 50%; background: var(--lime); color: #0c2913; font-weight: 900; font-size: 17px; display: grid; place-items: center; }
+.lp-how-tx h3 { margin: 2px 0 4px; font-size: 16.5px; font-weight: 900; color: var(--text); }
+.lp-how-tx p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--muted); }
 
 /* spine: tarjeta → IA → entrena → mejor */
 .lp-flow { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-top: 36px; }
@@ -2328,6 +2335,12 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .aiq-birdie-lab { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--lime); margin-bottom: 3px; }
 .aiq-birdie-tx p { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--text); }
 .aiq-birdie-load { display: flex; align-items: center; gap: 8px; color: var(--muted, #9aa); }
+.rd-birdie { margin: 4px 0 0; }
+.rd-birdie-btn { width: 100%; margin: 4px 0 0; }
+.jr-rep-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.jr-rep-btns .btn { flex: 1 1 auto; }
+.jr-report-box { background: var(--card2, var(--card)); border: 1px solid var(--line); border-radius: 14px; padding: 13px 14px; font-size: 14px; line-height: 1.55; color: var(--text); margin-top: 6px; }
+.jr-report-box p { margin: 0; }
 .aiq-card { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px 14px 12px; box-shadow: 0 8px 22px rgba(20,40,15,.06); overflow: hidden; }
 .aiq-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--pc); }
 .aiq-head { display: grid; grid-template-columns: 34px 1fr 38px; gap: 11px; align-items: center; }

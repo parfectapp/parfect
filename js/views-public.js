@@ -523,8 +523,8 @@ function vLanding() {
     <section class="lp-hero2 lp-appstage-sec">
       <div class="lp-loadphone reveal">${lpIntroPhone()}</div>
       <div class="lp-hero-copy reveal">
-        <h1 class="lp-title lp-title-stage">Baja tu hándicap,<br/><span class="lp-title-grad">fácil.</span></h1>
-        <p class="lp-sub">Sigue tu hándicap, tu progreso y tu juego completo en una sola app.</p>
+        <h1 class="lp-title lp-title-stage">Tu coach de golf,<br/><span class="lp-title-grad">con IA.</span></h1>
+        <p class="lp-sub">Anota tu ronda en segundos y la IA te dice <b>qué falló y qué practicar</b>. Bajas tu hándicap sin adivinar.</p>
         <div class="lp-cta-row">
           <button class="lp-order" data-act="go" data-view="signup">Empezar gratis →</button>
           <button class="lp-ghostbtn" data-act="demo-account">Ver demo</button>
@@ -533,12 +533,23 @@ function vLanding() {
       </div>
     </section>
 
+    <section class="lp-sec lp-how">
+      <span class="lp-eyebrow reveal">Así de fácil</span>
+      <h2 class="lp-h2 reveal">¿Cómo funciona?</h2>
+      <p class="lp-lead reveal" style="text-align:center;max-width:34ch;margin:14px auto 20px">No necesitas saber de estadísticas. Tú juegas; PARFECT hace el análisis.</p>
+      <div class="lp-how-grid">
+        <div class="lp-how-step reveal"><span class="lp-how-n">1</span><div class="lp-how-tx"><h3>Anota tu ronda</h3><p>Toca hoyo por hoyo: dónde cayó tu tiro, si pegaste al green y cuántos putts. Toma segundos.</p></div></div>
+        <div class="lp-how-step reveal"><span class="lp-how-n">2</span><div class="lp-how-tx"><h3>La IA encuentra tus fugas</h3><p>Birdie, tu coach con IA, lee tus rondas y te dice en español claro dónde se te van los golpes.</p></div></div>
+        <div class="lp-how-step reveal"><span class="lp-how-n">3</span><div class="lp-how-tx"><h3>Entrenas justo eso</h3><p>Te arma la práctica del día según tu tiempo. Practicas lo que importa y tu hándicap baja.</p></div></div>
+      </div>
+    </section>
+
     <section class="lp-sec">
       <span class="lp-eyebrow reveal">La app por dentro</span>
       <h2 class="lp-h2 reveal">Funciones reales,<br/><span class="lime">no promesas.</span></h2>
       <div class="lp-shots">
         <div class="lp-shot reveal">${lpPhoneShot('shot-rondas.png', lpScrRondas())}<div class="lp-shot-tx"><h3>Registra y revisa tus rondas</h3><p>Fairways, greens, up & down y putts hoyo por hoyo. Tu tarjeta completa y tu historial de rondas, siempre a la mano.</p></div></div>
-        <div class="lp-shot lp-shot-r reveal">${lpPhoneShot('shot-analisis.png', lpScrCoach())}<div class="lp-shot-tx"><h3>Tu coach IA</h3><p>Cruza tus rondas, encuentra dónde pierdes golpes y te dice exactamente qué entrenar.</p></div></div>
+        <div class="lp-shot lp-shot-r reveal">${lpPhoneShot('shot-analisis.png', lpScrCoach())}<div class="lp-shot-tx"><h3>Tu coach IA, Birdie</h3><p>Lee tus rondas, te explica dónde pierdes golpes y te dice qué entrenar. Y le puedes preguntar lo que sea de tu juego, cuando quieras.</p></div></div>
         <div class="lp-shot reveal">${lpPhoneShot('shot-logros.png', lpScrLogros())}<div class="lp-shot-tx"><h3>Sube de rango con logros</h3><p>Trofeos míticos por cada meta que alcanzas. Tu progreso, gamificado y claro.</p></div></div>
         <div class="lp-shot lp-shot-r reveal">${lpPhoneShot('shot-social.png', lpScrSocial())}<div class="lp-shot-tx"><h3>Juega con amigos</h3><p>Torneos en vivo, leaderboard y partidas por código. El golf es mejor en bola.</p></div></div>
       </div>

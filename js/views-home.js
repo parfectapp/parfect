@@ -1443,11 +1443,25 @@ function vJuniorDetail(c, m, u) {
       <span class="label">${golfIcon('card')} Reporte para padres</span>
       <p class="note" style="margin:4px 0 10px">${esc((m.name || '').split(' ')[0])} lleva <b>${done}/${N || 0}</b> ejercicios y <b>${hd}/${hitos.length}</b> hitos rumbo a la beca.</p>
       ${m.consent
-      ? `<button class="btn primary" data-act="jr-report" data-id="${esc(m.userId)}">Compartir con los padres →</button>`
+      ? `<div class="jr-rep-btns">${(typeof AI !== 'undefined' && AI.on()) ? `<button class="btn primary" data-act="jr-report-ai" data-id="${esc(m.userId)}">✨ Redactar con IA</button>` : ''}<button class="btn ${(typeof AI !== 'undefined' && AI.on()) ? 'ghost' : 'primary'}" data-act="jr-report" data-id="${esc(m.userId)}">Compartir resumen →</button></div>`
       : `<button class="btn" disabled>Falta el consentimiento de los padres</button>`}
     </div>
     ${V.consentOpen ? vConsentSheet(m) : ''}
-    ${V.jrPlanOpen ? vJrPlanSheet(c, m) : ''}`;
+    ${V.jrPlanOpen ? vJrPlanSheet(c, m) : ''}
+    ${V.jrReportOpen ? vJrReportSheet() : ''}`;
+}
+function vJrReportSheet() {
+  const r = V.jrReport || {};
+  const body = r.loading
+    ? `<p class="aiq-birdie-load" style="justify-content:center">Birdie está redactando<span class="chat-typing"><i></i><i></i><i></i></span></p>`
+    : `<p>${esc(r.text || '').replace(/\n/g, '<br>')}</p>`;
+  return `<div class="overlay" data-act="jr-report-close"><div class="sheet" data-act="noop">
+    <div class="grab"></div>
+    <h2>Reporte para padres</h2>
+    <p class="auth-sub">Redactado por Birdie con el progreso de ${esc((r.name || '').split(' ')[0])}.</p>
+    <div class="jr-report-box">${body}</div>
+    ${r.text ? `<button class="btn primary big" data-act="jr-report-share" style="margin-top:12px">Compartir con los padres →</button>` : ''}
+  </div></div>`;
 }
 function vConsentSheet(m) {
   const nm = (m.name || '').split(' ')[0];

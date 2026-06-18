@@ -71,5 +71,19 @@ const AI = (() => {
     return chat([{ from: 'me', text: prompt }], { stats });
   }
 
-  return { on, chat, statsBlurb, coachNarrative };
+  /* comentario breve de coach sobre UNA ronda recién jugada */
+  async function roundComment(s, courseName) {
+    if (!on() || !s) return { ok: false };
+    const pct = (x, t) => (t ? Math.round(x / t * 100) + '%' : '—');
+    const stats = [
+      `Campo: ${courseName || '—'}`,
+      `Score: ${s.score} (${s.toPar >= 0 ? '+' : ''}${s.toPar} al par) en ${s.holes} hoyos`,
+      `Fairways: ${pct(s.fw, s.fwTot)} · Greens (GIR): ${pct(s.gir, s.girTot)} · Up&down: ${pct(s.scr, s.scrTot)}`,
+      `Putts: ${s.putts} · 3-putts: ${s.threeP} · Penales: ${s.penals}`,
+    ].join('\n');
+    const prompt = 'Esta es una sola ronda que acabo de jugar (datos arriba). Dame un comentario corto de coach en 2 frases: una reconociendo lo mejor de la ronda y otra con lo único que más me ayudaría la próxima vez. Tono motivador y directo, háblame de tú. Solo las 2 frases.';
+    return chat([{ from: 'me', text: prompt }], { stats });
+  }
+
+  return { on, chat, statsBlurb, coachNarrative, roundComment };
 })();
