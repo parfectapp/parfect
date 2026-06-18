@@ -3,151 +3,258 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PARFECT para Clubes — Llena tus torneos, forma a tus juveniles</title>
-  <meta name="description" content="PARFECT lleva la vida social de tu campo y el desarrollo de tu cantera juvenil a una sola app: torneos con leaderboard en vivo y academia juvenil con reporte a padres." />
+  <title>PARFECT para Clubes — Llena tus torneos. Forma a tus juveniles.</title>
+  <meta name="description" content="La capa digital de tu club: torneos con leaderboard en vivo, academia juvenil con reporte a padres, patrocinios que se convierten en ingreso y socios que viven el club." />
+  <meta property="og:title" content="PARFECT para Clubes" />
+  <meta property="og:description" content="Llena tus torneos. Forma a tus juveniles. La capa digital de tu club." />
+  <meta property="og:image" content="https://rorropirrorro69.github.io/parfect/deck/assets/juveniles.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,800;1,9..144,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     :root{
-      --ink:#0c1f12; --green:#14321c; --green2:#1c4a23; --lime:#c4ff5d; --lime2:#7cc24a;
-      --sand:#f3efe4; --card:#ffffff; --line:#e6e2d6; --muted:#5c6b5c; --red:#e8392b;
+      --ink:#102117; --ink2:#1b3a26; --cream:#f6f2e8; --paper:#fffdf8;
+      --line:#e3ddcc; --muted:#5f6f5e; --lime:#c4ff5d; --green:#2f7d3a; --green-d:#1c4a23;
+      --gold:#c79a4e;
+      --serif:'Fraunces',Georgia,'Times New Roman',serif;
+      --sans:'Inter',-apple-system,system-ui,Segoe UI,Roboto,sans-serif;
     }
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Inter,-apple-system,system-ui,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--sand);line-height:1.5;-webkit-font-smoothing:antialiased}
-    .wrap{max-width:980px;margin:0 auto;padding:0 20px}
-    section{padding:64px 0}
-    h1,h2,h3{line-height:1.08;letter-spacing:-.02em}
-    .eyebrow{font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--lime2)}
-    .flag{display:inline-block;width:20px;height:20px;vertical-align:-4px}
-    /* hero */
-    .hero{background:radial-gradient(120% 100% at 70% 0%, #1c4a23 0%, #0c1f12 70%);color:#fff;padding:72px 0 64px;position:relative;overflow:hidden}
-    .hero .wrap{position:relative;z-index:1}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px;letter-spacing:.18em}
-    .brand .dot{width:26px;height:26px;border-radius:7px;background:var(--lime);display:grid;place-items:center}
-    .hero h1{font-size:clamp(34px,6vw,60px);font-weight:900;margin:26px 0 14px}
-    .hero h1 .hl{color:var(--lime)}
-    .hero p.lead{font-size:clamp(16px,2.4vw,20px);color:#d7e6d2;max-width:46ch}
-    .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
-    .chip{display:inline-flex;align-items:center;gap:8px;background:rgba(196,255,93,.12);border:1px solid rgba(196,255,93,.45);color:var(--lime);font-weight:800;font-size:14px;padding:9px 14px;border-radius:99px}
-    .hero-sun{position:absolute;top:-60px;right:-40px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle at 40% 38%,rgba(196,255,93,.5),transparent 62%)}
-    /* sections */
-    .lead2{font-size:18px;color:var(--muted);max-width:60ch;margin-top:10px}
-    h2.big{font-size:clamp(26px,4.4vw,40px);font-weight:900;margin-top:8px}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px}
-    .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:30px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 12px 30px rgba(20,40,15,.06)}
-    .card .ic{width:46px;height:46px;border-radius:13px;background:#eef7e6;display:grid;place-items:center;margin-bottom:14px}
-    .card .ic svg{width:26px;height:26px}
-    .card h3{font-size:20px;font-weight:900}
-    .card p{color:var(--muted);font-size:15px;margin-top:8px}
-    .card ul{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:7px}
-    .card li{font-size:14.5px;padding-left:22px;position:relative}
-    .card li::before{content:'✓';position:absolute;left:0;color:var(--lime2);font-weight:900}
-    .problem{background:#fff}
-    .problem .grid3 .card{background:var(--sand);box-shadow:none}
-    .dark{background:var(--green);color:#fff}
-    .dark .card{background:#173a20;border-color:#27502f;color:#fff}
-    .dark .card p{color:#bcd2bb}
-    .dark .card .ic{background:rgba(196,255,93,.14)}
-    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:28px}
-    .stat{background:#173a20;border:1px solid #27502f;border-radius:16px;padding:18px;text-align:center}
-    .stat b{display:block;font-size:30px;font-weight:900;color:var(--lime)}
-    .stat span{font-size:12.5px;color:#bcd2bb}
-    /* pricing */
-    .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:30px}
-    .price{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px;position:relative}
-    .price.hot{border:2px solid var(--lime2);box-shadow:0 16px 40px rgba(124,194,74,.2)}
-    .price .tag{position:absolute;top:-12px;right:18px;background:var(--lime);color:#0c2913;font-weight:900;font-size:11px;letter-spacing:.05em;text-transform:uppercase;padding:4px 12px;border-radius:99px}
-    .price .nm{font-size:18px;font-weight:900}
-    .price .amt{font-size:38px;font-weight:900;margin:4px 0 14px}
-    .price .amt span{font-size:14px;font-weight:700;color:var(--muted)}
-    .cta{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;font-weight:900;font-size:16px;padding:15px 26px;border-radius:14px;text-decoration:none}
-    .cta.lime{background:var(--lime2);color:#0c2913}
-    .final{background:radial-gradient(120% 100% at 30% 0%, #1c4a23 0%, #0c1f12 75%);color:#fff;text-align:center}
-    .final h2{font-size:clamp(26px,4.6vw,42px);font-weight:900}
-    .final p{color:#cfe0cd;margin:12px auto 26px;max-width:48ch}
-    .foot{padding:26px 0;text-align:center;color:var(--muted);font-size:13px}
-    @media(max-width:720px){.grid2,.grid3,.price-grid{grid-template-columns:1fr}.stat-row{grid-template-columns:1fr 1fr}}
+    html{scroll-behavior:smooth}
+    body{font-family:var(--sans);color:var(--ink);background:var(--cream);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    img{display:block;max-width:100%}
+    .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+    .eyebrow{font-family:var(--sans);font-size:12px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--green)}
+    .eyebrow.gold{color:var(--gold)}
+    h1,h2{font-family:var(--serif);font-weight:600;line-height:1.04;letter-spacing:-.01em}
+    .display{font-size:clamp(40px,8.5vw,86px);font-weight:600}
+    h2.big{font-size:clamp(30px,5.2vw,52px);font-weight:600;margin-top:14px}
+    .lead{font-size:clamp(16px,2.2vw,20px);color:var(--muted);max-width:54ch}
+    .serif-it{font-style:italic}
+    .lime-tx{color:var(--green)}
+
+    /* ---------- HERO ---------- */
+    .hero{position:relative;min-height:100svh;display:flex;align-items:flex-end;color:#fff;
+      background:linear-gradient(180deg,rgba(8,20,12,.18) 0%,rgba(8,20,12,.30) 42%,rgba(8,20,12,.82) 100%), url('assets/hero.jpg') center/cover no-repeat;}
+    .hero .wrap{padding-top:30px;padding-bottom:54px;width:100%}
+    .brand{position:absolute;top:26px;left:0;width:100%;}
+    .brand .wrap{display:flex;align-items:center;gap:10px;padding-top:0}
+    .brand .mark{width:30px;height:30px;border-radius:8px;background:var(--lime);display:grid;place-items:center}
+    .brand b{font-family:var(--sans);font-weight:800;letter-spacing:.26em;font-size:15px}
+    .hero .eyebrow{color:var(--lime)}
+    .hero h1{margin:14px 0 16px;text-shadow:0 12px 40px rgba(0,0,0,.35)}
+    .hero .lead{color:#eef3ea;max-width:40ch}
+    .cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+    .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--sans);font-weight:800;font-size:15px;padding:15px 26px;border-radius:999px;text-decoration:none;transition:transform .12s ease}
+    .btn:active{transform:scale(.97)}
+    .btn-lime{background:var(--lime);color:#0c2913}
+    .btn-ghost{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.5);backdrop-filter:blur(4px)}
+    .btn-dark{background:var(--green-d);color:#fff}
+    .scroll-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.7);font-size:11px;letter-spacing:.2em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:6px}
+    .scroll-hint span{width:1px;height:26px;background:linear-gradient(rgba(255,255,255,.7),transparent)}
+
+    /* ---------- INTRO ---------- */
+    .intro{padding:clamp(64px,10vw,120px) 0;text-align:center}
+    .intro .lead{margin:18px auto 0;max-width:46ch;font-size:clamp(17px,2.4vw,22px);color:var(--ink)}
+    .intro .rule{width:54px;height:3px;background:var(--gold);margin:0 auto 22px;border-radius:2px}
+
+    /* ---------- SPLIT (foto + texto) ---------- */
+    .split{padding:clamp(40px,7vw,90px) 0}
+    .split .wrap{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:clamp(28px,5vw,72px)}
+    .split .ph{position:relative;border-radius:22px;overflow:hidden;box-shadow:0 30px 60px rgba(16,33,23,.20);aspect-ratio:4/5}
+    .split .ph img{width:100%;height:100%;object-fit:cover}
+    .split .ph .cap{position:absolute;left:16px;bottom:16px;color:#fff;font-family:var(--serif);font-style:italic;font-size:18px;text-shadow:0 4px 16px rgba(0,0,0,.5)}
+    .split.flip .tx{order:2}
+    .split.flip .ph{order:1}
+    .num{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--gold);letter-spacing:.04em}
+    .split h2{margin:6px 0 14px}
+    ul.feat{list-style:none;margin:20px 0 0;display:flex;flex-direction:column;gap:13px}
+    ul.feat li{position:relative;padding-left:30px;font-size:15.5px;color:var(--ink)}
+    ul.feat li::before{content:'';position:absolute;left:0;top:7px;width:13px;height:8px;border-left:2.5px solid var(--green);border-bottom:2.5px solid var(--green);transform:rotate(-45deg)}
+
+    /* ---------- FULL BLEED foto con texto ---------- */
+    .bleed{position:relative;min-height:78svh;display:flex;align-items:flex-end;color:#fff}
+    .bleed.social{background:linear-gradient(180deg,rgba(8,20,12,.1),rgba(8,20,12,.78)),url('assets/social.jpg') center/cover no-repeat}
+    .bleed .wrap{padding-bottom:54px;padding-top:54px}
+    .bleed h2{max-width:18ch}
+    .bleed .lead{color:#eef3ea}
+
+    /* ---------- PATROCINIOS ---------- */
+    .spon{background:var(--ink);color:#fff;padding:clamp(54px,8vw,100px) 0}
+    .spon .eyebrow{color:var(--gold)}
+    .spon h2{color:#fff}
+    .spon .lead{color:#cdd8cb}
+    .spon .grid{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:clamp(28px,5vw,64px)}
+    .spon .ph{border-radius:22px;overflow:hidden;aspect-ratio:4/5;box-shadow:0 30px 60px rgba(0,0,0,.4)}
+    .spon .ph img{width:100%;height:100%;object-fit:cover}
+    .spon ul.feat li{color:#eaf0e8}
+    .spon ul.feat li::before{border-color:var(--lime)}
+
+    /* ---------- IA band ---------- */
+    .ia{background:var(--green-d);color:#fff;text-align:center;padding:clamp(56px,8vw,104px) 0}
+    .ia .badge{display:inline-block;font-family:var(--sans);font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#0c2913;background:var(--lime);padding:6px 14px;border-radius:999px}
+    .ia h2{color:#fff;margin:18px auto 0;max-width:16ch}
+    .ia .lead{color:#cfe0cd;margin:16px auto 0;max-width:50ch}
+
+    /* ---------- SATISFACCIÓN ---------- */
+    .sat{padding:clamp(56px,8vw,104px) 0}
+    .sat .grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(28px,5vw,64px);align-items:center}
+    .sat .ph{border-radius:22px;overflow:hidden;aspect-ratio:4/5;box-shadow:0 30px 60px rgba(16,33,23,.2)}
+    .sat .ph img{width:100%;height:100%;object-fit:cover}
+    .quote{font-family:var(--serif);font-style:italic;font-size:clamp(24px,4vw,38px);line-height:1.25;color:var(--ink)}
+    .quote .mk{color:var(--gold)}
+    .attr{margin-top:16px;font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
+    .satrow{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px}
+    .satrow div{flex:1 1 120px}
+    .satrow b{font-family:var(--serif);font-size:19px;display:block;color:var(--green)}
+    .satrow span{font-size:13.5px;color:var(--muted)}
+
+    /* ---------- POR QUÉ / stats ---------- */
+    .why{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:clamp(56px,8vw,100px) 0;text-align:center}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:36px}
+    .stat b{font-family:var(--serif);font-size:clamp(34px,6vw,52px);font-weight:600;color:var(--ink);display:block;line-height:1}
+    .stat span{font-size:13px;color:var(--muted);display:block;margin-top:8px}
+
+    /* ---------- CTA final ---------- */
+    .final{position:relative;min-height:88svh;display:flex;align-items:center;text-align:center;color:#fff;
+      background:linear-gradient(180deg,rgba(8,20,12,.55),rgba(8,20,12,.78)),url('assets/cierre.jpg') center/cover no-repeat}
+    .final h2{color:#fff;max-width:18ch;margin:14px auto 0}
+    .final .lead{color:#eef3ea;margin:18px auto 26px;max-width:46ch}
+
+    footer{background:var(--ink);color:#9fb09d;text-align:center;padding:30px 22px;font-size:13px}
+    footer .fmark{font-family:var(--sans);font-weight:800;letter-spacing:.24em;color:#fff;font-size:14px}
+
+    @media(max-width:760px){
+      .split .wrap,.spon .grid,.sat .grid{grid-template-columns:1fr}
+      .split.flip .tx{order:1}.split.flip .ph{order:2}
+      .split .ph,.spon .ph,.sat .ph{aspect-ratio:4/5;max-height:64svh}
+      .stats{grid-template-columns:1fr 1fr;gap:24px 16px}
+      .sat .ph{display:none}
+    }
   </style>
 </head>
 <body>
-  <!-- HERO -->
-  <section class="hero">
-    <span class="hero-sun"></span>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <div class="brand"><div class="wrap"><span class="mark"><svg width="16" height="16" viewBox="0 0 32 32"><path d="M16 5 L27 9 L16 13 Z" fill="#0c2913"/><rect x="14.6" y="5" width="1.8" height="22" rx=".9" fill="#0c2913"/></svg></span><b>PARFECT</b></div></div>
     <div class="wrap">
-      <div class="brand"><span class="dot"><svg width="16" height="16" viewBox="0 0 32 32"><path d="M16 5 L27 9 L16 13 Z" fill="#0c2913"/><rect x="14.6" y="5" width="1.8" height="22" rx=".9" fill="#0c2913"/></svg></span> PARFECT</div>
-      <h1>Llena tus torneos.<br><span class="hl">Forma a tus juveniles.</span></h1>
-      <p class="lead">PARFECT lleva la vida social de tu campo y el desarrollo de tu cantera a una sola app — sin hojas de cálculo, sin WhatsApp disperso.</p>
-      <div class="chips">
-        <span class="chip">🏆 Torneos con leaderboard en vivo</span>
-        <span class="chip">🎓 Academia juvenil → beca</span>
+      <span class="eyebrow">PARFECT · para clubes</span>
+      <h1 class="display">Llena tus torneos.<br><span class="serif-it">Forma a tus juveniles.</span></h1>
+      <p class="lead">La capa digital que tu campo merece: torneos que se viven en vivo, una cantera que crece y socios que no quieren irse.</p>
+      <div class="cta-row">
+        <a class="btn btn-lime" href="mailto:andremacouzetruiz@gmail.com?subject=PARFECT%20para%20mi%20club">Agendar demo →</a>
+        <a class="btn btn-ghost" href="https://rorropirrorro69.github.io/parfect/" target="_blank" rel="noopener">Ver la app</a>
       </div>
+    </div>
+    <div class="scroll-hint"><span></span>Desliza</div>
+  </header>
+
+  <!-- ===== INTRO ===== -->
+  <section class="intro">
+    <div class="wrap">
+      <div class="rule"></div>
+      <span class="eyebrow gold">El punto de partida</span>
+      <h2 class="big">Ya tienes lo más difícil.<br><span class="serif-it lime-tx">Te falta lo digital.</span></h2>
+      <p class="lead">El campo, los socios y los torneos ya son tuyos. Lo que se pierde está en el papel: leaderboards que nadie ve, juveniles sin seguimiento y patrocinios que no se lucen. PARFECT lo conecta todo — con la marca de tu club.</p>
     </div>
   </section>
 
-  <!-- PROBLEMA -->
-  <section class="problem">
+  <!-- ===== PILAR 1 · TORNEOS ===== -->
+  <section class="split">
     <div class="wrap">
-      <span class="eyebrow">El reto de tu club</span>
-      <h2 class="big">Tienes el campo. Falta la experiencia digital.</h2>
-      <div class="grid3">
-        <div class="card"><h3>Torneos en papel</h3><p>Resultados a mano, leaderboard que nadie ve hasta el final, poca emoción en vivo.</p></div>
-        <div class="card"><h3>Juveniles sin rumbo</h3><p>No hay seguimiento del progreso ni un camino claro hacia becas o selecciones.</p></div>
-        <div class="card"><h3>Socios desconectados</h3><p>Cuesta llenar eventos y mantener viva la comunidad entre rondas.</p></div>
+      <div class="tx">
+        <span class="num">Pilar 01</span>
+        <h2 class="big">Torneos que se llenan solos.</h2>
+        <p class="lead">Crea un torneo en minutos y deja que la emoción haga el resto. El leaderboard se actualiza en vivo en el teléfono de cada jugador; el podio y los netos se calculan solos.</p>
+        <ul class="feat">
+          <li>Calendario lleno toda la temporada</li>
+          <li>Más inscripciones y más consumo en el club</li>
+          <li>Resultados sin errores ni hojas de cálculo</li>
+          <li>Tu marca y tus patrocinadores en cada pantalla</li>
+        </ul>
       </div>
+      <div class="ph"><img src="assets/torneo.jpg" alt="Jugador en el tee durante un torneo" loading="lazy"><span class="cap">Cada hoyo, en vivo.</span></div>
     </div>
   </section>
 
-  <!-- SOLUCION: 2 pilares -->
-  <section>
+  <!-- ===== PILAR 2 · ACADEMIA / CANTERA ===== -->
+  <section class="split flip">
     <div class="wrap">
-      <span class="eyebrow">La solución, en 2 pilares</span>
-      <h2 class="big">Una app, con tu marca, para todo tu club.</h2>
-      <div class="grid2">
-        <div class="card">
-          <span class="ic"><svg viewBox="0 0 32 32"><path d="M12 23h8v3h-8z" fill="#cf9a36"/><path d="M10 6h12v5a6 6 0 0 1-12 0Z" fill="#ffcf5a"/></svg></span>
-          <h3>Torneos en vivo</h3>
-          <p>La vida social del campo, digital.</p>
-          <ul>
-            <li>Crea torneos en minutos (gross y neto)</li>
-            <li>Leaderboard que se actualiza en vivo</li>
-            <li>Categorías, podio y ganadores automáticos</li>
-            <li>Cuelga a tus patrocinadores a cada torneo</li>
-          </ul>
+      <div class="tx">
+        <span class="num">Pilar 02</span>
+        <h2 class="big">Tu club, cuna de campeones.</h2>
+        <p class="lead">Dale a cada juvenil un plan, un progreso medible y un camino claro hacia la beca. Las familias ven crecer a sus hijos y se quedan contigo temporada tras temporada.</p>
+        <ul class="feat">
+          <li>Plan de desarrollo por juvenil</li>
+          <li>Reporte de progreso para los papás</li>
+          <li>“Camino a la beca” con hitos claros</li>
+          <li>Ranking de cantera del club</li>
+        </ul>
+      </div>
+      <div class="ph"><img src="assets/juveniles.jpg" alt="Dos juveniles levantando el trofeo" loading="lazy"><span class="cap">De tu campo, al podio.</span></div>
+    </div>
+  </section>
+
+  <!-- ===== VIDA SOCIAL ===== -->
+  <section class="bleed social">
+    <div class="wrap">
+      <span class="eyebrow" style="color:var(--lime)">La vida del club</span>
+      <h2 class="big">Más rondas. Más sobremesa.<br><span class="serif-it">Más comunidad.</span></h2>
+      <p class="lead">PARFECT mantiene viva la conversación entre rondas: tarjetas que se comparten, retas entre socios y eventos que se llenan. El socio juega más, presume más y vuelve más.</p>
+    </div>
+  </section>
+
+  <!-- ===== PATROCINIOS ===== -->
+  <section class="spon">
+    <div class="wrap grid">
+      <div class="tx">
+        <span class="eyebrow gold">Nuevo ingreso</span>
+        <h2 class="big">Cada torneo,<br><span class="serif-it">una vitrina.</span></h2>
+        <p class="lead">Cuelga a tus patrocinadores en cada torneo y conviértelos en ingreso recurrente. Marcas presentes en la app, frente a un público cautivo que ama el golf.</p>
+        <ul class="feat">
+          <li>Patrocinio por torneo, con ingreso compartido</li>
+          <li>Logo y presencia de marca dentro de la app</li>
+          <li>Una audiencia ideal: tus propios socios</li>
+        </ul>
+      </div>
+      <div class="ph"><img src="assets/patrocinio.jpg" alt="Producto patrocinador en el campo" loading="lazy"></div>
+    </div>
+  </section>
+
+  <!-- ===== IA ===== -->
+  <section class="ia">
+    <div class="wrap">
+      <span class="badge">Nuevo · con IA</span>
+      <h2 class="big">Birdie escribe los reportes por ti.</h2>
+      <p class="lead">El resumen de cada torneo y el reporte de cada juvenil para sus papás — redactados solos, con los datos reales del club. Tu staff dedica el tiempo a la gente, no al teclado.</p>
+    </div>
+  </section>
+
+  <!-- ===== SATISFACCIÓN DEL SOCIO ===== -->
+  <section class="sat">
+    <div class="wrap grid">
+      <div class="ph"><img src="assets/socia.jpg" alt="Socia disfrutando su ronda" loading="lazy"></div>
+      <div class="tx">
+        <span class="eyebrow gold">La experiencia del socio</span>
+        <h2 class="big">Socios que viven el club.</h2>
+        <p class="quote"><span class="mk">“</span>Antes el torneo se acababa y ya. Ahora seguimos picándonos toda la semana en la app.<span class="mk">”</span></p>
+        <p class="attr">— Lo que escuchamos en el campo</p>
+        <div class="satrow">
+          <div><b>Juegan más</b><span>vuelven entre semana</span></div>
+          <div><b>Presumen</b><span>comparten su tarjeta</span></div>
+          <div><b>Se quedan</b><span>renuevan su membresía</span></div>
         </div>
-        <div class="card">
-          <span class="ic"><svg viewBox="0 0 32 32"><path d="M16 5 L27 9 L16 13 Z" fill="#e8392b"/><rect x="14.6" y="5" width="1.8" height="22" rx=".9" fill="#2f6b39"/><ellipse cx="16" cy="28" rx="9" ry="2" fill="#2f6b39"/></svg></span>
-          <h3>Academia juvenil</h3>
-          <p>Impulsa el talento y fideliza familias.</p>
-          <ul>
-            <li>Plan de entrenamiento por juvenil</li>
-            <li>Progreso medido y “camino a la beca”</li>
-            <li>Reporte automático para los padres</li>
-            <li>Ranking de desarrollo del club</li>
-          </ul>
-        </div>
       </div>
     </div>
   </section>
 
-  <!-- FEATURES -->
-  <section class="dark">
+  <!-- ===== POR QUÉ / STATS ===== -->
+  <section class="why">
     <div class="wrap">
-      <span class="eyebrow">Cómo se vive</span>
-      <h2 class="big" style="color:#fff">Tu club, en la palma de la mano.</h2>
-      <div class="grid3">
-        <div class="card"><span class="ic"><svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="12" fill="#c4ff5d"/></svg></span><h3>Leaderboard en vivo</h3><p>Los jugadores ven su posición en tiempo real durante el torneo.</p></div>
-        <div class="card"><span class="ic"><svg viewBox="0 0 32 32"><rect x="7" y="6" width="18" height="20" rx="3" fill="#c4ff5d"/></svg></span><h3>Reporte a padres</h3><p>Cada juvenil genera un reporte de progreso que el coach comparte con la familia.</p></div>
-        <div class="card"><span class="ic"><svg viewBox="0 0 32 32"><path d="M4 26 L14 8 L20 18 L28 26 Z" fill="#c4ff5d"/></svg></span><h3>Camino a la beca</h3><p>Hitos claros que motivan al juvenil y posicionan a tu club como cantera.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- POR QUE / ACTIVOS -->
-  <section>
-    <div class="wrap">
-      <span class="eyebrow">Por qué con PARFECT</span>
-      <h2 class="big">Hecho en México, para el golf de aquí.</h2>
-      <p class="lead2">Producto vivo, en español, con relaciones reales en el golf nacional y un enfoque único en la cantera juvenil.</p>
-      <div class="stat-row">
+      <span class="eyebrow gold">Por qué PARFECT</span>
+      <h2 class="big">Hecho en México,<br><span class="serif-it lime-tx">para el golf de aquí.</span></h2>
+      <div class="stats">
         <div class="stat"><b>2</b><span>ganchos: social + cantera</span></div>
         <div class="stat"><b>0</b><span>hardware requerido</span></div>
         <div class="stat"><b>100%</b><span>en español</span></div>
@@ -156,45 +263,20 @@
     </div>
   </section>
 
-  <!-- PLANES -->
-  <section class="problem">
+  <!-- ===== CTA FINAL ===== -->
+  <section class="final">
     <div class="wrap">
-      <span class="eyebrow">Planes</span>
-      <h2 class="big">Empieza una temporada. Cancela cuando quieras.</h2>
-      <div class="price-grid">
-        <div class="price">
-          <div class="nm">Club</div>
-          <div class="amt">$1,490<span>/mes</span></div>
-          <ul class="card" style="border:none;box-shadow:none;padding:0;background:none">
-            <li>Hasta 150 miembros</li>
-            <li>Torneos con leaderboard en vivo</li>
-            <li>Academia juvenil + reportes</li>
-            <li>Soporte por correo</li>
-          </ul>
-        </div>
-        <div class="price hot">
-          <span class="tag">Recomendado</span>
-          <div class="nm">Club Pro</div>
-          <div class="amt">$2,990<span>/mes</span></div>
-          <ul class="card" style="border:none;box-shadow:none;padding:0;background:none">
-            <li>Miembros ilimitados</li>
-            <li>Patrocinios por torneo (ingreso compartido)</li>
-            <li>Panel de talento y becas</li>
-            <li>Onboarding dedicado</li>
-          </ul>
-        </div>
-      </div>
+      <span class="eyebrow" style="color:var(--lime)">El siguiente paso</span>
+      <h2 class="big">Pongamos a tu club en PARFECT.</h2>
+      <p class="lead">Te montamos un club de demostración con tus torneos y tu cantera en una llamada. Una temporada piloto, sin compromiso.</p>
+      <a class="btn btn-lime" href="mailto:andremacouzetruiz@gmail.com?subject=PARFECT%20para%20mi%20club">Agendar demo →</a>
     </div>
   </section>
 
-  <!-- CTA FINAL -->
-  <section class="final">
-    <div class="wrap">
-      <h2>Pongamos a tu club en PARFECT.</h2>
-      <p>Te montamos un club de demostración con tus torneos y tu cantera en una llamada. Una temporada de piloto, sin compromiso.</p>
-      <a class="cta lime" href="mailto:andremacouzetruiz@gmail.com?subject=PARFECT%20para%20mi%20club">Agendar demo →</a>
-    </div>
-  </section>
-  <div class="foot">PARFECT — Golf Analytics · IA · Comunidad. Hecho en Morelia, México.</div>
+  <footer>
+    <div class="fmark">PARFECT</div>
+    Golf Analytics · IA · Comunidad — Hecho en Morelia, México.
+  </footer>
+
 </body>
 </html>
