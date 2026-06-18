@@ -683,7 +683,8 @@ function vLanding() {
 
     <footer class="lp-foot">
       <span class="lp-logo">${pLogo()}</span>
-      <span>Tu app para mejorar en el golf y jugar con amigos. Tus datos viven en tu dispositivo.</span>
+      <span>Tu app para mejorar en el golf y jugar con amigos.</span>
+      <span class="lp-foot-links"><a href="legal.html#privacidad">Aviso de privacidad</a> · <a href="legal.html#terminos">Términos</a></span>
     </footer>
     ${chatWidget('lp')}
   </div>`;
@@ -891,6 +892,7 @@ function vAuth(mode) {
       ${err}
       <button class="btn primary" data-act="signup">Crear cuenta gratis</button>
       ${googleBtn()}
+      <p class="auth-legal">Al continuar aceptas el <a href="legal.html#privacidad" target="_blank" rel="noopener">Aviso de privacidad</a> y los <a href="legal.html#terminos" target="_blank" rel="noopener">Términos</a>.</p>
       <p class="auth-alt">¿Ya tienes cuenta? <button data-act="go" data-view="login">Iniciar sesión</button></p>
     </div>
   </div>`;

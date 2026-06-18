@@ -116,6 +116,27 @@ const Cloud = (() => {
     Store.save(S);
   }
 
+  /* ---- sube fotos/videos locales (data-URL) a Storage y reescribe la URL pública.
+         Requiere un bucket público llamado "media" en Supabase. Si no existe o
+         falla, la foto se queda local (no rompe nada). ---- */
+  async function uploadMedia(uid) {
+    const mine = S.rounds.filter(r => r.userId === uid && r.media && r.media.src && String(r.media.src).startsWith('data:'));
+    if (!mine.length) return;
+    let changed = false;
+    for (const r of mine) {
+      try {
+        const blob = await (await fetch(r.media.src)).blob();
+        const ext = ((blob.type.split('/')[1] || 'jpg').split(';')[0]) || 'jpg';
+        const path = `${uid}/${r.id}.${ext}`;
+        const up = await sb.storage.from('media').upload(path, blob, { upsert: true, contentType: blob.type });
+        if (up.error) throw up.error;
+        const url = sb.storage.from('media').getPublicUrl(path).data.publicUrl;
+        if (url) { r.media = { ...r.media, src: url }; changed = true; }
+      } catch (e) { break; } // sin bucket/permiso: se queda local, reintenta luego
+    }
+    if (changed) Store.save(S);
+  }
+
   /* ---- subir el snapshot del usuario actual (upsert; sin borrados aquí) ---- */
   async function push() {
     if (!ON || !currentUid || currentUid !== S.session || !hydrated) return;
@@ -128,6 +149,7 @@ const Cloud = (() => {
         hcp: u.hcp != null ? u.hcp : 18, goal: u.goal != null ? u.goal : 13,
         avatar: u.avatar != null ? u.avatar : 0, is_coach: !!u.isCoach, extra: extraOf(u),
       });
+      await uploadMedia(uid);
       const rs = S.rounds.filter(r => r.userId === uid).map(r => roundToRow(r, uid));
       if (rs.length) await sb.from('rounds').upsert(rs);
       const ps = S.practices.filter(p => p.userId === uid).map(p => practiceToRow(p, uid));

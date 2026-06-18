@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PARFECT — Aviso de privacidad y Términos</title>
+  <meta name="robots" content="index,follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    :root{ --ink:#0f2117; --muted:#5c6b5c; --line:#e4e0d3; --lime:#7cc24a; --card:#fff; --bg:#f6f2e8; }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Inter,-apple-system,system-ui,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg);line-height:1.62;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:760px;margin:0 auto;padding:40px 22px 80px}
+    .brand{display:inline-flex;align-items:center;gap:9px;font-weight:900;letter-spacing:.22em;font-size:15px;text-decoration:none;color:var(--ink)}
+    .brand .dot{width:26px;height:26px;border-radius:7px;background:var(--lime);display:grid;place-items:center}
+    a{color:#2f7d3a}
+    h1{font-size:clamp(28px,5vw,40px);font-weight:900;letter-spacing:-.02em;margin:26px 0 6px}
+    h2{font-size:20px;font-weight:800;margin:34px 0 8px}
+    p,li{font-size:15px;color:#33402f}
+    ul{margin:8px 0 8px 20px}
+    li{margin:4px 0}
+    .upd{color:var(--muted);font-size:13px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 22px;margin-top:18px;box-shadow:0 10px 26px rgba(20,40,15,.05)}
+    .toc{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    .toc a{font-weight:700;font-size:13px;background:#eef7e6;border:1px solid #d6ead0;border-radius:999px;padding:7px 13px;text-decoration:none}
+    .back{display:inline-block;margin-top:30px;font-weight:700}
+    .note{font-size:13px;color:var(--muted);margin-top:10px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="brand" href="./"><span class="dot"><svg width="15" height="15" viewBox="0 0 32 32"><path d="M16 5 L27 9 L16 13 Z" fill="#0c2913"/><rect x="14.6" y="5" width="1.8" height="22" rx=".9" fill="#0c2913"/></svg></span>PARFECT</a>
+
+    <h1>Aviso de privacidad y Términos</h1>
+    <p class="upd">Última actualización: junio 2026 · Contacto: <a href="mailto:andremacouzetruiz@gmail.com">andremacouzetruiz@gmail.com</a></p>
+    <div class="toc"><a href="#privacidad">Aviso de privacidad</a><a href="#menores">Menores de edad</a><a href="#terminos">Términos de uso</a></div>
+
+    <!-- ===== PRIVACIDAD ===== -->
+    <div class="card" id="privacidad">
+      <h2 style="margin-top:0">Aviso de privacidad</h2>
+      <p>PARFECT ("la app") es una aplicación de golf operada desde Morelia, México. Este aviso explica qué datos recopilamos y cómo los usamos.</p>
+
+      <h2>Qué datos recopilamos</h2>
+      <ul>
+        <li><b>De tu cuenta:</b> nombre, correo electrónico, hándicap y meta.</li>
+        <li><b>De tu juego:</b> rondas, estadísticas (calles, greens, putts), prácticas y, si las agregas, fotos o videos de tus rondas.</li>
+        <li><b>De clubes/academia (si aplica):</b> miembros, torneos y progreso de juveniles, siempre con el consentimiento correspondiente.</li>
+      </ul>
+
+      <h2>Cómo usamos tus datos</h2>
+      <ul>
+        <li>Para mostrarte tus estadísticas, tu análisis y tu progreso.</li>
+        <li>Para que juegues con amigos y participes en torneos.</li>
+        <li>Para mejorar la app. <b>No vendemos tus datos</b> a terceros.</li>
+      </ul>
+
+      <h2>Dónde viven tus datos</h2>
+      <p>La app funciona <b>local-first</b>: tus datos se guardan primero en tu dispositivo. Si creas una cuenta en la nube, se respaldan de forma segura en <b>Supabase</b> (nuestro proveedor de base de datos y autenticación), protegidos por reglas de acceso por usuario. Si inicias sesión con Google, recibimos tu nombre y correo de Google para crear tu cuenta.</p>
+
+      <h2>Inteligencia artificial (Birdie)</h2>
+      <p>Cuando usas el coach IA, enviamos un resumen de tus estadísticas a la API de Anthropic (Claude) para generarte el análisis. No se envían tus datos personales identificables más allá de lo necesario para el consejo.</p>
+
+      <h2>Tus derechos</h2>
+      <p>Puedes ver, corregir o borrar tus datos desde la app, o escribirnos a <a href="mailto:andremacouzetruiz@gmail.com">andremacouzetruiz@gmail.com</a> para solicitar acceso o eliminación.</p>
+
+      <h2 id="menores">Menores de edad</h2>
+      <p>La academia juvenil procesa datos de menores <b>únicamente con el consentimiento de su padre, madre o tutor</b>, registrado dentro de la app. Los reportes de progreso se comparten solo con la familia y el club correspondiente. Si eres tutor y quieres revocar el consentimiento o eliminar los datos de tu hijo/a, escríbenos.</p>
+    </div>
+
+    <!-- ===== TÉRMINOS ===== -->
+    <div class="card" id="terminos">
+      <h2 style="margin-top:0">Términos de uso</h2>
+      <p>Al usar PARFECT aceptas estos términos.</p>
+      <ul>
+        <li><b>Uso:</b> la app es para registrar y mejorar tu golf, y para la operación de torneos y academias de clubes. Úsala de forma legal y respetuosa con otros jugadores.</li>
+        <li><b>Tu cuenta:</b> eres responsable de la información que registras y de mantener segura tu contraseña.</li>
+        <li><b>Contenido:</b> las fotos, videos y textos que subes son tuyos; al compartirlos en la app autorizas que se muestren a tu comunidad o club.</li>
+        <li><b>Disponibilidad:</b> la app se ofrece "tal cual". Hacemos nuestro mejor esfuerzo, pero no garantizamos que esté libre de errores o disponible sin interrupciones.</li>
+        <li><b>Cambios:</b> podemos actualizar la app y estos términos; publicaremos la versión vigente en esta página.</li>
+        <li><b>Contacto:</b> <a href="mailto:andremacouzetruiz@gmail.com">andremacouzetruiz@gmail.com</a>.</li>
+      </ul>
+      <p class="note">Este documento es una base en lenguaje claro; para una operación a gran escala o cobro a clubes, conviene que un abogado lo revise.</p>
+    </div>
+
+    <a class="back" href="./">← Volver a PARFECT</a>
+  </div>
+</body>
+</html>

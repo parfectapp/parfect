@@ -68,10 +68,21 @@ supabase secrets set ANTHROPIC_API_KEY=sk-ant-xxxxxxxx
 
 ---
 
+## E) Fotos/videos a la nube (Supabase Storage)
+Para que las fotos de ronda se vean entre dispositivos y en el feed (hoy se suben solas si existe el bucket):
+1. Supabase → **Storage → New bucket** → nombre **`media`** → marca **Public bucket** → Create.
+2. (Opcional, recomendado) Policy: permite subir solo a usuarios autenticados en su carpeta. En **Storage → Policies → media** crea una policy de INSERT para `authenticated`. Para una demo rápida basta con el bucket público.
+3. Listo: al guardar una ronda con foto, la app la sube a `media/<tu-id>/<ronda>.jpg` y guarda la URL pública. Si el bucket no existe, la foto se queda local (no se rompe nada).
+
+---
+
 ## Checklist
 - [ ] Google Cloud: OAuth client (origins + redirect a Supabase)
 - [ ] Supabase: Google provider con Client ID/Secret
 - [ ] Supabase: Site URL + Redirect URLs
 - [ ] Email: confirmación on/off según prefieras
+- [ ] Storage: crear bucket público `media` (para fotos de ronda)
+- [ ] Correr la migración `supabase/migrations/05_clubs.sql` (clubes)
 - [ ] (Opcional) Renombrar usuario/repo → parfectgolf.github.io → avísame
 - [ ] (Opcional) Desplegar Edge Function `coach` + secreto
+- [ ] (Después) Pasarela de pago para planes de club (Stripe/Mercado Pago)
