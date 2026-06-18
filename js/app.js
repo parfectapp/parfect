@@ -174,6 +174,7 @@ function App() {
     trainer: vTrainer,
     perfil: vPerfil,
     social: vSocial,
+    club: vClub,
   }[V.view] || vDashboard;
   return vShell(content());
 }
@@ -248,6 +249,40 @@ const actions = {
   'chat-close'() { if (V.chat) V.chat.open = false; render(); },
   'chat-send'() { const el = document.getElementById('chat-text'); const txt = el ? el.value.trim() : ''; if (!txt) return; V.chat = V.chat || { open: true, msgs: [] }; V.chat.msgs.push({ from: 'me', text: txt }); V.chat.msgs.push({ from: 'bot', text: botReply(txt) }); render(); setTimeout(() => { const i = document.getElementById('chat-text'); if (i) i.focus(); chatScrollBottom(); }, 40); },
   'chat-quick'(d) { const txt = d.q || ''; if (!txt) return; V.chat = V.chat || { open: true, msgs: [] }; V.chat.msgs.push({ from: 'me', text: txt }); V.chat.msgs.push({ from: 'bot', text: botReply(txt) }); render(); setTimeout(chatScrollBottom, 40); },
+
+  /* ---- Club (B2B) ---- */
+  'club-create-open'() { V.clubCreating = true; V.clubErr = null; render(); window.scrollTo(0, 0); },
+  'club-create-cancel'() { V.clubCreating = false; V.clubErr = null; render(); },
+  'club-create'() {
+    const u = cur(); if (!u) return;
+    const name = (document.getElementById('club-name') || {}).value;
+    const nm = (name || '').trim();
+    if (!nm) { V.clubErr = 'Ponle nombre a tu club.'; render(); return; }
+    S.clubs = S.clubs || [];
+    let code; do { code = Math.random().toString(36).slice(2, 7).toUpperCase(); } while (S.clubs.some(c => c.code === code));
+    const seed = [
+      { userId: 'seed-coach', name: 'Coach Hugo', role: 'coach', hcp: 3 },
+      { userId: 'seed-j1', name: 'Mateo Ríos', role: 'junior', hcp: 18, category: 'Sub-14' },
+      { userId: 'seed-j2', name: 'Renata Gil', role: 'junior', hcp: 22, category: 'Sub-12' },
+      { userId: 'seed-m1', name: 'Andrés Soto', role: 'member', hcp: 9 },
+    ];
+    S.clubs.push({ id: Store.uid(), name: nm, code, ownerId: u.id, createdAt: Date.now(), members: [{ userId: u.id, name: u.name, role: 'admin', hcp: u.hcp }, ...seed] });
+    V.clubCreating = false; V.clubErr = null; V.clubDraftName = ''; commit();
+  },
+  'club-join'() {
+    const u = cur(); if (!u) return;
+    const code = ((document.getElementById('club-code') || {}).value || '').trim().toUpperCase();
+    if (!code) { V.clubErr = 'Escribe el código del club.'; render(); return; }
+    const c = (S.clubs || []).find(x => x.code === code);
+    if (!c) { V.clubErr = 'No encontramos ese código en este dispositivo. Con la nube se conecta a cualquier club.'; render(); return; }
+    if (!c.members.some(m => m.userId === u.id)) c.members.push({ userId: u.id, name: u.name, role: 'member', hcp: u.hcp });
+    V.clubErr = null; commit();
+  },
+  'club-leave'() {
+    const u = cur(); const c = myClub();
+    if (c) { c.members = (c.members || []).filter(m => m.userId !== u.id); if (!c.members.length) S.clubs = (S.clubs || []).filter(x => x.id !== c.id); }
+    commit();
+  },
 
   /* ---- auth ---- */
   async login() {

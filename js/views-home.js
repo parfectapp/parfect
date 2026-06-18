@@ -3,7 +3,7 @@
 function navKeyOf(view) {
   if (['ronda', 'nueva', 'detalle'].includes(view)) return 'ronda';
   if (['trainer', 'clubs'].includes(view)) return 'trainer';
-  if (['perfil', 'clubs', 'friend', 'social'].includes(view)) return 'perfil';
+  if (['perfil', 'clubs', 'friend', 'social', 'club', 'club-tourn', 'club-academy'].includes(view)) return 'perfil';
   return 'inicio';
 }
 
@@ -1170,10 +1170,82 @@ function vEventComposer(u) {
 
 function vPerfil() {
   const u = cur();
-  return `${vStories(u)}
+  return `${vClubEntry(u)}
+    ${vStories(u)}
     ${vTorneo(u)}
     ${vRanking(u)}
     ${vSocialFeed()}`;
+}
+
+/* ============ Club (B2B): multi-tenant local-first, listo para Supabase ============ */
+const CLUB_ROLE_LABEL = { admin: 'Administrador', coach: 'Coach', member: 'Miembro', junior: 'Juvenil', parent: 'Padre/Madre' };
+function myClub() { const u = cur(); if (!u) return null; return (S.clubs || []).find(c => (c.members || []).some(m => m.userId === u.id)) || null; }
+function clubRole(c, u) { u = u || cur(); const m = c && (c.members || []).find(x => x.userId === (u && u.id)); return m ? m.role : null; }
+function clubInitials(n) { return (typeof initials === 'function') ? initials(n) : String(n || '?').slice(0, 2).toUpperCase(); }
+
+/* tarjeta de acceso al club dentro del hub social */
+function vClubEntry(u) {
+  const c = myClub();
+  if (c) {
+    const n = (c.members || []).length;
+    return `<button class="club-entry has" data-act="nav" data-view="club">
+      <span class="club-entry-ic">${golfIcon('flag')}</span>
+      <div class="club-entry-tx"><b>${esc(c.name)}</b><span>${n} miembro${n === 1 ? '' : 's'} · ${CLUB_ROLE_LABEL[clubRole(c, u)] || 'miembro'}</span></div>
+      <span class="club-entry-go">›</span></button>`;
+  }
+  return `<button class="club-entry" data-act="nav" data-view="club">
+    <span class="club-entry-ic">${golfIcon('flag')}</span>
+    <div class="club-entry-tx"><b>¿Eres de un club?</b><span>Llévalo a PARFECT: torneos y cantera juvenil</span></div>
+    <span class="club-entry-go">›</span></button>`;
+}
+
+/* vista principal del Club */
+function vClub() {
+  const u = cur(); if (!u) return '';
+  const c = myClub();
+  if (V.clubCreating) {
+    return `<div class="sec-h"><h2>Crear tu club</h2><button class="sec-link" data-act="club-create-cancel">Cancelar</button></div>
+      <div class="card">
+        <div class="field"><label>Nombre del club</label><input id="club-name" placeholder="Ej. Club Campestre Morelia" value="${esc(V.clubDraftName || '')}"></div>
+        <p class="note" style="margin-top:8px">Serás el administrador. Generaremos un código para invitar a tus socios y juveniles.</p>
+        <button class="btn primary big" data-act="club-create" style="margin-top:8px">Crear club ${golfIcon('flag')}</button>
+        ${V.clubErr ? `<p class="note err">${esc(V.clubErr)}</p>` : ''}
+      </div>`;
+  }
+  if (!c) {
+    return `<div class="sec-h"><h2>Tu club</h2></div>
+      <div class="card club-intro">
+        <span class="club-bigic">${golfIcon('flag')}</span>
+        <h3>Lleva tu club a PARFECT</h3>
+        <p class="note">Corre torneos con leaderboard en vivo e impulsa a tus juveniles. Crea el club de tu campo o únete con un código.</p>
+        <button class="btn primary big" data-act="club-create-open">Crear un club</button>
+        <div class="club-join">
+          <input id="club-code" placeholder="CÓDIGO" maxlength="6" autocomplete="off" style="text-transform:uppercase">
+          <button class="btn" data-act="club-join">Unirme</button>
+        </div>
+        ${V.clubErr ? `<p class="note err">${esc(V.clubErr)}</p>` : ''}
+      </div>`;
+  }
+  const role = clubRole(c, u);
+  const isStaff = role === 'admin' || role === 'coach';
+  const members = c.members || [];
+  const juniors = members.filter(m => m.role === 'junior').length;
+  const roster = members.map(m => `<div class="cl-mem">
+      <span class="cl-mem-av" style="--ci:${(m.name || '').length % 6}">${clubInitials(m.name)}</span>
+      <div class="cl-mem-tx"><b>${esc(m.name)}${m.userId === u.id ? ' <span class="cl-you">tú</span>' : ''}</b><span>${CLUB_ROLE_LABEL[m.role] || m.role}${m.category ? ' · ' + esc(m.category) : (m.hcp != null ? ' · HCP ' + fmtHcp(m.hcp) : '')}</span></div>
+      ${m.role === 'junior' ? `<span class="cl-badge jr">JR</span>` : ''}
+    </div>`).join('');
+  return `<div class="sec-h"><h2>${esc(c.name)}</h2><span class="small muted">${members.length} miembros</span></div>
+    <div class="card cl-hub">
+      <div class="cl-hubtop"><span class="cl-role">${CLUB_ROLE_LABEL[role] || role}</span>${isStaff ? `<span class="cl-code">Código <b>${esc(c.code)}</b></span>` : ''}</div>
+      <div class="cl-actions">
+        <button class="cl-tile soon" disabled>${golfIcon('trophy')}<span>Torneos</span><i>pronto</i></button>
+        <button class="cl-tile soon" disabled>${golfIcon('flag')}<span>Academia juvenil</span><i>${juniors} juveniles</i></button>
+      </div>
+    </div>
+    <div class="sec-h" style="margin-top:18px"><h2 style="font-size:18px">Miembros</h2>${isStaff ? `<span class="small muted">${juniors} juveniles</span>` : ''}</div>
+    <div class="card cl-roster">${roster}</div>
+    <button class="btn ghost" data-act="club-leave" style="margin-top:12px">Salir del club</button>`;
 }
 
 /* ============ Bienvenida / onboarding (primer ingreso) ============ */
