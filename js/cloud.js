@@ -117,7 +117,7 @@ const Cloud = (() => {
   }
 
   /* ---- sube fotos/videos locales (data-URL) a Storage y reescribe la URL pública.
-         Requiere un bucket público llamado "media" en Supabase. Si no existe o
+         Usa el bucket público "round-media" (mismo que el feed). Si no existe o
          falla, la foto se queda local (no rompe nada). ---- */
   async function uploadMedia(uid) {
     const mine = S.rounds.filter(r => r.userId === uid && r.media && r.media.src && String(r.media.src).startsWith('data:'));
@@ -128,9 +128,9 @@ const Cloud = (() => {
         const blob = await (await fetch(r.media.src)).blob();
         const ext = ((blob.type.split('/')[1] || 'jpg').split(';')[0]) || 'jpg';
         const path = `${uid}/${r.id}.${ext}`;
-        const up = await sb.storage.from('media').upload(path, blob, { upsert: true, contentType: blob.type });
+        const up = await sb.storage.from('round-media').upload(path, blob, { upsert: true, contentType: blob.type });
         if (up.error) throw up.error;
-        const url = sb.storage.from('media').getPublicUrl(path).data.publicUrl;
+        const url = sb.storage.from('round-media').getPublicUrl(path).data.publicUrl;
         if (url) { r.media = { ...r.media, src: url }; changed = true; }
       } catch (e) { break; } // sin bucket/permiso: se queda local, reintenta luego
     }

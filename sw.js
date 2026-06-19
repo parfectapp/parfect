@@ -1,5 +1,5 @@
 /* PARFECT service worker: la app funciona offline una vez visitada. */
-const CACHE = 'parfect-v414';
+const CACHE = 'parfect-v415';
 /* Shell + imágenes. El JS/CSS llevan ?v=N y se cachean en runtime (cache-first exacto),
    así nunca se sirve una versión vieja tras un deploy. */
 const ASSETS = [

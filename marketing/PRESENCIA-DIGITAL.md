@@ -69,20 +69,19 @@ supabase secrets set ANTHROPIC_API_KEY=sk-ant-xxxxxxxx
 ---
 
 ## E) Fotos/videos a la nube (Supabase Storage)
-Para que las fotos de ronda se vean entre dispositivos y en el feed (hoy se suben solas si existe el bucket):
-1. Supabase → **Storage → New bucket** → nombre **`media`** → marca **Public bucket** → Create.
-2. (Opcional, recomendado) Policy: permite subir solo a usuarios autenticados en su carpeta. En **Storage → Policies → media** crea una policy de INSERT para `authenticated`. Para una demo rápida basta con el bucket público.
-3. Listo: al guardar una ronda con foto, la app la sube a `media/<tu-id>/<ronda>.jpg` y guarda la URL pública. Si el bucket no existe, la foto se queda local (no se rompe nada).
+✅ **Ya está.** El bucket público **`round-media`** existe (lo creó la migración 03) y tanto las fotos de ronda como el feed apuntan a él. Al guardar una ronda con foto, la app la sube a `round-media/<tu-id>/<ronda>.jpg` y guarda la URL pública. (No necesitas crear el bucket `media`; eso era un nombre viejo, ya corregido en el código.)
 
 ---
 
-## Checklist
-- [ ] Google Cloud: OAuth client (origins + redirect a Supabase)
-- [ ] Supabase: Google provider con Client ID/Secret
-- [ ] Supabase: Site URL + Redirect URLs
-- [ ] Email: confirmación on/off según prefieras
-- [ ] Storage: crear bucket público `media` (para fotos de ronda)
-- [ ] Correr la migración `supabase/migrations/05_clubs.sql` (clubes)
+## Checklist (estado verificado · jun 2026)
+- [x] Supabase: tablas core (`profiles`, `rounds`, `practices`) — rondas sincronizan ✅
+- [x] Supabase: tablas sociales (`posts`, `likes`, `comments`, `events`…) — feed listo ✅
+- [x] Supabase: Email habilitado + autoconfirmación → login por correo funciona ✅
+- [x] Storage: bucket público `round-media` (fotos/videos) ✅
+- [ ] **Supabase: Google provider con Client ID/Secret** ← pendiente
+- [ ] **Google Cloud: OAuth client** (origen `https://rorropirrorro69.github.io` + redirect `https://xvkbkhyznwoaljjnsxue.supabase.co/auth/v1/callback`) ← pendiente
+- [ ] Supabase: Site URL + Redirect URLs (para el regreso de Google)
+- [ ] **Desplegar Edge Function `coach` + secreto `ANTHROPIC_API_KEY`** (Birdie con IA real) ← pendiente
+- [ ] Correr la migración `supabase/migrations/05_clubs.sql` (clubes en la nube) ← pendiente
 - [ ] (Opcional) Renombrar usuario/repo → parfectgolf.github.io → avísame
-- [ ] (Opcional) Desplegar Edge Function `coach` + secreto
 - [ ] (Después) Pasarela de pago para planes de club (Stripe/Mercado Pago)
