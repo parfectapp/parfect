@@ -3398,6 +3398,8 @@ button.story.story-link:active { transform: scale(.96); }
 .wz-tab.on { border-color: var(--lime); background: var(--lime-faint); }
 .wz-tab.on b { color: var(--text); }
 .wz-q { font-size: 19px; font-weight: 900; text-align: center; color: var(--text); margin: 4px 0 12px; }
+.wz-map { width: 100%; margin: -2px 0 14px; border-radius: 14px; overflow: hidden; }
+.wz-map .cap, .wz-map .cap svg { width: 100%; display: block; }
 .wz-art { width: 100%; height: 90px; perspective: 320px; margin-bottom: 14px; }
 .wz-art .hs-svg { width: 100%; height: 100%; display: block; transform: rotateX(12deg); transform-origin: 50% 80%; filter: drop-shadow(0 6px 8px rgba(20,40,10,.16)); }
 .wz-yn { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }

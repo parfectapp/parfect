@@ -795,6 +795,11 @@ function vPlay() {
       const ci = (V.fastStep != null && V.fastStep < steps.length) ? V.fastStep : fastDerivedIndex(h, steps);
       const cur = steps[ci];
       const tabLab = { tee: 'Fairway', app: 'Green', ud: 'Up&D', putts: 'Putts', score: 'Score' };
+      // mapa del hoyo en perspectiva, según el momento actual (salida → approach → green)
+      const capH = cur === 'tee' ? { ...h, app: null, putts: null, dist: null }
+        : cur === 'app' ? { ...h, app: (h.app && h.app !== 'gir' ? h.app : 'corto'), putts: null, dist: null }
+          : { ...h, app: (h.app || 'gir'), dist: (h.dist != null ? h.dist : 8), putts: (h.putts != null ? h.putts : 0) };
+      const capArt = (typeof captureSchematic === 'function') ? captureSchematic(capH, chole) : '';
       const ansOf = k => {
         if (k === 'tee') return h.teeLie === 'calle' ? 'Sí' : h.teeLie === 'ob' ? 'OB' : h.teeLie ? 'No' : null;
         if (k === 'app') return h.app === 'gir' ? 'Sí' : h.app ? 'No' : null;
@@ -806,7 +811,6 @@ function vPlay() {
       const tabs = steps.map((s, i) => `<button class="wz-tab ${i === ci ? 'on' : ''} ${ansOf(s) != null ? 'ans' : ''}" data-act="fast-tab" data-s="${s}"><span>${tabLab[s]}</span><b>${ansOf(s) || '·'}</b></button>`).join('');
       const yn = (scene, onYes, onNo, yesAttr, noAttr, q, extra) => `
         <h3 class="wz-q">${q}</h3>
-        <div class="wz-art">${chkScene(scene, onYes)}</div>
         <div class="wz-yn">
           <button class="wz-opt yes ${onYes ? 'on' : ''}" data-act="fast" ${yesAttr}>Sí</button>
           <button class="wz-opt no ${onNo ? 'on' : ''}" data-act="fast" ${noAttr}>No</button>
@@ -827,6 +831,7 @@ function vPlay() {
           </div>`;
       }
       return `<div class="card wz">
+        <div class="wz-map">${capArt}</div>
         <div class="wz-tabs">${tabs}</div>
         <div class="wz-body">${body}</div>
         ${ci > 0 ? `<button class="wz-back" data-act="fast-back">← Atrás</button>` : ''}
