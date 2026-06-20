@@ -2919,6 +2919,14 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .share-uptx { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 800; color: var(--muted); }
 .share-uptx .gi { width: 16px; height: 16px; color: var(--lime-ink); }
 .share-prev { width: 100%; max-height: 240px; object-fit: cover; display: block; }
+.invite-card { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; cursor: pointer; margin-bottom: 12px; border: 1px solid rgba(37,211,102,.4); background: linear-gradient(135deg, rgba(37,211,102,.1), var(--card)); }
+.invite-ic { flex: none; width: 42px; height: 42px; }
+.invite-ic svg { width: 42px; height: 42px; display: block; }
+.invite-tx { flex: 1; min-width: 0; }
+.invite-tx b { display: block; font-size: 15px; }
+.invite-tx span { font-size: 12px; color: var(--muted); }
+.invite-go { font-weight: 800; color: #1f9d4d; font-size: 13px; white-space: nowrap; }
+.invite-card:active { transform: scale(.99); }
 .fd-card { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 15px 16px 14px; box-shadow: 0 8px 22px rgba(20,40,15,.06); overflow: hidden; transition: transform .14s, box-shadow .2s; }
 .fd-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #7cc24a, #46b0e0, #9a5cd0); opacity: .9; }
 .fd-card:active { transform: scale(.995); }

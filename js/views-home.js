@@ -950,7 +950,7 @@ function vSocialFeed() {
     const card = (typeof scorecardTable === 'function') ? scorecardTable(s.holes, parOf, [{ name: '', scoreOf: i => (r.holes[i] ? r.holes[i].score : null) }], -1, null) : scoreStrip(s.holes, parOf, i => (r.holes[i] ? r.holes[i].score : null));
     return { id: 'me-' + r.id, mine: true, name: u.name, course: r.courseId ? sname(r.courseId) : r.course, holes: s.holes, score: s.score, toPar: s.toPar, fw: pct(s.fw, s.fwTot), gir: pct(s.gir, s.girTot), putts: s.putts, when: fmtDate(r.date), cmt: 0, likes: 0, cap: r.caption || '', media: r.media || null, card };
   });
-  const feed = [...myPosts, ...FRIENDS_FEED];
+  const feed = [...myPosts, ...(isDemoUser(u) ? FRIENDS_FEED : [])];
   const cards = feed.map(p => {
     const liked = !!likes[p.id];
     const ln = (p.likes || 0) + (liked ? 1 : 0);
@@ -979,8 +979,18 @@ function vSocialFeed() {
     </div>`;
   }).join('');
   return `<div class="sec-h" style="margin-top:6px"><h2>Feed de amigos</h2></div>
-    <div class="fd-list">${cards}</div>
+    ${inviteCard()}
+    ${cards ? `<div class="fd-list">${cards}</div>` : `<div class="card empty"><div class="e-ico">${golfIcon('flag')}</div><h3>Tu feed está listo</h3><p>Comparte una ronda e invita a tus cuates por WhatsApp para verlos aquí.</p></div>`}
     ${V.shareDraft ? vShareComposer(u) : ''}`;
+}
+
+/* tarjeta para invitar amigos por WhatsApp con tu link */
+function inviteCard() {
+  return `<button class="card invite-card" data-act="invite-wa">
+    <span class="invite-ic" aria-hidden="true"><svg viewBox="0 0 32 32"><path fill="#25D366" d="M16 3a13 13 0 0 0-11 19.7L3 29l6.5-1.9A13 13 0 1 0 16 3z"/><path fill="#fff" d="M22.6 19.2c-.3-.2-1.9-1-2.2-1.1-.3-.1-.5-.2-.8.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1a8.6 8.6 0 0 1-4.3-3.8c-.3-.6.3-.5.9-1.7.1-.2 0-.4 0-.6l-1-2.4c-.3-.7-.6-.6-.8-.6h-.7c-.2 0-.6.1-.9.4-.9.9-1.2 2.1-.6 3.6a10.4 10.4 0 0 0 5.6 5.3c2.4 1 2.9.8 3.5.8.7-.1 1.9-.8 2.1-1.5.3-.7.3-1.4.2-1.5-.1-.1-.3-.2-.6-.4z"/></svg></span>
+    <div class="invite-tx"><b>Invita a tus amigos</b><span>Mándales el link por WhatsApp y armen su liga</span></div>
+    <span class="invite-go">Invitar ›</span>
+  </button>`;
 }
 
 /* Composer para compartir una ronda con caption + foto/video */
@@ -1038,7 +1048,7 @@ function socialLeaders(u) {
   }
   // ---- modo local: demo ----
   const mine = myRounds();
-  const e = FRIENDS_FEED.map(f => ({ id: f.id, name: f.name, av: f.av, hcp: f.hcp, toPar18: Math.round(f.toPar / f.holes * 18), score: f.score }));
+  const e = (isDemoUser(u) ? FRIENDS_FEED : []).map(f => ({ id: f.id, name: f.name, av: f.av, hcp: f.hcp, toPar18: Math.round(f.toPar / f.holes * 18), score: f.score }));
   if (mine.length) {
     const s = Stats.roundStats(mine[0]);
     e.push({ me: true, name: u.name, hcp: u.hcp, toPar18: Math.round(s.toPar / Math.max(1, s.holes) * 18), score: s.score });
@@ -1062,7 +1072,9 @@ function vStories(u) {
     // si nadie ha publicado en la nube, cae al demo (diseño de antes)
   }
   // ---- modo local: demo ----
-  const cells = me + FRIENDS_FEED.map(f => `<button class="story story-link" data-act="friend" data-id="${esc(f.id)}">
+  const fr = isDemoUser(u) ? FRIENDS_FEED : [];
+  if (!fr.length) return '';   // usuario real: sin amigos demo, no mostramos la fila de historias
+  const cells = me + fr.map(f => `<button class="story story-link" data-act="friend" data-id="${esc(f.id)}">
       <span class="story-ring"><img class="story-img golfer" src="${AVATARS[f.av] || AVATARS[0]}" alt="" loading="lazy"></span>
       <span class="story-nm">${esc(f.name.split(' ')[0])}</span></button>`).join('');
   return `<div class="story-row"><div class="story-track">${cells}${cells}</div></div>`;
@@ -1070,6 +1082,7 @@ function vStories(u) {
 
 /* liga de amigos: ranking */
 function vRanking(u) {
+  if (!isDemoUser(u) && !(typeof Feed !== 'undefined' && Feed.on())) return '';   // usuario real sin amigos en la nube: sin liga demo
   const lead = socialLeaders(u);
   if (typeof Feed !== 'undefined' && Feed.on() && !lead.length) {
     return `<div class="sec-h"><h2>Liga de amigos</h2></div>
@@ -1112,6 +1125,7 @@ const TOURNAMENT = {
   ],
 };
 function vTorneo(u) {
+  if (!isDemoUser(u)) return '';   // torneo demo (con nombres de ejemplo) solo en la cuenta demo
   // Mismo diseño (tablero demo + próximos eventos); en la nube se añaden los eventos reales.
   const t = TOURNAMENT.active;
   const rows = t.leaders.slice().sort((a, b) => a.score - b.score).map((p, i) => {

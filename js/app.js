@@ -19,6 +19,7 @@ let V = {
 };
 
 const cur = () => S.users.find(u => u.id === S.session) || null;
+const isDemoUser = (u) => !!(u && /@parfect\.golf$/.test(u.email || ''));   // amigos demo solo para la cuenta demo
 const myRounds = () => S.rounds.filter(r => r.userId === S.session).sort((a, b) => b.date.localeCompare(a.date));
 const myPractices = () => S.practices.filter(p => p.userId === S.session).sort((a, b) => a.date.localeCompare(b.date));
 const today = () => new Date().toISOString().slice(0, 10);
@@ -1263,6 +1264,13 @@ const actions = {
     V.feedCard = id; go('feedcard');
   },
   'friend-soon'() { alert('Agregar amigos de otros dispositivos llegará con las cuentas en la nube (backend). Por ahora puedes invitarlos a una Party con el código.'); },
+  'invite-wa'() {
+    const u = cur();
+    const link = 'https://parfectapp.github.io/parfect/' + (u && u.id ? '?ref=' + encodeURIComponent(u.id) : '');
+    const msg = `¡Juega golf conmigo en PARFECT! 🏌️⛳️ Anota tus rondas, mídete con tus amigos y la IA te dice qué mejorar. Únete con mi link: ${link}`;
+    const wa = 'https://wa.me/?text=' + encodeURIComponent(msg);
+    try { window.open(wa, '_blank'); } catch (e) { location.href = wa; }
+  },
   'cal-train'(d) { const u = cur(); u.trainPerWeek = Stats.clamp((u.trainPerWeek != null ? u.trainPerWeek : 3) + Number(d.d), 0, 14); commit(); },
   'cal-rounds'(d) { const u = cur(); u.roundsPerWeek = Stats.clamp((u.roundsPerWeek != null ? u.roundsPerWeek : 1) + Number(d.d), 0, 7); commit(); },
   'cal-prev'() { if (--V.calM < 0) { V.calM = 11; V.calY--; } render(); },
