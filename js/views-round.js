@@ -505,7 +505,7 @@ function greenCloseup(h, G, pf, px) {
     <rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="16" fill="none" stroke="rgba(20,50,15,0.18)"/>
   </svg></div>`;
 }
-function captureSchematic(h, chole, noZoom, clean) {
+function captureSchematic(h, chole, noZoom, clean, full) {
   const shots = captureShots(h);
   const dog = (chole && chole.dog) || 'straight';
   const parV = chole ? chole.par : h.par;
@@ -516,9 +516,9 @@ function captureSchematic(h, chole, noZoom, clean) {
   // ¿vista de SOLO el green? (ya estás en green y registras la distancia/putts)
   const last = shots[shots.length - 1];
   const onGreen = !!last && last.lie === 'green';
-  if (!clean && onGreen && (h.putts != null || h.dist != null)) return greenCloseup(h, G, pf, px);
+  if (!clean && !full && onGreen && (h.putts != null || h.dist != null)) return greenCloseup(h, G, pf, px);
   // 2º tiro: toma "de frente al green" (imagen totalmente distinta a la salida)
-  if (!clean && h.app) return approachView(h, chole, G, pf, px);
+  if (!clean && !full && h.app) return approachView(h, chole, G, pf, px);
 
   // ===== proyección en perspectiva (diorama 3D profundo) =====
   const yNear = 270, yFar = 88;
@@ -590,9 +590,12 @@ function captureSchematic(h, chole, noZoom, clean) {
     return proj(t, s.side);
   };
   // ===== cámara por tiro: salida = toma del hoyo; approach/GIR = la cámara sube al green =====
-  const stage = h.app ? 'approach' : 'tee';
+  const stage = (!full && h.app) ? 'approach' : 'tee';
   let actShots, startNode;
-  if (stage === 'tee') {
+  if (full) {                              // hoyo COMPLETO: toda la secuencia tee → green en la toma ancha
+    actShots = shots;
+    startNode = proj(0, 0);
+  } else if (stage === 'tee') {
     actShots = shots.filter(s => s.role === 'tee');
     startNode = proj(0, 0);
   } else {
@@ -803,11 +806,12 @@ function vPlay() {
       const cur = steps[ci];
       const tabLab = { tee: 'Fairway', app: 'Green', ud: 'Up&D', putts: 'Putts', score: 'Score' };
       // mapa del hoyo en perspectiva, según el momento actual (salida → approach → green)
-      const capH = cur === 'tee' ? { ...h, teeLie: (h.teeLie || 'calle'), tee: (h.tee || 'c'), app: null, putts: null, dist: null }
-        : cur === 'app' ? { ...h, app: (h.app || 'gir'), putts: null, dist: null }
-          : cur === 'ud' ? { ...h, app: 'corto', upDown: true, putts: null, dist: null }   // chip que sube al green y se mete (up & down)
-            : { ...h, app: 'gir', dist: (h.dist != null ? h.dist : 8), putts: (h.putts != null ? h.putts : 1) };   // green closeup: anima según nº de putts
-      const capArt = (typeof captureSchematic === 'function') ? captureSchematic(capH, chole) : '';
+      const capArt = (typeof captureSchematic !== 'function') ? ''
+        : cur === 'tee' ? captureSchematic({ ...h, teeLie: (h.teeLie || 'calle'), tee: (h.tee || 'c'), app: null, putts: null, dist: null }, chole)
+          : cur === 'app' ? captureSchematic({ ...h, app: (h.app || 'gir'), putts: null, dist: null }, chole)
+            : cur === 'ud' ? captureSchematic({ ...h, app: 'corto', upDown: true, putts: null, dist: null }, chole)   // chip que sube al green y se mete
+              : cur === 'putts' ? captureSchematic({ ...h, app: 'gir', dist: (h.dist != null ? h.dist : 8), putts: (h.putts != null ? h.putts : 1) }, chole)   // green closeup según nº de putts
+                : captureSchematic({ ...h, teeLie: (h.teeLie || 'calle'), tee: (h.tee || 'c'), app: (h.app || 'gir') }, chole, false, false, true);   // SCORE = hoyo completo (tee → green)
       const ansOf = k => {
         if (k === 'tee') return h.teeLie === 'calle' ? 'Sí' : h.teeLie === 'ob' ? 'OB' : h.teeLie ? 'No' : null;
         if (k === 'app') return h.app === 'gir' ? 'Sí' : h.app ? 'No' : null;
