@@ -959,5 +959,24 @@ function savePartyRounds(party) {
     S.rounds.push(round);
     added = true;
   }
+  // agrega a los compañeros de party a tu historial de amigos (desde tu perspectiva)
+  const me = S.users.find(u => u.id === S.session);
+  if (me && party.players.some(pl => pl.userId === S.session)) {
+    me.friends = me.friends || [];
+    for (const pl of party.players) {
+      if (pl.userId === S.session) continue;                            // soy yo
+      const name = (pl.name || '').trim(); if (!name) continue;
+      const srcId = pl.userId || pl.pid;
+      if (me.friends.some(f => f.src === srcId || (f.name || '').toLowerCase() === name.toLowerCase())) continue; // ya es amigo
+      const acc = pl.userId ? S.users.find(u => u.id === pl.userId) : null;
+      const c = cardOf(pl.pid);
+      const played = c.holes.filter(h => h.score != null).length;
+      const hcp = (acc && acc.hcp != null) ? Math.round(acc.hcp)
+        : (c.has && played) ? Math.max(0, Math.round(c.toPar / played * 18)) : 0;   // estimado por su ronda si no tiene cuenta
+      const av = (acc && acc.avatar != null) ? acc.avatar : 0;
+      me.friends.push({ id: 'fr_' + Store.uid(), name, hcp, av, src: srcId, fromParty: true });
+      added = true;
+    }
+  }
   if (added) { Store.save(S); if (typeof Cloud !== 'undefined' && Cloud.enabled()) Cloud.pushSoon(); }
 }
