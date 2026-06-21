@@ -1442,7 +1442,6 @@ function vTournCreate(c) {
       <div class="field"><label>Nombre</label><input id="trn-name" placeholder="Ej. Copa Campestre · Junio" value="${esc(d.name || '')}"></div>
       <div class="field"><label>Fecha</label><input id="trn-date" type="date" value="${esc(d.date || '')}"></div>
       <div class="field"><label>Hoyos</label><div class="chips">${[9, 18].map(h => `<button class="chip sm ${(d.holes || 18) === h ? 'on' : ''}" data-act="tourn-holes" data-h="${h}">${h} hoyos</button>`).join('')}</div></div>
-      <div class="field"><label>Patrocinadores <span class="muted">(opcional, separa con comas)</span></label><input id="trn-sponsors" placeholder="Ej. Mercedes-Benz, Titleist" value="${esc(d.sponsors || '')}"></div>
       <p class="note">Formato: <b>Stroke play</b> (gross y neto). Se inscriben los miembros del club; tú capturas sus scores y el leaderboard se ordena solo.</p>
       <button class="btn primary big" data-act="tourn-create">Crear torneo ${golfIcon('trophy')}</button>
       ${V.tournErr ? `<p class="note err">${esc(V.tournErr)}</p>` : ''}
