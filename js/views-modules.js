@@ -283,19 +283,15 @@ function vTrainer() {
   const u = cur();
   let tab = V.trainerTab;
   if (tab === 'plan' || tab === 'coach') tab = 'diag';            // alias heredados
-  if (tab === 'tracker' || tab === 'logros' || tab === 'objetivos') tab = 'camino';
-  tab = ['diag', 'entreno', 'camino'].includes(tab) ? tab : 'diag';
+  if (tab === 'tracker' || tab === 'camino' || tab === 'objetivos') tab = 'logros';
+  tab = ['diag', 'entreno', 'logros'].includes(tab) ? tab : 'diag';
   const showHist = (!V.planStep || V.planStep === 'time') && !V.sessionRun && !V.sessionSummary;
-  const caminoBody = vCamino(u)
-    + `<div class="sec-h" style="margin-top:22px"><h2 style="font-size:15px">${golfIcon('green')} Tu plan</h2></div>` + vDataDriven(u, Stats.aggregate(myRounds()))
-    + `<div class="sec-h" style="margin-top:22px"><h2 style="font-size:15px">${golfIcon('bucket')} Tracker · drills</h2></div>` + vCourse(u)
-    + `<div class="sec-h" style="margin-top:22px"><h2 style="font-size:15px">${golfIcon('trophy')} Logros</h2></div>` + vKeyTargets(u) + `<div style="margin-top:12px"></div>` + vLogros();
   const body = tab === 'entreno' ? (vSessionPlanner() + (showHist ? vTrainHistory() : ''))
-    : tab === 'camino' ? caminoBody
+    : tab === 'logros' ? (vKeyTargets(u) + `<div style="margin-top:12px"></div>` + vLogros())
       : vDiag();
   const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>
-    <div class="tabs scroll">${T('diag', 'Análisis IA')}${T('entreno', 'Entreno')}${T('camino', 'Camino')}</div>
+    <div class="tabs scroll">${T('diag', 'Análisis IA')}${T('entreno', 'Entreno')}${T('logros', 'Logros')}</div>
     ${body}`;
 }
 
