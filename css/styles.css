@@ -2590,13 +2590,13 @@ body.is-scrolling .gi *, body.is-scrolling [class*="gi-"], body.is-scrolling .lp
 .lp-gal-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .lp-gal-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px 14px 11px; font-size: 13px; font-weight: 800; color: #fff; background: linear-gradient(0deg, rgba(8,20,8,.6), transparent); }
 /* ===== Club (B2B) ===== */
-.club-entry { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 13px 14px; border-radius: 16px; border: 1px solid var(--line); background: linear-gradient(135deg, #3b424d, #4b5560); color: #fff; cursor: pointer; margin-bottom: 14px; box-shadow: 0 6px 16px rgba(30,35,45,.12); }
-.club-entry-ic { width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,.16); display: grid; place-items: center; flex: none; }
-.club-entry-ic .gi { width: 22px; height: 22px; filter: brightness(0) invert(1); }
+.club-entry { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 13px 14px; border-radius: 16px; border: 1px solid var(--line); background: var(--card); color: var(--text); cursor: pointer; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(30,35,45,.06); }
+.club-entry-ic { width: 40px; height: 40px; border-radius: 12px; background: var(--lime-faint, rgba(124,194,74,.12)); display: grid; place-items: center; flex: none; }
+.club-entry-ic .gi { width: 22px; height: 22px; }
 .club-entry-tx { flex: 1; min-width: 0; }
-.club-entry-tx b { display: block; font-size: 14.5px; font-weight: 900; }
-.club-entry-tx span { display: block; font-size: 11.5px; color: rgba(255,255,255,.78); }
-.club-entry-go { font-size: 22px; color: rgba(255,255,255,.7); }
+.club-entry-tx b { display: block; font-size: 14.5px; font-weight: 800; }
+.club-entry-tx span { display: block; font-size: 11.5px; color: var(--muted); }
+.club-entry-go { font-size: 22px; color: var(--muted); }
 .club-entry:active { transform: scale(.99); }
 .club-intro { text-align: center; }
 .club-bigic { display: inline-grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; background: var(--lime-faint); margin: 4px auto 8px; }
