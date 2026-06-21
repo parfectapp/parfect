@@ -15,6 +15,18 @@ function shareWA(text, url) {
   if (!w) location.href = wa;   // respaldo: navega (no se bloquea)
 }
 
+/* Tracker: guarda el % de un drill desde el slider 0–100 (en vivo, sin re-render) */
+function trkFill(key, val) {
+  const u = (typeof cur === 'function') ? cur() : null; if (!u) return;
+  u.tracker = u.tracker || {};
+  const pct = Math.max(0, Math.min(100, Math.round(Number(val) || 0)));
+  u.tracker[key] = { pct, date: today() };
+  const lab = document.getElementById('trkpct-' + key);
+  if (lab) { lab.textContent = pct + '%'; lab.style.color = pct >= 85 ? '#3aa055' : pct >= 50 ? '#e0a23a' : 'var(--danger)'; }
+  clearTimeout(window.__trkSave);
+  window.__trkSave = setTimeout(() => { try { Store.save(S); if (typeof Cloud !== 'undefined' && Cloud.enabled()) Cloud.pushSoon(); } catch (e) {} }, 500);
+}
+
 let S = Store.load();
 S.settings = S.settings || { lang: 'es', theme: 'light' };
 let V = {
@@ -24,7 +36,7 @@ let V = {
   setupCourseId: null, setupTee: 'blancas', setupHoles: 18, setupStart: 0, setupWhen: 'ahora',
   hole: null, scoreTouched: false, confirmExit: false,
   detail: null, delArm: null,
-  trainerTab: 'tracker', diag: null, diagBusy: false, sessionMin: 60, planStep: 'time', planMode: 'ai', planAreas: ['driving', 'approach', 'short', 'putting'],
+  trainerTab: 'diag', diag: null, diagBusy: false, sessionMin: 60, planStep: 'time', planMode: 'ai', planAreas: ['driving', 'approach', 'short', 'putting'],
   trackVals: null, trkTab: 'plan', drillLog: null, drillCat: 'fw',
   calY: null, calM: null, calSel: null, calAddType: 'entreno', friendId: null, holeIdx: 0,
   courseId: 'campestre', addFriend: false, teeClubId: null, attack2: false, sim: null, shadowHcp: null, camposHcp: null,
@@ -1029,7 +1041,7 @@ const actions = {
     render();
   },
   diagnose() {
-    V.diagBusy = true; V.diag = null; V.diagAI = null; V.trainerTab = 'plan';
+    V.diagBusy = true; V.diag = null; V.diagAI = null; V.trainerTab = 'diag';
     render();
     setTimeout(() => {
       V.diagBusy = false;

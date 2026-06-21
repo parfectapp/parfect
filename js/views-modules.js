@@ -223,25 +223,25 @@ function vCourse(u) {
   const anyBag = Object.keys((u && u.clubs) || {}).length;
   const groups = trackerDrills(u);
   const drillCard = d => {
-    const e = log[d.key]; const hits = e ? e.hits : 0; const reps = d.reps; const pct = reps ? Math.round(hits / reps * 100) : 0; const done = e && hits >= reps;
-    const pc = !e ? 'var(--muted)' : pct >= 85 ? '#3aa055' : pct >= 50 ? '#e0a23a' : 'var(--danger)';
+    const e = log[d.key];
+    const pct = e ? (e.pct != null ? e.pct : (e.reps ? Math.round(e.hits / e.reps * 100) : 0)) : 0;
+    const has = !!e; const done = has && pct >= 85;
+    const pc = !has ? 'var(--muted)' : pct >= 85 ? '#3aa055' : pct >= 50 ? '#e0a23a' : 'var(--danger)';
     const tmRun = V.trkTimer && V.trkTimer.key === d.key && V.trkTimer.running;
     return `<div class="card trk-card ${done ? 'trk-done' : ''}" style="padding:12px;margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start">
         <div style="min-width:0"><b style="font-size:14.5px">${esc(d.name)}</b><span style="display:block;font-size:12px;color:var(--muted);line-height:1.35;margin-top:2px">${esc(d.goal)}</span></div>
-        <span style="font-weight:900;font-size:15px;color:${pc};flex:none">${e ? pct + '%' : '—'}</span>
+        <span id="trkpct-${d.key}" style="font-weight:900;font-size:16px;color:${pc};flex:none">${has ? pct + '%' : '—'}</span>
       </div>
-      <div style="display:flex;align-items:center;gap:12px;margin-top:10px">
-        <button class="ph-pbtn" data-act="trk-set" data-k="${d.key}" data-reps="${reps}" data-d="-1">−</button>
-        <b style="min-width:44px;text-align:center;font-size:15px">${hits}/${reps}</b>
-        <button class="ph-pbtn" data-act="trk-set" data-k="${d.key}" data-reps="${reps}" data-d="1">+</button>
-        <span style="flex:1"></span>
+      <input type="range" min="0" max="100" step="5" value="${pct}" class="trk-slider" oninput="trkFill('${d.key}',this.value)" aria-label="${esc(d.name)} % de aciertos">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+        <span class="small muted">% de aciertos (0–100)</span>
         <button class="chip sm ${tmRun ? 'on' : ''}" data-act="trk-timer" data-k="${d.key}" id="trktm-${d.key}" style="white-space:nowrap">⏱ ${tmRun ? fmtClock(V.trkTimer.left) : '20 min'}</button>
       </div>
     </div>`;
   };
   const sec = ([title, arr]) => arr.length ? `<div class="sec-h" style="margin-top:16px"><h2 style="font-size:15px">${esc(title)}</h2></div>${arr.map(drillCard).join('')}` : '';
-  return `<p class="note" style="margin:2px 2px 10px">Elige un carry, pega tus reps y registra cuántas caíste en el gap. Tu <b>% por palo</b> alimenta tu plan.</p>
+  return `<p class="note" style="margin:2px 2px 10px">Pega tus reps y <b>desliza tu % de aciertos</b> (0–100) por palo. Eso alimenta tu plan.</p>
     ${!anyBag ? `<div class="card"><p class="note" style="margin:6px 2px">Primero llena tu <b>bolsa</b> (carrys) en tu perfil — con eso genero tus drills.</p></div>` : groups.map(sec).join('')}`;
 }
 
@@ -282,24 +282,20 @@ function vCamino(u) {
 function vTrainer() {
   const u = cur();
   let tab = V.trainerTab;
-  if (tab === 'diag') tab = 'plan';                              // alias heredados
-  if (tab === 'logros' || tab === 'objetivos') tab = 'camino';
-  tab = ['tracker', 'plan', 'entreno', 'camino', 'coach'].includes(tab) ? tab : 'tracker';
+  if (tab === 'plan' || tab === 'coach') tab = 'diag';            // alias heredados
+  if (tab === 'tracker' || tab === 'logros' || tab === 'objetivos') tab = 'camino';
+  tab = ['diag', 'entreno', 'camino'].includes(tab) ? tab : 'diag';
   const showHist = (!V.planStep || V.planStep === 'time') && !V.sessionRun && !V.sessionSummary;
-  const aiCta = Stats.aggregate(myRounds()) ? `<div class="diag-cta" style="margin-top:18px">
-        <span class="diag-cta-ic">${golfIcon('green')}</span>
-        <h2 class="diag-cta-h">Análisis IA</h2>
-        <p class="diag-cta-p">La IA cruza tus rondas y te dice dónde se te van los golpes y qué entrenar. El resultado aparece en <b>Plan</b>.</p>
-        <button class="btn primary big" data-act="diagnose">${golfIcon('flag')} Generar análisis IA</button>
-      </div>` : '';
-  const body = tab === 'tracker' ? vCourse(u)
-    : tab === 'plan' ? vDiag()
-      : tab === 'entreno' ? (vSessionPlanner() + (showHist ? vTrainHistory() : '') + aiCta)
-        : tab === 'coach' ? vCoach()
-          : (vCamino(u) + `<div class="sec-h" style="margin-top:22px"><h2 style="font-size:15px">${golfIcon('trophy')} Logros</h2></div>` + vKeyTargets(u) + `<div style="margin-top:12px"></div>` + vLogros());
+  const caminoBody = vCamino(u)
+    + `<div class="sec-h" style="margin-top:22px"><h2 style="font-size:15px">${golfIcon('green')} Tu plan</h2></div>` + vDataDriven(u, Stats.aggregate(myRounds()))
+    + `<div class="sec-h" style="margin-top:22px"><h2 style="font-size:15px">${golfIcon('bucket')} Tracker · drills</h2></div>` + vCourse(u)
+    + `<div class="sec-h" style="margin-top:22px"><h2 style="font-size:15px">${golfIcon('trophy')} Logros</h2></div>` + vKeyTargets(u) + `<div style="margin-top:12px"></div>` + vLogros();
+  const body = tab === 'entreno' ? (vSessionPlanner() + (showHist ? vTrainHistory() : ''))
+    : tab === 'camino' ? caminoBody
+      : vDiag();
   const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>
-    <div class="tabs scroll">${T('tracker', 'Tracker')}${T('plan', 'Plan')}${T('entreno', 'Entreno')}${T('camino', 'Camino')}${T('coach', 'Coach')}</div>
+    <div class="tabs scroll">${T('diag', 'Análisis IA')}${T('entreno', 'Entreno')}${T('camino', 'Camino')}</div>
     ${body}`;
 }
 
@@ -309,8 +305,9 @@ function vDataDriven(u, agg) {
   const tr = (u && u.tracker) || {};
   const bag = (u && u.clubs) || {};
   const carry = id => (typeof clubC === 'function') ? clubC(bag, id) : (bag[id] && bag[id].c);
+  const drillPct = e => e ? (e.pct != null ? e.pct : (e.reps ? Math.round(e.hits / e.reps * 100) : null)) : null;
   const ins = [];
-  CLUBS.forEach(c => { const e = tr['c_' + c.id]; if (e && e.reps && carry(c.id) != null) { const pct = Math.round(e.hits / e.reps * 100); if (pct < 70) ins.push({ sev: 100 - pct, txt: `Baja precisión en ${c.name} (${pct}%)`, drill: { name: c.name, goal: `${carry(c.id)} yds · 7/7 en su gap` } }); } });
+  CLUBS.forEach(c => { const e = tr['c_' + c.id]; const pct = drillPct(e); if (pct != null && carry(c.id) != null && pct < 70) ins.push({ sev: 100 - pct, txt: `Baja precisión en ${c.name} (${pct}%)`, drill: { name: c.name, goal: `${carry(c.id)} yds en su gap` } }); });
   if (agg) {
     if (agg.fwPct < 50) ins.push({ sev: 62 - agg.fwPct, txt: `Pocos fairways (${Math.round(agg.fwPct)}%)`, drill: { name: 'Driver', goal: '7/7 en un gap de 40 yds' } });
     if (agg.girPct < 40) ins.push({ sev: 52 - agg.girPct, txt: `Pocos greens en regulación (${Math.round(agg.girPct)}%)`, drill: { name: 'Fierros', goal: '7/7 a tu carry, gap 40' } });
@@ -320,7 +317,7 @@ function vDataDriven(u, agg) {
   }
   ins.sort((a, b) => b.sev - a.sev);
   const top = ins.slice(0, 3);
-  const accs = CLUBS.map(c => { const e = tr['c_' + c.id]; return (e && e.reps) ? { name: c.name, pct: Math.round(e.hits / e.reps * 100), group: c.group } : null; }).filter(Boolean);
+  const accs = CLUBS.map(c => { const p = drillPct(tr['c_' + c.id]); return p != null ? { name: c.name, pct: p, group: c.group } : null; }).filter(Boolean);
   const strat = [];
   if (accs.length) {
     const best = accs.slice().sort((a, b) => b.pct - a.pct)[0];
@@ -332,9 +329,9 @@ function vDataDriven(u, agg) {
   if (agg && agg.scrPct < 45) strat.push('Cuando falles green, deja el chip cuesta arriba para salvar el par.');
   const goals = [];
   if (agg) {
-    goals.push(['Fairways', Math.round(agg.fwPct) + '%', Math.min(78, Math.round(agg.fwPct) + 8) + '%']);
-    goals.push(['GIR', Math.round(agg.girPct) + '%', Math.min(68, Math.round(agg.girPct) + 8) + '%']);
-    goals.push(['Putts / ronda', agg.putts18.toFixed(1), Math.max(28, agg.putts18 - 1.5).toFixed(1)]);
+    if (isFinite(agg.fwPct)) goals.push(['Fairways', Math.round(agg.fwPct) + '%', Math.min(78, Math.round(agg.fwPct) + 8) + '%']);
+    if (isFinite(agg.girPct)) goals.push(['GIR', Math.round(agg.girPct) + '%', Math.min(68, Math.round(agg.girPct) + 8) + '%']);
+    if (isFinite(agg.putts18)) goals.push(['Putts / ronda', agg.putts18.toFixed(1), Math.max(28, agg.putts18 - 1.5).toFixed(1)]);
   }
   const row = t => `<div style="font-size:13.5px;padding:5px 0;border-top:1px solid var(--line-soft,var(--line))">${t}</div>`;
   const cardInsights = top.length
@@ -352,13 +349,18 @@ function vDiag() {
       <p>Registra al menos una ronda y Parfect Trainer encontrará dónde se van tus golpes.</p>
       <button class="btn primary" data-act="quick-round">Registrar ronda</button></div>`;
   }
-  const dd = vDataDriven(cur(), agg);
   if (V.diagBusy) {
     return `<div class="card empty"><div class="e-ico">${golfIcon('green')}</div><h3>Analizando tus patrones…</h3>
       <p>Correlacionando ${agg.holesPlayed} hoyos, ${agg.rounds} rondas y 12+ métricas.</p></div>`;
   }
   if (!V.diag) {
-    return dd + `<p class="note" style="text-align:center;margin-top:14px">¿Quieres el análisis profundo con IA? Genéralo desde la pestaña <b>Entreno</b>.</p>`;
+    return `<div class="sec-h" style="margin-top:6px"><h2 style="font-size:18px">Análisis IA</h2><span class="small muted">${agg.rounds} rondas</span></div>
+      <div class="diag-cta">
+        <span class="diag-cta-ic">${golfIcon('green')}</span>
+        <h2 class="diag-cta-h">Tu coach IA está listo</h2>
+        <p class="diag-cta-p">La IA cruza tus ${agg.holesPlayed} hoyos y ${agg.rounds} ronda${agg.rounds === 1 ? '' : 's'} para encontrar dónde se te van los golpes y qué entrenar.</p>
+        <button class="btn primary big" data-act="diagnose">${golfIcon('flag')} Generar análisis IA</button>
+      </div>`;
   }
   const d = V.diag;
   const done = (cur() || {}).drillsDone || {};
@@ -402,7 +404,7 @@ function vDiag() {
             : `<p>${esc(ai.text).replace(/\n/g, '<br>')}</p>`}
        </div>
      </div>` : '';
-  return dd + warn +
+  return warn +
     `<div class="aiq-hero">
        <span class="aiq-hero-ava">${golfIcon('flag')}</span>
        <div class="aiq-hero-tx"><span class="aiq-hero-lab">Análisis IA · ${agg.rounds} ronda${agg.rounds === 1 ? '' : 's'}</span><b class="aiq-hero-h">Tu enfoque ahora: ${esc((top.titulo || 'tu juego').split('·')[0].trim())}</b><p class="aiq-hero-p">${d.focus.length} prioridades para bajar golpes, ordenadas por impacto.</p></div>
