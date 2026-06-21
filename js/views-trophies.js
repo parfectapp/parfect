@@ -45,7 +45,7 @@ function vTrophies() {
 
 /* Solo logros (sin metas) — su propia sección */
 /* Aviario: 50 pájaros coleccionables. Cada ronda y cada birdie desbloquea uno. */
-const AVIARY = ['Birdie', 'Eagle', 'Albatros', 'Cóndor', 'Águila real', 'Halcón', 'Búho', 'Quetzal', 'Colibrí', 'Cardenal', 'Tucán', 'Guacamaya', 'Pavorreal', 'Flamenco', 'Cisne', 'Garza', 'Pelícano', 'Martín pescador', 'Petirrojo', 'Golondrina', 'Ruiseñor', 'Jilguero', 'Canario', 'Periquito', 'Gorrión', 'Mirlo', 'Urraca', 'Cuervo', 'Pingüino', 'Avestruz', 'Cigüeña', 'Lechuza', 'Águila calva', 'Gavilán', 'Cernícalo', 'Faisán', 'Codorniz', 'Paloma', 'Tórtola', 'Carpintero', 'Calandria', 'Zopilote', 'Ibis', 'Cormorán', 'Gaviota', 'Chara', 'Tángara', 'Mosquero', 'Chipe', 'Fénix'];
+const AVIARY = ['Primera ronda', 'Primer hoyo', 'Primer par', 'Primer birdie', 'Romper 120', 'Romper 115', 'Romper 110', 'Romper 105', 'Romper 100', 'Romper 95', 'Romper 90', 'Romper 85', 'Romper 80', 'Romper 75', 'Vuelta en par', 'Bajo par', 'Calles firmes', 'Nueve calles', 'Green en regulación', 'Nueve GIR', 'Up & down', 'Sin tres putts', 'Putt sólido', 'Ronda sin dobles', 'Tres birdies', 'Cinco pares', 'Racha de pares', 'Cazador de birdies', 'Fábrica de pares', 'Maestro de calles', 'Guardián del green', 'Mago del up & down', 'Hechicero del putt', 'Rey del front nine', 'Rey del back nine', 'Remontada', 'Cinco rondas', 'Diez rondas', 'Veinticinco rondas', 'Cincuenta rondas', 'Constancia', 'Hándicap bajando', 'Un dígito', 'Camino a scratch', 'Scratch', 'Récord personal', 'Veterano del campo', 'Rey del campo', 'Leyenda del club', 'Inmortal'];
 function aviBird(i, locked) {
   const hue = Math.round(i * 360 / AVIARY.length);
   const body = locked ? '#c4cec2' : `hsl(${hue},66%,57%)`;

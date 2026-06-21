@@ -287,7 +287,7 @@ function vTrainer() {
   tab = ['diag', 'entreno', 'logros'].includes(tab) ? tab : 'diag';
   const showHist = (!V.planStep || V.planStep === 'time') && !V.sessionRun && !V.sessionSummary;
   const body = tab === 'entreno' ? (vSessionPlanner() + (showHist ? vTrainHistory() : ''))
-    : tab === 'logros' ? (vKeyTargets(u) + `<div style="margin-top:12px"></div>` + vLogros())
+    : tab === 'logros' ? vLogros()
       : vDiag();
   const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
   return `<div class="sec-h"><h2>Parfect Trainer</h2></div>

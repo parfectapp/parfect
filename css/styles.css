@@ -4675,3 +4675,16 @@ body.is-scrolling .lp-flyb, body.is-scrolling .lp-bug, body.is-scrolling .lp-bee
 .avi-nm { display: block; font-size: 10.5px; font-weight: 800; color: var(--text); margin-top: 5px; line-height: 1.15; }
 .avi:not(.on) .avi-nm { color: var(--muted); }
 .avi-lock { position: absolute; top: 6px; right: 7px; font-size: 11px; opacity: .8; }
+
+/* Nueva ronda: objetivos de la ronda */
+.obj-card { padding: 14px; }
+.obj-head { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+.obj-av { flex: 0 0 auto; width: 46px; height: 46px; display: grid; place-items: center; }
+.obj-av .golfer { width: 46px; height: 46px; object-fit: contain; }
+.obj-who b { display: block; font-size: 15px; }
+.obj-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.obj-it { background: var(--lime-faint, rgba(124,194,74,.1)); border: 1px solid var(--line); border-radius: 12px; padding: 9px 4px; text-align: center; }
+.obj-ic { display: block; width: 20px; height: 20px; margin: 0 auto 3px; opacity: .85; }
+.obj-ic svg { width: 100%; height: 100%; }
+.obj-v { display: block; font-size: 17px; font-weight: 900; color: var(--text); line-height: 1; }
+.obj-k { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; font-weight: 700; }

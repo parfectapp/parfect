@@ -336,6 +336,25 @@ function vSetup() {
         ${V.err ? `<p class="form-err">${esc(V.err)}</p>` : ''}
       </div>
     </div>`;
+  const objCard = (() => {
+    const goal = u.goal != null ? u.goal : Math.max(0, (u.hcp != null ? u.hcp : 12) - 5);
+    const b = (typeof Stats !== 'undefined' && Stats.benchFor) ? Stats.benchFor(goal) : null;
+    if (!b) return '';
+    const items = [
+      [golfIcon('flag'), Math.round(b.fwPct) + '%', 'Fairways'],
+      [golfIcon('green'), Math.round(b.girPct) + '%', 'Greens (GIR)'],
+      [golfIcon('bucket'), Math.round(b.scrPct) + '%', 'Up & down'],
+      [golfIcon('putter'), Math.round(b.putts18), 'Putts'],
+    ];
+    return `<div class="su-block"><span class="su-lab">Tus objetivos de hoy</span>
+      <div class="card obj-card">
+        <div class="obj-head">
+          <span class="obj-av">${avatarImg(u, 'obj-monito', true)}</span>
+          <div class="obj-who"><b>${esc(u.name || 'Tú')}</b><span class="small muted">HCP ${fmtHcp(u.hcp != null ? u.hcp : 12)} · meta ${fmtHcp(goal)}</span></div>
+        </div>
+        <div class="obj-grid">${items.map(([ic, v, k]) => `<div class="obj-it"><span class="obj-ic">${ic}</span><b class="obj-v">${v}</b><span class="obj-k">${k}</span></div>`).join('')}</div>
+      </div></div>`;
+  })();
   return `<div class="su-hero2 su-hero-course">
       <div class="su-hero2-txt">
         <span class="su-hero-tag">${golfIcon('flag')} Nueva ronda</span>
@@ -344,6 +363,7 @@ function vSetup() {
       </div>
       <div class="su-hero2-art">${courseCrest(cid)}</div>
     </div>
+    ${objCard}
     ${body}
     ${lobbyCard}
     <button class="btn su-cancel" data-act="nav" data-view="ronda">Cancelar</button>
