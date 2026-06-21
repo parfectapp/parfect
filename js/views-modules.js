@@ -286,7 +286,7 @@ function vTrainer() {
   if (tab === 'tracker' || tab === 'camino' || tab === 'objetivos') tab = 'logros';
   tab = ['diag', 'entreno', 'logros'].includes(tab) ? tab : 'diag';
   const showHist = (!V.planStep || V.planStep === 'time') && !V.sessionRun && !V.sessionSummary;
-  const body = tab === 'entreno' ? (vSessionPlanner() + (showHist ? vTrainHistory() : ''))
+  const body = tab === 'entreno' ? (vSessionPlanner() + (showHist ? (`<div class="sec-h" style="margin-top:18px"><h2 style="font-size:16px">${golfIcon('bucket')} Tracker · drills</h2></div>` + vCourse(u) + vTrainHistory()) : ''))
     : tab === 'logros' ? vLogros()
       : vDiag();
   const T = (id, label) => `<button class="tab ${tab === id ? 'on' : ''}" data-act="trainer-tab" data-t="${id}">${label}</button>`;
