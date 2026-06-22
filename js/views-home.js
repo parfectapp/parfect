@@ -1661,11 +1661,11 @@ function onbSaveStep() {
   }
 }
 
-const ONB_STEPS = ['Bienvenida', 'Tu golfista', 'Cómo juegas', 'Tu bolsa', '¡Listo!'];
+const ONB_STEPS = ['Bienvenida', 'Tu golfista', 'Tu meta', 'Tu bolsa', '¡Listo!'];
 const ONB_META = [
   null,
-  { ic: 'bird', t: 'Crea tu golfista', s: 'Elige tu monito, color y fondo — lo cambias cuando quieras.', ac: '#7cc24a' },
-  { ic: 'flag', t: '¿Cómo juegas?', s: 'Tu hándicap y tu meta. Si no los sabes, pon un estimado — lo afinamos con tus rondas.', ac: '#3aa0e0' },
+  { ic: 'bird', t: 'Crea tu golfista', s: 'Tu monito y cómo juegas hoy (tu hándicap). Lo cambias cuando quieras.', ac: '#7cc24a' },
+  { ic: 'flag', t: 'Tu meta', s: '¿A qué hándicap quieres llegar? Si no lo sabes, pon un estimado — lo afinamos con tus rondas.', ac: '#3aa0e0' },
   { ic: 'bucket', t: 'Tu bolsa', s: 'Cuánto vuela cada palo, para que el coach te diga qué usar en cada tiro.', ac: '#e0a23a' },
   null,
 ];
@@ -1705,16 +1705,16 @@ function vOnboard() {
   } else if (step === 1) {
     const m = ONB_META[1];
     body = `<div class="onb-banner" style="--ac:${m.ac}"><div class="onb-banner-ic">${golfIcon(m.ic)}</div><div class="onb-banner-tx"><b>${m.t}</b><span>${m.s}</span></div>${onbHills(m.ac)}</div>
-      <div class="card"><div class="field"><label>Tu nombre</label><input id="p-name" value="${esc(u.name || '')}" placeholder="¿Cómo te llamas?"></div></div>
+      <div class="card">
+        <div class="field"><label>Tu nombre</label><input id="p-name" value="${esc(u.name || '')}" placeholder="¿Cómo te llamas?"></div>
+        <div class="field"><label>¿Cómo juegas? · Hándicap actual</label><input id="p-hcp" type="number" inputmode="decimal" step="1" value="${esc(u.hcp)}" placeholder="ej. 18"></div>
+      </div>
       ${vAvatarCreator(u)}`;
   } else if (step === 2) {
     const m = ONB_META[2];
     body = `<div class="onb-banner" style="--ac:${m.ac}"><div class="onb-banner-ic">${golfIcon(m.ic)}</div><div class="onb-banner-tx"><b>${m.t}</b><span>${m.s}</span></div>${onbHills(m.ac)}</div>
       <div class="card">
-        <div class="field-row">
-          <div class="field"><label>Hándicap</label><input id="p-hcp" type="number" step="1" value="${esc(u.hcp)}"></div>
-          <div class="field"><label>Meta</label><input id="p-goal" type="number" step="1" value="${esc(u.goal)}"></div>
-        </div>
+        <div class="field"><label>Tu meta · Hándicap objetivo</label><input id="p-goal" type="number" inputmode="decimal" step="1" value="${esc(u.goal)}" placeholder="ej. 12"></div>
         <div class="field"><label>Campo de casa</label>
           <div class="chips">${COURSE_ORDER.map(id => `<button class="chip sm ${(u.homeCourse || 'campestre') === id ? 'on' : ''}" data-act="prof-campo" data-c="${id}">${esc(COURSES[id].name.split(' · ')[0].replace('Club ', '').replace(' Morelia', ''))}</button>`).join('')}</div>
         </div>
