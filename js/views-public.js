@@ -507,11 +507,9 @@ function vLanding() {
         <span class="lp-introflag">${golfFlagSvg()}</span>
         <span class="lp-intro-logo">${pLogo()}</span>
         <span class="lp-intro-tag">Golf Analytics</span>
-        <div class="lp-press2">
-          <span class="lp-beta">Beta</span>
-        </div>
         <div class="lp-intro-cta">
           <div class="lp-stores">${lpStoreBadge()}${lpGooglePlay()}</div>
+          <div class="lp-rating"><span class="lp-rating-stars">★★★★★</span><b class="lp-rating-num">4.9</b></div>
         </div>
       </div>
     </section>
