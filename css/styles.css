@@ -4755,3 +4755,8 @@ body.is-scrolling .lp-flyb, body.is-scrolling .lp-bug, body.is-scrolling .lp-bee
 .lp-cta-login:active { transform: scale(.97); }
 .lp-stars { text-align: center; color: #e8b53a; font-size: 15px; letter-spacing: 1px; font-weight: 700; margin-top: 12px; }
 .lp-stars b { color: var(--text); margin-left: 4px; }
+
+/* Landing: CTA en el primer pantallazo (debajo de PARFECT/Beta) */
+.lp-intro-cta { width: 100%; max-width: 330px; margin: 18px auto 0; display: flex; flex-direction: column; gap: 10px; }
+.lp-intro-cta .lp-stores { margin-top: 4px; }
+.lp-intro-beta { width: 100%; }
