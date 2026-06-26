@@ -398,28 +398,28 @@ function vPartyLive() {
     const gir = c.app === 'gir';
     const scoreCls = score == null ? '' : (score - h.par <= -1 ? 'good' : score - h.par === 0 ? 'par' : score - h.par === 1 ? 'over' : 'bad');
     const nm = esc(apl.name.split(' ')[0]);
-    const steps = partySteps(c, h.par);
-    const curK = (V.pWizStep && steps.includes(V.pWizStep)) ? V.pWizStep : partyDerived(c, h.par);
-    const tabLab = { tee: 'Fairway', app: 'Green', ud: 'Up&D', putts: 'Putts', score: 'Score' };
-    const ansOf = k => k === 'tee' ? (c.tee === 'fw' ? 'Sí' : c.tee === 'penal' ? 'OB' : c.tee ? 'No' : null)
-      : k === 'app' ? (c.app === 'gir' ? 'Sí' : c.app ? 'No' : null)
-        : k === 'ud' ? (c.upDown === true ? 'Sí' : c.upDown === false ? 'No' : null)
-          : k === 'putts' ? (c.putts != null ? c.putts + 'p' : null)
-            : (score != null ? String(score) : null);
-    const tabs = steps.map(s => `<button class="wz-tab ${s === curK ? 'on' : ''} ${ansOf(s) != null ? 'ans' : ''}" data-act="pa-wiz-tab" data-s="${s}"><span>${tabLab[s]}</span><b>${ansOf(s) || '·'}</b></button>`).join('');
-    const yn = (scene, onYes, onNo, yesAttr, noAttr, q, extra) => `<h3 class="wz-q">${q}</h3><div class="wz-art">${chkScene(scene, onYes)}</div><div class="wz-yn"><button class="wz-opt yes ${onYes ? 'on' : ''}" data-act="pa-fast" ${yesAttr}>Sí</button><button class="wz-opt no ${onNo ? 'on' : ''}" data-act="pa-fast" ${noAttr}>No</button></div>${extra || ''}`;
-    const penPill = `<div class="wz-extra"><button class="wz-pen ${c.tee === 'penal' ? 'on' : ''}" data-act="pa-pen" data-pid="${ap}">${c.tee === 'penal' ? '✓ ' : ''}Penalti / OB</button></div>`;
-    let body;
-    if (curK === 'tee') body = yn('fw', c.tee === 'fw', !!c.tee && c.tee !== 'fw' && c.tee !== 'penal', `data-pid="${ap}" data-k="tee" data-v="fw"`, `data-pid="${ap}" data-k="tee" data-v="rough"`, `¿${nm} pegó al fairway?`, penPill);
-    else if (curK === 'app') body = yn('gir', gir, !!c.app && !gir, `data-pid="${ap}" data-k="app" data-v="gir"`, `data-pid="${ap}" data-k="app" data-v="miss"`, '¿Green en regulación?', h.par === 3 ? penPill : '');
-    else if (curK === 'ud') body = yn('ud', c.upDown === true, c.upDown === false, `data-pid="${ap}" data-k="ud" data-v="si"`, `data-pid="${ap}" data-k="ud" data-v="no"`, '¿Salvó el par? (up &amp; down)');
-    else if (curK === 'putts') { const opts = c.upDown === true ? [[0, '0'], [1, '1']] : [[0, '0'], [1, '1'], [2, '2'], [3, '3'], [4, '4+']]; body = `<h3 class="wz-q">¿Cuántos putts?</h3><div class="wz-putts ${opts.length === 2 ? 'wz-putts2' : ''}">${opts.map(([v, l]) => `<button class="wz-putt ${c.putts === v ? 'on' : ''}" data-act="pa-fast" data-pid="${ap}" data-k="putts" data-v="${v}">${l}</button>`).join('')}</div>`; }
-    else body = `<h3 class="wz-q">Score de ${nm}</h3><div class="wz-scorebox ${scoreCls}"><span class="sc-num">${score != null ? score : '–'}</span><span class="sc-rel">${score != null ? relScore(score - h.par) : ''}</span><div class="stepper"><button data-act="pa-cap-score" data-pid="${ap}" data-d="-1">−</button><button data-act="pa-cap-score" data-pid="${ap}" data-d="1">+</button></div></div>`;
-    const ci = steps.indexOf(curK);
-    capBody = `<div class="card wz">
-      <div class="wz-tabs">${tabs}</div>
-      <div class="wz-body">${body}</div>
-      ${ci > 0 ? `<button class="wz-back" data-act="pa-wiz-back">← Atrás</button>` : ''}
+    const A = `data-act="pa-fast" data-pid="${ap}"`;
+    capBody = `<div class="card qlog">
+      ${h.par > 3 ? `<span class="qlog-lab">Salida · ${nm}</span><div class="qlog-chips">
+          <button class="qlog-chip ${c.tee === 'fw' ? 'on' : ''}" ${A} data-k="tee" data-v="fw">Fairway</button>
+          <button class="qlog-chip neg ${c.tee === 'rough' ? 'on' : ''}" ${A} data-k="tee" data-v="rough">Falló</button>
+          <button class="qlog-chip neg ${c.tee === 'penal' ? 'on' : ''}" ${A} data-k="tee" data-v="penal">OB</button>
+        </div>` : `<div class="qlog-par3">Par 3 · directo al green</div>`}
+      <span class="qlog-lab">Green</span><div class="qlog-chips">
+        <button class="qlog-chip ${c.app === 'gir' ? 'on' : ''}" ${A} data-k="app" data-v="gir">En regulación</button>
+        <button class="qlog-chip neg ${c.app != null && c.app !== 'gir' ? 'on' : ''}" ${A} data-k="app" data-v="miss">Falló</button>
+      </div>
+      ${(c.app != null && c.app !== 'gir') ? `<span class="qlog-lab">Up &amp; down</span><div class="qlog-chips">
+        <button class="qlog-chip ${c.upDown === true ? 'on' : ''}" ${A} data-k="ud" data-v="si">Sí</button>
+        <button class="qlog-chip neg ${c.upDown === false ? 'on' : ''}" ${A} data-k="ud" data-v="no">No</button>
+      </div>` : ''}
+      <span class="qlog-lab">Putts</span><div class="qlog-chips">
+        ${[[0, '0'], [1, '1'], [2, '2'], [3, '3'], [4, '4+']].map(([v, l]) => `<button class="qlog-chip ${c.putts === v ? 'on' : ''}" ${A} data-k="putts" data-v="${v}">${l}</button>`).join('')}
+      </div>
+      <div class="qlog-score ${scoreCls}">
+        <div><span class="qlog-score-lab">SCORE · ${nm}</span><div class="qlog-score-val"><b>${score != null ? score : '–'}</b><i>${score != null ? relScore(score - h.par) : ''}</i></div></div>
+        <div class="stepper"><button data-act="pa-cap-score" data-pid="${ap}" data-d="-1">−</button><button data-act="pa-cap-score" data-pid="${ap}" data-d="1">+</button></div>
+      </div>
     </div>
     ${p.games.corta ? `<div class="card cx">
       <span class="label">La corta · extras de ${nm}</span>
@@ -730,7 +730,7 @@ const partyActions = {
     const k = d.k;
     if (k === 'tee') c.tee = d.v;
     else if (k === 'app') { c.app = d.v; if (d.v === 'gir') c.upDown = null; }
-    else if (k === 'ud') c.upDown = (d.v === 'si');
+    else if (k === 'ud') { c.upDown = (d.v === 'si'); if (d.v === 'si') c.putts = 1; }
     else if (k === 'putts') c.putts = Number(d.v);
     V.pWizStep = null; psync(h, d.pid); pcommit(p);
   },

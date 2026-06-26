@@ -96,6 +96,14 @@ function loadHole() {
   V.fastStep = null;
   V.wizStep = null;
 }
+/* guarda el hoyo en curso en la ronda activa cada toque (sobrevive recargas / pérdida de sesión) */
+function persistHole() {
+  const a = S.active, h = V.hole;
+  if (!a || !h || a.idx >= a.holesCount) return;
+  const score = (V.scoreTouched && h.score != null) ? h.score : suggestScore(h);
+  a.holes[a.idx] = { ...h, score };
+  try { Store.save(S); } catch (e) {}
+}
 
 /* ============ Router ============ */
 /* importar copia de respaldo (exportada con export-data) */
@@ -905,6 +913,7 @@ const actions = {
     else if (d.k === 'gir') { h.app = h.app === 'gir' ? 'corto' : 'gir'; if (h.app === 'gir') h.upDown = null; }
     else if (d.k === 'ud') { h.upDown = !(h.upDown === true); }
     else if (d.k === 'pen') { h.pen = !h.pen; }
+    persistHole();
     render();
   },
   'fast'(d) {
@@ -915,6 +924,7 @@ const actions = {
     else if (k === 'ud') { h.upDown = (d.v === 'si'); if (d.v === 'si') h.putts = 1; }   // salvar el par = 1 putt automático
     else if (k === 'putts') { h.putts = Number(d.v); }
     V.fastStep = null; // re-deriva el paso → auto-avanza al siguiente
+    persistHole();
     render();
   },
   'fast-pen'() { const h = V.hole; if (!h) return; h.pen = !h.pen; if (h.pen && (h.teeLie == null)) { h.teeLie = 'ob'; h.tee = 'c'; } render(); },
@@ -932,6 +942,7 @@ const actions = {
     if (eff == null) return;
     h.score = Math.max(1, eff + Number(d.d));
     V.scoreTouched = true;
+    persistHole();
     render();
   },
   'h-next'() {
